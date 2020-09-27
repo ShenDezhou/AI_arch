@@ -1,0 +1,484 @@
+% This version of CVPR template is provided by Ming-Ming Cheng.
+% Please leave an issue if you found a bug:
+% https://github.com/MCG-NKU/CVPR_Template.
+
+\documentclass[review]{cvpr}
+%\documentclass[final]{cvpr}
+
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% Include other packages here, before hyperref.
+
+% If you comment hyperref and then uncomment it, you should delete
+% egpaper.aux before re-running latex.  (Or just hit 'q' on the first latex
+% run, let it finish, and you should be clear).
+\usepackage[pagebackref=true,breaklinks=true,colorlinks,bookmarks=false]{hyperref}
+
+
+\def\cvprPaperID{6666} % *** Enter the CVPR Paper ID here
+\def\confYear{CVPR 2021}
+%\setcounter{page}{4321} % For final version only
+
+
+\begin{document}
+
+%%%%%%%%% TITLE
+\title{Lower Bounds on Rate of Convergence of Matrix Products in All Pairs Shortest Path of Social Network}
+
+\author{Dezhou Shen\\
+Department of Computer Science\\
+Tsinghua University\\
+Beijing, CN 100084\\
+{\tt\small sdz15@mails.tsinghua.edu.cn}
+% For a paper whose authors are all at the same institution,
+% omit the following lines up until the closing ``}''.
+% Additional authors and addresses can be added with ``\and'',
+% just like the second author.
+% To save space, use either the email address or home page, not both
+}
+
+\maketitle
+
+
+%%%%%%%%% ABSTRACT
+\begin{abstract}
+  With the rapid development of social network applications, social network has become an important medium for people to interact.
+  For the shortest distance calculation task of all nodes in networks, Alon \etal ~\cite{alon1997exponent} proposed an algorithm with matrix multiplication,
+  combining with the distance product association law and block matrix multiplication, all pairs shortest path algorithm on networks has time bound \(O({logn2n^3 \over B})\) .
+  In practical applications, considering the scale-free characteristics of social networks and the precision limitations of floating-point operations on computer hardware,
+  the shortest path algorithm has an improved time bound \(O({14n^3 \over B})\). Based on the above theory, I propose an all node pairs shortest path algorithm that combines sparseness judgment and convergence judgment,
+  leveraging the distance product algorithm with matrix multiplication, distance product exchange law, block matrix multiplication, scale-free characteristics of social networks,
+  and limitation of floating-point operations on hardware. Tested the theory on a social network dataset with 8508 actors, the algorithm has a performance improvement of 0.39 to 36.2 times compared to the Alon N algorithm on the CPU and GPU.
+\end{abstract}
+
+%%%%%%%%% BODY TEXT
+\section{Introduction}
+
+In recent years, driven by Asian film industries such as China and India, the global box office has maintained a steady growth trend, and with the rapid development of social network applications, more and more actors use social network for work communication.
+Therefore, social network has become an important tool for film distribution, marketing, promotion and an important medium for film actors and fans to interact.
+Previous studies have lacked research on actors' social networks; PageRank, an existing node influence algorithm, is not accurate in evaluating social network influence.
+Social network feature measurement is an important task in social network data mining, some network characteristics, such as betweenness and closeness, need to calculate the distances between nodes.
+As a result, efficient calculation of the shortest path is one of the key problems in social network measurement.
+There was Floyd-Warshall~\cite{floyd1962algorithm,warshall1962theorem} algorithm for calculating node distances, Aho and Hopcroft~\cite{aho1974design} proved that distance product is homogenous to matrix multiplication,
+Alon \etal ~\cite{alon1997exponent} proposed an algorithm to calculate distance product by matrix multiplication, Zwick~\cite{zwick2002all} optimized distance product using fast matrix multiplication,
+and Garbow and Winograd~\cite{garbow1985scaling} proposed an algorithm for distance product using matrix multiplication with element bound.
+From time bound of matrix multiplication, Strassen~\cite{strassen1969gaussian}, Coppersmith and Winograd~\cite{coppersmith1987matrix}, Davie and Andrew ~\cite{davie2013improved}, Le Gall~\cite{le2014powers} proposed the block matrix multiplication with time bound of \(O(n ^ {2.807})\), \(O(n^{2.376})\), \(O(n^{2.374})\), \(O(n^{2.373})\).
+Lam \etal ~\cite{lam1991cache} proposed that the progressive time complexity of matrix multiplication with a cache block size of $B*B$ is \(O({2n^3 \over B}+{n^2})\) ,
+and Goto and Geijn~\cite{goto2008anatomy} proposed a new library, OpenBLAS, which has a higher cache hit rate and improved time cost in matrix computation on X86 CPU, compared to modern BLAS libraries, such as Intel MKL v8.1.1, ESSL v4.2.0 and ATLAS v3.7.11.
+From point of view of matrix sparseness of network adjacent matrix, for sparse matrix multiplication, SciPy  and CuPy  use SciPy-sparse and CuPy-cuSparse to achieve efficient sparse matrix multiplication on CPU and GPU.
+For dense matrix multiplication, NumPy, SciPy, CuPy and ND4J use OpenBLAS, cuBLAS and other libraries to achieve efficient block matrix multiplication on CPU and GPU.
+Therefore, a feasible method for calculating shortest path of full node pairs is: represents the network by adjacent matrix, then makes all matrix elements exponential, computes matrix multiplication and finally takes logarithm of matrix elements.
+This procedure is called distance product epoch. Iterate several times to get full node pairs shortest path result.
+Further, analysis time complexity of the distance product calculation and iteration of each epoch. For time complexity of distance product, matrix multiplication is the most complex sub-procedure;
+(1) For distance product optimization, Zwick U proposed distance product with block matrix multiplication, therefore choose proper computation device library with optimized cache for block matrix multiplication.
+(2) For iteration optimization, because Aho A V proved distance product is isomorphic to the matrix multiplication, and regard to that the distance product association law, optimize the iteration process by last distance product result reuse.
+
+%-------------------------------------------------------------------------
+
+\section{Dataset and Hardware}
+From January 1, 2011 to March 31, 2015, collected the film actors' social network following relationship, profile information, and text message on Sina Weibo. In all, collected 8508 actors, 577775 edges and 12526114 Sina Weibo posts.
+I used a server with two Intel Xeon E5-2620 v4 CPUs and one NVIDIA GeForce GTX 1080 Ti GPU, in total 32 cores with frequency of 2.1Ghz, 128G system memory and 11G GPU memory in my experiment.
+
+
+%-------------------------------------------------------------------------
+
+\section{Comparison on block matrix multiplication implementtation}
+On the actors' social network, this paper implements Strassen block matrix multiplication, Copper-Winograd block matrix multiplication and OpenBLAS matrix multiplication. On the computer hardware, compared the $8508*8508$ matrix multiplication time-cost.
+The block matrix multiplication based on Strassen and Coppersmith-Winograd takes 6 seconds for one iteration of matrix multiplication, and with OpenBLAS library it takes only 4 seconds.
+The performance of optimized cache block matrix multiplication, such as OpenBLAS matrix computation library, is higher than Strassen and Copper-Winograd block matrix multiplication algorithm.
+Therefore, distance product algorithm proposed by Zwick U with OpenBLAS block matrix multiplication is obviously better than distance product algorithm with Strassen and Coppersmith-Winograd.
+
+
+%-------------------------------------------------------------------------
+
+\section{Time bound of distance product algorithm with cache optimized block matrix multiplication}
+For a fully connected network, the graph has a maximum diameter of $n-1$, so using result reuse method in distance product, that is use the last distance product calculation result, the matrix multiplication is a $log_2(n-1)$.
+Albert ~\cite{albert1999diameter} estimated the number of documents on the Internet is $N=8*10^8$, diameter D=18.59, found that social networks, the Internet and other complex networks have scale-free and small world phenomenon, diameter is much smaller than node number.
+I present the corresponding nodes counts, diameters and logarithm of diameters in Table 1, from the observation there is formula (1):
+In social networks, the number of nodes n, with cache block size $B*B$, according to the formula (9-10), the matrix product calculation iteration times does not exceed the number of $\lceil{logD}\rceil$, recall that Monica D. Lam proved that matrix multiplication time bound is \(O({2n^3 \over B}+{n^2})\) ,
+thus Alon N algorithm time bound is \(O({logD 2n^3 \over B})\) , use the equation (1) result, time bound is \(O({ log(logN) 2n^3 \over B})\). With the limitation of the floating-point operation on computer hardware, take a network of number of nodes $N<10^{308}$ as example,
+as shown in Table 1, see that the shortest path calculation iterations time is no larger than $logD \approx {log(logN)}<7$, that is, the number of calculation iterations does not exceed the magic number 7, bringing a stronger time bound of \(O({14n^3 \over B})\).
+In another words, with the floating-point operation accuracy limitation on computer hardware, on scale-free complex networks, the all node pairs shortest path algorithm time bound is \(O({14n^3 \over B})\).
+
+
+%-------------------------------------------------------------------------
+
+
+\section{Shortest Path Algorithm with Block Matrix Multiplication}
+Definition 1 Matrix Product The outer product of two matrices with the same dimension K is the $(K*1)*(1*K)$ matrix multiplication, obtaining $(K*K)$ square matrix, see formula (2):
+
+Definition 2 Distance Product For a matrix $\Bbb A$ with a dimension of $n*m$ elements, $\Bbb B$ with a dimension of $m*n$ elements, the distance product of $\Bbb A$ and $\Bbb B$ is matrix $\Bbb C$ with a dimension of $n*n$ elements, for $1 \leq i$, $j \leq n$, satisfying formula (3):
+
+%-------------------------------------------------------------------------
+
+
+
+\subsection{Maximum calculation}
+
+Calculate the largest value of the square matrix element $\widetilde X$, such as the formula (4):
+
+\subsection{Exponential calculation}
+
+The calculation accuracy of different computer hardware is in line with the IEEE floating-point operation standard~\cite{ieee1985ieee}, first of all, transform the input matrix by exponential process, that is, taking the number of nodes as the base, taking the difference between the largest value of the element $\widetilde X$ and the matrix elements as exponential, as shown in the formula (5).
+As shown in Table 2, for actors' social network with 8508 nodes, the diameter of the network does not allow to exceed 9.8 and 78.4 when calculating a precision of 32-bit floating-point and 64-bit floating-point, otherwise the exponential operation on the computer platform will overflow.
+
+\subsection{Matrix multiplication}
+Use different matrix libraries to speed up the matrix multiplication on computer hardware, as shown in Table 3, choose proper device-based optimized matrix multiplication libraries according to different conditions, such as matrix sparseness, calculation hardware, and programming language.
+
+%-------------------------------------------------------------------------
+\subsection{Logarithm calculation}
+Take non-zero elements of the matrix multiplication result to the element logarithm process, that is, the number of network nodes as the base, the element in the matrix multiplication result as the true number, then round down the logarithm result,
+after that take difference between twice of the largest input matrix element value $\widetilde X$ and the logarithm result as result, such as formula (6).
+
+\subsection{Distance product association law}
+
+From the iteration of the shortest path calculation, suppose A, B, C is the square matrix, according to the association law of distance product, there is a formula (7):
+Matrix multiplication has association law, and the distance product is isomorphism to matrix multiplication, so simplify the shortest path iteration process as formula (8):
+Since matrix multiplication has association law and distance product is isomorphism to matrix multiplication, similarly, distance product has an association law.
+Under the premise of the shortest path matrix $L^{(n-1)}$ given the adjacent matrix and the $n-1$ edge, calculate the shortest path matrix $L^{(n)}$ with n edges, and extend the shortest path of the $n-1$ edge by edge.
+Calculating the shortest path matrix $L^{(n)}$ can be completed as formula (9):
+As can be seen from the nature of the shortest path in the graph, the shortest path from the any of two nodes does not exceed $n-1$, so there is formula (10):
+Definition 3 Result Reuse in Distance Product According to the nature of the equation (8), the process of calculating the shortest path iteration using the last result of distance product follows in turn, as shown in formula (11).
+The shortest path needs to be calculated $\lceil{log_2(n-1)}\rceil$ times matrix multiplication, from the formula (10), it can be seen that $(n-1)\leq2^{\lceil{log_2(n-1)}\rceil}$ is the same as the simple shortest path matrix calculation result $L^{(n-1)}$, so there is a formula (12):
+Obviously, the result reuse method saves $n-2-\lceil{log_2(n-1)}\rceil$ times of matrix multiplication.
+Observe the shortest path calculation process of the actors' social network, the adjacent matrix is shown in Figure 1a, and the change of result in each iteration is shown in Figure 1b-d, the shortest path result matrix converges gradually, each element stabilizes as iterations goes.
+
+\section{Architecture design}
+
+\subsection{Sparseness judgment}
+
+As shown in Table 3, observing the adjacent matrix represented by the network diagram is usually a sparse matrix, and becomes a dense matrix during the iteration,
+and one idea of optimization is to use sparse matrix multiplication to speed up the iteration when the matrix is sparse, and when the matrix becomes denser, the sparse matrix multiplication is much time-consuming.
+Taking the actors' social network as an example, the non-zero element of the adjacent matrix of 8508 nodes is 617958, and the non-zero element of the matrix is 0.8536\% of the total element,
+which is a typical sparse matrix. Consider the advantages of sparse matrix multiplication algorithm, a threshold for triggering sparse matrix multiplication is set,
+and when the proportion of non-zero-value elements entered is less than the 10\% threshold, performs sparse matrix multiplication.
+
+\subsection{Convergence judgment}
+
+For networks with unknown diameters, the calculation results can be made using convergence method, and for the calculation process of reaching convergence,
+i.e. $L^{(n-1)}=L^{(n)}$, should be regarded as the program termination of iteration, and the calculation of the matrix product method is completed by the equation (4).
+
+\subsection{The shortest path algorithm that fuses sparseness judgment and convergence judgment}
+
+Based on Alon N distance product algorithm, utilize the sparseness judgment of the input matrix and the calculation result convergence judgment, named PowerLawBound shortest path algorithm,
+PowerLaw refers to the network conforming to the power law distribution, Bound refers to the precision of floating-point operation, and the name implies two characteristics of the limitation
+of floating-point precision on the scale-free social network and the computer hardware, the algorithm process is shown in Algorithm 1.
+
+\section{Experiment}
+
+Firstly, compared to the Floyd-Warshall algorithm implemented on CPU, the Alon N algorithm implementation with matrix multiplication of block cache optimization on GPU has a time performance improvement, see Table 4.
+
+\section{Conclusion}
+This paper discussed the use of matrix multiplication in calculation of the all pairs shortest path with association law, and the time bound of Alon N distance product algorithm with cache optimization block matrix multiplication is \(O({logn2n^3 \over B})\).
+Further strengthen the conditions, in social networks with scale-free characteristics, under the precision limit of floating-point operation on hardware, limiting the network diameter to avoid floating-point operation overflow in the calculation process,
+the algorithm has lower time bound \(O({14n^3 \over B})\). With the above limitations, this paper proposed a novel shortest path algorithm, named PowerLawBound, combining matrix sparseness judgment and calculation result convergence judgment.
+PowerLaw here refers to the network conforming to the power law distribution, and Bound refers to the accuracy of floating-point operations on hardware.
+The experimental results show that PowerLawBound algorithm improves time performance by 39\% to 36.2 times compared to the Alon N algorithm on the hardware of CPU and GPU.
+
+%\begin{quote}
+%\begin{center}
+%    An analysis of the frobnicatable foo filter.
+%\end{center}
+%
+%   In this paper we present a performance analysis of our
+%   previous paper [1], and show it to be inferior to all
+%   previously known methods.  Why the previous paper was
+%   accepted without this analysis is beyond me.
+%
+%   [1] Removed for blind review
+%\end{quote}
+%
+%
+%An example of an acceptable paper:
+%
+%\begin{quote}
+%\begin{center}
+%     An analysis of the frobnicatable foo filter.
+%\end{center}
+%
+%   In this paper we present a performance analysis of the
+%   paper of Smith \etal [1], and show it to be inferior to
+%   all previously known methods.  Why the previous paper
+%   was accepted without this analysis is beyond me.
+%
+%   [1] Smith, L and Jones, C. ``The frobnicatable foo
+%   filter, a fundamental contribution to human knowledge''.
+%   Nature 381(12), 1-213.
+%\end{quote}
+%
+%If you are making a submission to another conference at the same time,
+%which covers similar or overlapping material, you may need to refer to that
+%submission in order to explain the differences, just as you would if you
+%had previously published related work.  In such cases, include the
+%anonymized parallel submission~\cite{Authors14} as additional material and
+%cite it as
+%\begin{quote}
+%[1] Authors. ``The frobnicatable foo filter'', F\&G 2014 Submission ID 324,
+%Supplied as additional material {\tt fg324.pdf}.
+%\end{quote}
+%
+%Finally, you may feel you need to tell the reader that more details can be
+%found elsewhere, and refer them to a technical report.  For conference
+%submissions, the paper must stand on its own, and not {\em require} the
+%reviewer to go to a techreport for further details.  Thus, you may say in
+%the body of the paper ``further details may be found
+%in~\cite{Authors14b}''.  Then submit the techreport as additional material.
+%Again, you may not assume the reviewers will read this material.
+%
+%Sometimes your paper is about a problem which you tested using a tool which
+%is widely known to be restricted to a single institution.  For example,
+%let's say it's 1969, you have solved a key problem on the Apollo lander,
+%and you believe that the CVPR70 audience would like to hear about your
+%solution.  The work is a development of your celebrated 1968 paper entitled
+%``Zero-g frobnication: How being the only people in the world with access to
+%the Apollo lander source code makes us a wow at parties'', by Zeus \etal.
+%
+%You can handle this paper like any other.  Don't write ``We show how to
+%improve our previous work [Anonymous, 1968].  This time we tested the
+%algorithm on a lunar lander [name of lander removed for blind review]''.
+%That would be silly, and would immediately identify the authors. Instead
+%write the following:
+%\begin{quotation}
+%\noindent
+%   We describe a system for zero-g frobnication.  This
+%   system is new because it handles the following cases:
+%   A, B.  Previous systems [Zeus et al. 1968] didn't
+%   handle case B properly.  Ours handles it by including
+%   a foo term in the bar integral.
+%
+%   ...
+%
+%   The proposed system was integrated with the Apollo
+%   lunar lander, and went all the way to the moon, don't
+%   you know.  It displayed the following behaviours
+%   which show how well we solved cases A and B: ...
+%\end{quotation}
+%As you can see, the above text follows standard scientific convention,
+%reads better than the first version, and does not explicitly name you as
+%the authors.  A reviewer might think it likely that the new paper was
+%written by Zeus \etal, but cannot make any decision based on that guess.
+%He or she would have to be sure that no other authors could have been
+%contracted to solve problem B.
+%\medskip
+%
+%\noindent
+%FAQ\medskip\\
+%{\bf Q:} Are acknowledgements OK?\\
+%{\bf A:} No.  Leave them for the final copy.\medskip\\
+%{\bf Q:} How do I cite my results reported in open challenges?
+%{\bf A:} To conform with the double blind review policy, you can report results of other challenge participants together with your results in your paper. For your results, however, you should not identify yourself and should not mention your participation in the challenge. Instead present your results referring to the method proposed in your paper and draw conclusions based on the experimental comparison to other results.\medskip\\
+%
+%\begin{figure}[t]
+%\begin{center}
+%\fbox{\rule{0pt}{2in} \rule{0.9\linewidth}{0pt}}
+%   %\includegraphics[width=0.8\linewidth]{egfigure.eps}
+%\end{center}
+%   \caption{Example of caption.  It is set in Roman so that mathematics
+%   (always set in Roman: $B \sin A = A \sin B$) may be included without an
+%   ugly clash.}
+%\label{fig:long}
+%\label{fig:onecol}
+%\end{figure}
+%
+%\subsection{Miscellaneous}
+%
+%\noindent
+%Compare the following:\\
+%\begin{tabular}{ll}
+% \verb'$conf_a$' &  $conf_a$ \\
+% \verb'$\mathit{conf}_a$' & $\mathit{conf}_a$
+%\end{tabular}\\
+%See The \TeX book, p165.
+%
+%The space after \eg, meaning ``for example'', should not be a
+%sentence-ending space. So \eg is correct, {\em e.g.} is not.  The provided
+%\verb'\eg' macro takes care of this.
+%
+%When citing a multi-author paper, you may save space by using ``et alia'',
+%shortened to ``\etal'' (not ``{\em et.\ al.}'' as ``{\em et}'' is a complete word.)
+%However, use it only when there are three or more authors.  Thus, the
+%following is correct: ``
+%   Frobnication has been trendy lately.
+%   It was introduced by Alpher~\cite{Alpher02}, and subsequently developed by
+%   Alpher and Fotheringham-Smythe~\cite{Alpher03}, and Alpher \etal~\cite{Alpher04}.''
+%
+%This is incorrect: ``... subsequently developed by Alpher \etal~\cite{Alpher03} ...''
+%because reference~\cite{Alpher03} has just two authors.  If you use the
+%\verb'\etal' macro provided, then you need not worry about double periods
+%when used at the end of a sentence as in Alpher \etal.
+%
+%For this citation style, keep multiple citations in numerical (not
+%chronological) order, so prefer \cite{Alpher03,Alpher02,Authors14} to
+%\cite{Alpher02,Alpher03,Authors14}.
+%
+%
+%\begin{figure*}
+%\begin{center}
+%\fbox{\rule{0pt}{2in} \rule{.9\linewidth}{0pt}}
+%\end{center}
+%   \caption{Example of a short caption, which should be centered.}
+%\label{fig:short}
+%\end{figure*}
+%
+%%------------------------------------------------------------------------
+%\section{Formatting your paper}
+%
+%All text must be in a two-column format. The total allowable width of the
+%text area is $6\frac78$ inches (17.5 cm) wide by $8\frac78$ inches (22.54
+%cm) high. Columns are to be $3\frac14$ inches (8.25 cm) wide, with a
+%$\frac{5}{16}$ inch (0.8 cm) space between them. The main title (on the
+%first page) should begin 1.0 inch (2.54 cm) from the top edge of the
+%page. The second and following pages should begin 1.0 inch (2.54 cm) from
+%the top edge. On all pages, the bottom margin should be 1-1/8 inches (2.86
+%cm) from the bottom edge of the page for $8.5 \times 11$-inch paper; for A4
+%paper, approximately 1-5/8 inches (4.13 cm) from the bottom edge of the
+%page.
+%
+%%-------------------------------------------------------------------------
+%\subsection{Margins and page numbering}
+%
+%All printed material, including text, illustrations, and charts, must be kept
+%within a print area 6-7/8 inches (17.5 cm) wide by 8-7/8 inches (22.54 cm)
+%high.
+%%
+%Page numbers should be in footer with page numbers, centered and .75
+%inches from the bottom of the page and make it start at the correct page
+%number rather than the 4321 in the example.  To do this fine the line (around
+%line 20)
+%\begin{verbatim}
+%\setcounter{page}{4321}
+%\end{verbatim}
+%where the number 4321 is your assigned starting page.
+%
+%
+%
+%%-------------------------------------------------------------------------
+%\subsection{Type-style and fonts}
+%
+%Wherever Times is specified, Times Roman may also be used. If neither is
+%available on your word processor, please use the font closest in
+%appearance to Times to which you have access.
+%
+%MAIN TITLE. Center the title 1-3/8 inches (3.49 cm) from the top edge of
+%the first page. The title should be in Times 14-point, boldface type.
+%Capitalize the first letter of nouns, pronouns, verbs, adjectives, and
+%adverbs; do not capitalize articles, coordinate conjunctions, or
+%prepositions (unless the title begins with such a word). Leave two blank
+%lines after the title.
+%
+%AUTHOR NAME(s) and AFFILIATION(s) are to be centered beneath the title
+%and printed in Times 12-point, non-boldface type. This information is to
+%be followed by two blank lines.
+%
+%The ABSTRACT and MAIN TEXT are to be in a two-column format.
+%
+%MAIN TEXT. Type main text in 10-point Times, single-spaced. Do NOT use
+%double-spacing. All paragraphs should be indented 1 pica (approx. 1/6
+%inch or 0.422 cm). Make sure your text is fully justified---that is,
+%flush left and flush right. Please do not place any additional blank
+%lines between paragraphs.
+%
+%Figure and table captions should be 9-point Roman type as in
+%Figures~\ref{fig:onecol} and~\ref{fig:short}.  Short captions should be centred.
+%
+%\noindent Callouts should be 9-point Helvetica, non-boldface type.
+%Initially capitalize only the first word of section titles and first-,
+%second-, and third-order headings.
+%
+%FIRST-ORDER HEADINGS. (For example, {\large \bf 1. Introduction})
+%should be Times 12-point boldface, initially capitalized, flush left,
+%with one blank line before, and one blank line after.
+%
+%SECOND-ORDER HEADINGS. (For example, { \bf 1.1. Database elements})
+%should be Times 11-point boldface, initially capitalized, flush left,
+%with one blank line before, and one after. If you require a third-order
+%heading (we discourage it), use 10-point Times, boldface, initially
+%capitalized, flush left, preceded by one blank line, followed by a period
+%and your text on the same line.
+%
+%%-------------------------------------------------------------------------
+%\subsection{Footnotes}
+%
+%Please use footnotes\footnote {This is what a footnote looks like.  It
+%often distracts the reader from the main flow of the argument.} sparingly.
+%Indeed, try to avoid footnotes altogether and include necessary peripheral
+%observations in
+%the text (within parentheses, if you prefer, as in this sentence).  If you
+%wish to use a footnote, place it at the bottom of the column on the page on
+%which it is referenced. Use Times 8-point type, single-spaced.
+%
+%
+%%-------------------------------------------------------------------------
+%\subsection{References}
+%
+%List and number all bibliographical references in 9-point Times,
+%single-spaced, at the end of your paper. When referenced in the text,
+%enclose the citation number in square brackets, for
+%example~\cite{Authors14}.  Where appropriate, include the name(s) of
+%editors of referenced books.
+%
+%\begin{table}
+%\begin{center}
+%\begin{tabular}{|l|c|}
+%\hline
+%Method & Frobnability \\
+%\hline\hline
+%Theirs & Frumpy \\
+%Yours & Frobbly \\
+%Ours & Makes one's heart Frob\\
+%\hline
+%\end{tabular}
+%\end{center}
+%\caption{Results.   Ours is better.}
+%\end{table}
+%
+%%-------------------------------------------------------------------------
+%\subsection{Illustrations, graphs, and photographs}
+%
+%All graphics should be centered.  Please ensure that any point you wish to
+%make is resolvable in a printed copy of the paper.  Resize fonts in figures
+%to match the font in the body text, and choose line widths which render
+%effectively in print.  Many readers (and reviewers), even of an electronic
+%copy, will choose to print your paper in order to read it.  You cannot
+%insist that they do otherwise, and therefore must not assume that they can
+%zoom in to see tiny details on a graphic.
+%
+%When placing figures in \LaTeX, it's almost always best to use
+%\verb+\includegraphics+, and to specify the  figure width as a multiple of
+%the line width as in the example below
+%{\small\begin{verbatim}
+%   \usepackage[dvips]{graphicx} ...
+%   \includegraphics[width=0.8\linewidth]
+%                   {myfile.eps}
+%\end{verbatim}
+%}
+%
+%
+%%-------------------------------------------------------------------------
+%\subsection{Color}
+%
+%Please refer to the author guidelines on the \confYear~web page for a discussion
+%of the use of color in your document.
+%
+%%------------------------------------------------------------------------
+%\section{Final copy}
+%
+%You must include your signed IEEE copyright release form when you submit
+%your finished paper. We MUST have this form before your paper can be
+%published in the proceedings.
+%
+%Please direct any questions to the production editor in charge of these
+%proceedings at the IEEE Computer Society Press:
+%\url{https://www.computer.org/about/contact}.
+
+
+{\small
+\bibliographystyle{ieee_fullname}
+\bibliography{cpvr}
+}
+
+\end{document}
