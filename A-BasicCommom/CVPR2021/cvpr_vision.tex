@@ -28,7 +28,8 @@
 \begin{document}
 
 %%%%%%%%% TITLE
-\title{Movie Box office Prediction via Joint Actor Representations and Social Media Sentiment}
+%\title{Movie Box office Prediction via Joint Actor Representations and Social Media Sentiment}
+\title{Visualize Non-Euclidean Actors Social Media via Joint Social Relationship Representations, Network Characteristics and Media Sentiments}
 
 \author{Dezhou Shen\\
 Department of Computer Science\\
@@ -47,22 +48,23 @@ Beijing, CN 100084\\
 
 %%%%%%%%% ABSTRACT
 \begin{abstract}
-  In recent years, driven by the Asian film industry, such as China and India, the global box office has maintained a steady growth trend.
-  Previous studies have rarely used long-term, full-sample film data in analysis, lack of research on actors' social networks.
-  Existing film box office prediction algorithms only use film meta-data, lack of using social network characteristics and the model is less interpretable.
-  I propose a FC-GRU-CNN binary classification model in of box office prediction task, combining five characteristics, including the film meta-data, Sina Weibo text sentiment,
-  actors' social network measurement, all pairs shortest path and actors' art contribution.
-  Exploiting long-term memory ability of GRU layer in long sequences and the mapping ability of CNN layer in retrieving all pairs shortest path matrix features,
-  proposed model is 14\% higher in accuracy than the current best C-LSTM model.
+  In film industry, visualizing social media data for analyzing stars and audience intention for movies is common to producers.
+  However, non-Euclidean social media is hard to analyze, I propose a FC-GRU-CNN deep learning architecture for visualizing social media, and as an empirical case, use it in a box-office prediction task.
+  Further more, key factors, such as social relationship representations, network characteristics and media sentiments are used in the prediction model.
+  By exploiting long-term memory ability of GRU layer in long sequences in cast list and the mapping ability of CNN layer in retrieving all pairs shortest path feature of actors social relationship,
+  proposed model is 14\% higher in accuracy than Zhou \etal model.
 \end{abstract}
 
 %%%%%%%%% BODY TEXT
 \section{Introduction}
 
-With the development of social networks, actors' influence on social networks is increasing, and the influence of actors' consumption is spread through social networks, and the use of long-cycle, full-sample social network data to study the relationships between all actors, directors and films is a challenge in the field of social media research.
+With the development of social networks, actors' influence on social media is increasing, and the influence of actors' consumption is spread through social networks,
+and using long-term social networks data to study the relationships between all actors, directors and films remains a challenge.
 It is easy to see that the relationship between the box office and the director, actor, scriptwriter and producer is often non-linear, that is, it is difficult to use linear functions to build box office prediction models.
-By analyzing the social network characteristics of movie actors, sentiment of movies in Sina Weibo posts, all pairs shortest path, it is easy to get the priority of each characteristic by analysis of feature importance, existing prediction algorithm only makes use of the film meta-data, lacks the study on the social network characteristics of the actors, though traditional explanation of the film box office prediction algorithm is sufficing, however the prediction effect is not satisfactory.
-This paper presents a model, named FC-GRU-CNN, for movie box office prediction, combining characteristics of film meta-data, actors' social network measurement, all nodes pair shortest path, social network text sentiment and actors' art characteristics, proposed model is 14\% higher in accuracy than the current best C-LSTM model.
+By analyzing the social network characteristics of movie actors, sentiment of movies in Sina Weibo posts, all pairs shortest path, it is easy to get the priority of each characteristic by analysis of feature importance,
+existing prediction algorithm only makes use of the film meta-data, lacks the study on the social network characteristics of the actors, though traditional explanation of the film box office prediction algorithm is sufficing, however the prediction effect is not satisfactory.
+This paper presents a model, named FC-GRU-CNN, for movie box office prediction, combining characteristics of film meta-data, actors' social network measurement,
+all nodes pair shortest path, social network text sentiment and actors' art characteristics, proposed model is 14\% higher in accuracy than Zhou \etal~\cite{zhou2015c} model.
 
 %-------------------------------------------------------------------------
 
@@ -79,7 +81,7 @@ Qiu and Tang~\cite{qiu2018microblog} used the 10 movie Sina Weibo texts and movi
 \subsection{Logistic Regression Model}
 
 Some researchers use social network text sentiment to predict movie box office.
-Asur and Huberman~\cite{asur2010predicting} collected 2.89 million texts related to 1.2 million users on Twitter in connection with 24 films, and concluded that the correlation coefficient R2 was between 0.92 and 0.97 using the daily postings in the first seven days of release.
+Asur and Huberman~\cite{asur2010predicting} collected 2.89 million texts related to 1.2 million users on Twitter in connection with 24 films, and concluded that the correlation coefficient $R^2$ was between 0.92 and 0.97 using the daily postings in the first seven days of release.
 The film box office forecast logic regression model with the distribution of social network posts was 0.97.
 Jain~\cite{jain2013prediction} collected 4800 Twitter texts of the movie name in the SNAP2009 (Stanford) dataset 2 weeks before release and 4 weeks after release.
 Trained an sentiment al four-category model based on an 8-grammar model with an accuracy rate of 64.4\%.
@@ -91,13 +93,13 @@ first week screen number and weekly revenue per screen, the determine of coeffic
 
 \subsection{Support Vector Regression and Multi-Layer Neural Network Model}
 
-From 2015 to 2017, Jiang and Wang~\cite{jiang2018predicting} collected 34 high-grossing films, using 10 features, such as film meta-data, director awards, and actor awards, and used voting feature selection algorithms to select features, training SVR (supporting vector regression) box office and scoring prediction models.
-From 2012 to 2015, Quader \etal~\cite{quader2017machine} collected 755 film reviews from four film review sites, including film ratings, MPAA categories, director's total box office, total box office, actor total box office, release time, budget, screen numbers, user reviews, reviews, and the sentiment al characteristics of review texts,
-training SVR, MLP(multi-layer neural network) model, with an accuracy of about 44.4\%.
+Jiang and Wang~\cite{jiang2018predicting} collected 34 high-grossing films from 2015 to 2017, using 10 features, such as film meta-data, director awards, and actor awards, and used voting feature selection algorithms to select features, training SVR (supporting vector regression) box office and scoring prediction models.
+Quader \etal~\cite{quader2017machine} collected 755 film reviews from four film review sites from 2012 to 2015, including film ratings, MPAA categories, director's total box office, total box office, actor total box office, release time, budget, screen numbers, user reviews, reviews, and the sentiment al characteristics of review texts,
+training SVR, MLP model, with an accuracy of about 44.4\%.
 
-\subsection{Text Classification by Deep Learning}
+\subsection{Text Classification using Deep Learning}
 
-Zhou \etal~\cite{zhou2015c} proposed C-LSTM text classification model, using single-layer CNN to extract the high-order dimensional representation of text, and then connected the LSTM model to obtain sentence representation, the classification accuracy of the model is 87.8\%.
+Zhou \etal proposed a C-LSTM text classification model, using single-layer CNN for extracting the high-order dimensional representation of text, and then connected to LSTM layers for sentence representation, accuracy of the model is 87.8\%.
 
 \subsection{Summary}
 
@@ -105,7 +107,7 @@ From the social network to predict the movie box office, feature selection inclu
 
 %-------------------------------------------------------------------------
 
-\section{Feature Analysis}
+\section{Characteristics Correlation Analysis}
 
 The following linear analysis of social network measurement features and the regression coefficient of film box office, and from the practical significance of the interaction between the characteristics and the film box office.
 The positive characteristics associated with the box office in the linear regression algorithm are:
@@ -136,19 +138,20 @@ In summary, the decision tree structure shows that the influence of the actors i
 while the social network characteristics, movie-related Sina Weibo sentiment, film meta-data are the general determinants.
 
 
-\section{Actors Representation Learning Using Social Network Measurement, Shortest Path And Art Characteristics}
+\section{Representation Learning for Social Relationship, Network Characteristics And Art Contribution}
 
-Definition 2 (Network Embedding)  A network $G=(V,E)$, V represents a set of nodes consisting of n nodes, and E represents an edge set of m edges. For each edge $e\in \Bbb E$, the ordered pair is $e=(u,v)$, $u,v \in \Bbb V$ and the weight is $A_{ij}$.
-A network can be represented as an adjacent matrix, $A\in \Bbb R^{(n*n)}$, and the goal of network embedding is to learn an all pairs representation, $U\in \Bbb R^{(n*m)}$, where m(m<n) is an embedding dimension.
-Definition 3 (Shortest Path Network Embedding)  In a network represented as a $G=(V,E)$, V represents a node set of n nodes, and E represents an edge set of m edges.
-For each edge $e\in \Bbb E$, the ordered pair is e=(u,v), $u,v \in \Bbb V$ and the weight is $A_{ij}$.
-A network can be represented as an adjacent matrix, $A\in \Bbb R^{(n*n)}$, and the goal of the shortest path network embedding is to learn an all pairs, shortest path representation, $U\in \Bbb R^{(n*n)}$, where n is an embedding dimension.
+Definition 1 (Network Embedding)  A network $\Bbb G=(\Bbb V,\Bbb E)$, $\Bbb V$ represents a set of nodes consisting of $n$ nodes, and $\Bbb E$ represents an edge set of $m$ edges.
+For each edge $e\in \Bbb E$, the ordered pair is $e=(u,v)$, $u,v \in \Bbb V$ and the weight is $A_{ij}$.
+A network can be represented as an adjacent matrix, $A\in \Bbb R^{(n*n)}$, and the goal of network embedding is to learn an all pairs representation, $U\in \Bbb R^{(n*m), m < n}$, where $m$ is an embedding dimension.
+Definition 2 (Shortest Path Network Embedding)  In a network represented as a $G=(V,E)$, $\Bbb V$ represents a node set of $n$ nodes, and $\Bbb E$ represents an edge set of $m$ edges.
+For each edge $e\in \Bbb E$, the ordered pair is $e=(u,v)$, $u,v \in \Bbb V$ and the weight is $A_{ij}$.
+A network can be represented as an adjacent matrix, $A\in \Bbb R^{(n*n)}$, and the goal of the shortest path network embedding is to learn an all pairs, shortest path representation, $U\in \Bbb R^{(n*n)}$, where $n$ is an embedding dimension.
 For the task of box office forecasting, because of the significant impact the actors on the box office, in addition to the measurement of the film meta-data and the sentiment of the movie social media, the actors' contribution is required to compute by leveraging the movie participants actors list.
 A film, led by several actors, obtained the names of 7,369 actors who participated in films between 2011 and 2015 are collected as an actor's dictionary, and then used the shortest path features of the actors' social network.
 Combining social network measurement features, the shortest path network embedding, and the art features to construct the actor representation vector.
 For actors who have no accounts on social networks, marked as unknown, and initialized with zero vectors.
 Actor representation vectors include social network measurement features of 10 dimensions, shortest path features of 8380 dimensions, art features of 1 dimension.
-In total, 10-dimensional measurement features include fans number, betweenness, closeness, followers, posts number, average posts interval, average word count per post, retweet number, movie-related post number, co-occurrence number, shortest path 8380 dimensions.
+In total, 10-dimensional measurement features include fans number, betweenness, closeness, followers, posts number, average posts interval, average word count per post, retweet number, movie-related post number, co-occurrence number, shortest path with 8380 dimensions.
 
 \section{Machine Learning Classifier}
 
@@ -163,7 +166,7 @@ The explanatories of the decision tree prediction model is more intuitive and mo
 the characteristics can be sorted according to the importance, so the social network structure characteristics are the most important, the social network text sentiment al characteristics, the film meta-data are important, and the social network characteristics are generally important.
 With Qiu and Tang's logistic regression model on sentiment and twitter index algorithm's 95.71\% in determination of coefficient, the proposed method in this paper has a 2.87\% improvement, 98.58\%.
 
-\section{FC-GRU-CNN Model Classifier}
+\section{FC-GRU-CNN Model}
 
 
 \begin{figure*}
@@ -231,9 +234,9 @@ This paper & 75.0\% \\
 
 \section{Conclusion}
 
-Based on the film box office prediction of actor's Sina Weibo sentiment and social network characteristics, this paper discussed the relationship between the movie meta-data,
-the movie Sina Weibo text sentiment, the actor's social network feature, the shortest path feature and the actor's art characteristics.
-Then proposed a FC-GRU-CNN box office binary prediction model, compared with the current best C-LSTM model, the accuracy improves 14\%, in a dataset of 1,296 movies released on China mainland collected from 2011 to 2015, proposed model has an accuracy of 75\% in test set.
+According to the box office prediction model, using actors' Sina Weibo sentiments, social relationship and network characteristics, this paper discussed relationship between the movie meta-data,
+Sina Weibo text sentiments, the actors' network characteristics, shortest path feature and actors' art contribution.
+Then I proposed a FC-GRU-CNN box office prediction model, compared to Zhou \etal model, accuracy improves 14\%, and tested in a dataset of 1,296 movies released in China mainland collected from 2011 to 2015, proposed model has an accuracy of 75\%.
 
 %\subsection{Dataset}
 %
