@@ -1,0 +1,738 @@
+% This version of CVPR template is provided by Ming-Ming Cheng.
+% Please leave an issue if you found a bug:
+% https://github.com/MCG-NKU/CVPR_Template.
+
+\documentclass[review]{cvpr}
+%\documentclass[final]{cvpr}
+
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\usepackage[linesnumbered,lined,boxed,commentsnumbered]{algorithm2e}
+% Include other packages here, before hyperref.
+
+% If you comment hyperref and then uncomment it, you should delete
+% egpaper.aux before re-running latex.  (Or just hit 'q' on the first latex
+% run, let it finish, and you should be clear).
+\usepackage[pagebackref=true,breaklinks=true,colorlinks,bookmarks=false]{hyperref}
+
+
+\def\cvprPaperID{8888} % *** Enter the CVPR Paper ID here
+\def\confYear{CVPR 2021}
+%\setcounter{page}{4321} % For final version only
+
+
+\begin{document}
+
+%%%%%%%%% TITLE
+\title{Movie Box office Prediction via Joint Actor Representations and Social Media Sentiment}
+
+\author{Dezhou Shen\\
+Department of Computer Science\\
+Tsinghua University\\
+Beijing, CN 100084\\
+{\tt\small sdz15@mails.tsinghua.edu.cn}
+% For a paper whose authors are all at the same institution,
+% omit the following lines up until the closing ``}''.
+% Additional authors and addresses can be added with ``\and'',
+% just like the second author.
+% To save space, use either the email address or home page, not both
+}
+
+\maketitle
+
+
+%%%%%%%%% ABSTRACT
+\begin{abstract}
+  In recent years, driven by the Asian film industry, such as China and India, the global box office has maintained a steady growth trend.
+  Previous studies have rarely used long-term, full-sample film data in analysis, lack of research on actors' social networks.
+  Existing film box office prediction algorithms only use film meta-data, lack of using social network characteristics and the model is less interpretable.
+  I propose a FC-GRU-CNN binary classification model in of box office prediction task, combining five characteristics, including the film meta-data, Sina Weibo text sentiment,
+  actors' social network measurement, all pairs shortest path and actors' art contribution.
+  Exploiting long-term memory ability of GRU layer in long sequences and the mapping ability of CNN layer in retrieving all pairs shortest path matrix features,
+  proposed model is 14\% higher in accuracy than the current best C-LSTM model.
+\end{abstract}
+
+%%%%%%%%% BODY TEXT
+\section{Introduction}
+
+With the development of social networks, actors' influence on social networks is increasing, and the influence of actors' consumption is spread through social networks, and the use of long-cycle, full-sample social network data to study the relationships between all actors, directors and films is a challenge in the field of social media research.
+It is easy to see that the relationship between the box office and the director, actor, scriptwriter and producer is often non-linear, that is, it is difficult to use linear functions to build box office prediction models.
+By analyzing the social network characteristics of movie actors, sentiment of movies in Sina Weibo posts, all pairs shortest path, it is easy to get the priority of each characteristic by analysis of feature importance, existing prediction algorithm only makes use of the film meta-data, lacks the study on the social network characteristics of the actors, though traditional explanation of the film box office prediction algorithm is sufficing, however the prediction effect is not satisfactory.
+This paper presents a model, named FC-GRU-CNN, for movie box office prediction, combining characteristics of film meta-data, actors' social network measurement, all nodes pair shortest path, social network text sentiment and actors' art characteristics, proposed model is 14\% higher in accuracy than the current best C-LSTM model.
+
+%-------------------------------------------------------------------------
+
+\section{Recent Work}
+
+The film industry is a multi-billion-dollar industry, with China's box office exceeding 60 billion yuan in 2018, reaching 60.9 billion yuan, and predicting the acceptance and adoption of new films among the public is a challenging topic.
+
+\subsection{Linear Regression Model}
+
+Zhu and Tang~\cite{zhu2019film} collected 13 features, such as search engine user data, social network fan number and movie meta-data of 20 films with more than 300 million box office in 2017,
+and constructed a partial least-squared model with a margin of error of 87.7\% and an average absolute error of 26.6\%.
+Qiu and Tang~\cite{qiu2018microblog} used the 10 movie Sina Weibo texts and movie reviews of more than 1 billion at the box office in the Chinese film market in 2017 to calculate the web index and the film reviews to predict the box office.
+
+\subsection{Logistic Regression Model}
+
+Some researchers use social network text sentiment to predict movie box office.
+Asur and Huberman~\cite{asur2010predicting} collected 2.89 million texts related to 1.2 million users on Twitter in connection with 24 films, and concluded that the correlation coefficient R2 was between 0.92 and 0.97 using the daily postings in the first seven days of release.
+The film box office forecast logic regression model with the distribution of social network posts was 0.97.
+Jain~\cite{jain2013prediction} collected 4800 Twitter texts of the movie name in the SNAP2009 (Stanford) dataset 2 weeks before release and 4 weeks after release.
+Trained an sentiment al four-category model based on an 8-grammar model with an accuracy rate of 64.4\%.
+Eight films released in 2012 as test sets, using the sentiment al positive-negative ratio to predict the accuracy of the box office profit model by 50\%.
+Chi \etal~\cite{chi2019does} collected reviews from 150 films released in 2017 and found that the number of reviews was positively related to the box office.
+online reviews were not correlated with box office. and the number of reviews was significantly positive lying to the first week of the film's box office, and the relevance gradually diminished.
+Josh \etal~\cite{joshi2010movie} collected the film review text of the film released by MetaCritic from 2005 to 2009, using film meta-data, n-gram model, part-of-speech ngram model and dependency characteristics, to predict the first week box office,
+first week screen number and weekly revenue per screen, the determine of coefficient of the Elastic Net linear model is 67.1\%.
+
+\subsection{Support Vector Regression and Multi-Layer Neural Network Model}
+
+From 2015 to 2017, Jiang and Wang~\cite{jiang2018predicting} collected 34 high-grossing films, using 10 features, such as film meta-data, director awards, and actor awards, and used voting feature selection algorithms to select features, training SVR (supporting vector regression) box office and scoring prediction models.
+From 2012 to 2015, Quader \etal~\cite{quader2017machine} collected 755 film reviews from four film review sites, including film ratings, MPAA categories, director's total box office, total box office, actor total box office, release time, budget, screen numbers, user reviews, reviews, and the sentiment al characteristics of review texts,
+training SVR, MLP(multi-layer neural network) model, with an accuracy of about 44.4\%.
+
+\subsection{Text Classification by Deep Learning}
+
+Zhou \etal~\cite{zhou2015c} proposed C-LSTM text classification model, using single-layer CNN to extract the high-order dimensional representation of text, and then connected the LSTM model to obtain sentence representation, the classification accuracy of the model is 87.8\%.
+
+\subsection{Summary}
+
+From the social network to predict the movie box office, feature selection includes the selection of user behavior characteristics, social network time characteristics, text sentiment al characteristics, classifiers more use of choice logic regression, support vector machine and neural network to predict the box office and comments.
+
+%-------------------------------------------------------------------------
+
+\section{Feature Analysis}
+
+The following linear analysis of social network measurement features and the regression coefficient of film box office, and from the practical significance of the interaction between the characteristics and the film box office.
+The positive characteristics associated with the box office in the linear regression algorithm are:
+\par$\bullet$ Betweenness: the higher the number of actors, the higher the box office.
+\par$\bullet$ Closeness: The higher the closeness of the actors, the higher the box office.
+\par$\bullet$ Followers: The more other actors you pay attention to, the higher the box office.
+\par$\bullet$ Number of posts: the more actors, the higher the box office.
+\par$\bullet$ Average post interval: the greater the average hair interval, the higher the box office.
+\par$\bullet$ Average characters of each posts: the longer the number of characters, the higher the box office, but the degree of relevance is not obvious.
+\par$\bullet$ Number of retweets: the more retweet posts, the higher the box office.
+\par$\bullet$ Box office history: the higher the box office receipts of actors, the higher the box office attendance of participating in the film.
+
+The negative correlation characteristics are:
+\par$\bullet$ Number of fans: the more fans there are, the lower the box office is.
+\par$\bullet$ Number of movie-related Sina Weibo posts: the larger number the actors' mentioned the movie in Sina Weibo, the lower the box office is.
+\par$\bullet$ Co-occurrence: The more actors and other actors co-appears on Sina Weibo posts, the lower the box office is.
+Then, calculated Pearson correlation of average box office per movie and actors social network measurement characteristics, the post and retweet correlation is -0.00108, social media Activity correlation is -0.03203, Co-occurrence correlation is 0.1508.
+First of all, the actor's average box office per movie is clearly positively related to the influence of the actors, that is, the higher number of co-occurrence in Sina Weibo, the higher average box office per movie.
+Secondly, the actors Sina Weibo activity and the average box office per movie showed a slight negative correlation, that is, the number of actors' followers, the number of tweets, the interval between the posts, the length of posts, the number of movie-related posts showed negative impact on average box office per movie.
+Finally, the number of actors retweets and tweets is not related to average box office per movie, thus they are independent.
+Then I use Sina Weibo text sentiment and actor social network measurement characteristics as features, then trained a decision tree to fit the movie box office, training set determination of coefficient is 0.9858, and the test set determination of coefficient is 0.9605.
+Actors social network meta-data decision tree visualization is illustrated as Figure 2.
+Definition 1 Gini Impurity  A measure of how often randomly selected elements are incorrectly marked from a collection is a common CART (decision tree) algorithm evaluation indicator.
+If it is randomly marked based on the distribution of the label in a subset.
+Gini impurities can be divided by multiplying the probability of the item by the probability that it is misplaced.
+When in all conditions a node belong to a single category, it reaches its minimum value of zero.
+In summary, the decision tree structure shows that the influence of the actors in the social network is the main factor affecting the box office results, followed by the movie-related Sina Weibo sentiment and the film meta-data is the secondary determinant,
+while the social network characteristics, movie-related Sina Weibo sentiment, film meta-data are the general determinants.
+
+
+\section{Actors Representation Learning Using Social Network Measurement, Shortest Path And Art Characteristics}
+
+Definition 2 (Network Embedding)  A network $G=(V,E)$, V represents a set of nodes consisting of n nodes, and E represents an edge set of m edges. For each edge $e\in \Bbb E$, the ordered pair is $e=(u,v)$, $u,v \in \Bbb V$ and the weight is $A_{ij}$.
+A network can be represented as an adjacent matrix, $A\in \Bbb R^{(n*n)}$, and the goal of network embedding is to learn an all pairs representation, $U\in \Bbb R^{(n*m)}$, where m(m<n) is an embedding dimension.
+Definition 3 (Shortest Path Network Embedding)  In a network represented as a $G=(V,E)$, V represents a node set of n nodes, and E represents an edge set of m edges.
+For each edge $e\in \Bbb E$, the ordered pair is e=(u,v), $u,v \in \Bbb V$ and the weight is $A_{ij}$.
+A network can be represented as an adjacent matrix, $A\in \Bbb R^{(n*n)}$, and the goal of the shortest path network embedding is to learn an all pairs, shortest path representation, $U\in \Bbb R^{(n*n)}$, where n is an embedding dimension.
+For the task of box office forecasting, because of the significant impact the actors on the box office, in addition to the measurement of the film meta-data and the sentiment of the movie social media, the actors' contribution is required to compute by leveraging the movie participants actors list.
+A film, led by several actors, obtained the names of 7,369 actors who participated in films between 2011 and 2015 are collected as an actor's dictionary, and then used the shortest path features of the actors' social network.
+Combining social network measurement features, the shortest path network embedding, and the art features to construct the actor representation vector.
+For actors who have no accounts on social networks, marked as unknown, and initialized with zero vectors.
+Actor representation vectors include social network measurement features of 10 dimensions, shortest path features of 8380 dimensions, art features of 1 dimension.
+In total, 10-dimensional measurement features include fans number, betweenness, closeness, followers, posts number, average posts interval, average word count per post, retweet number, movie-related post number, co-occurrence number, shortest path 8380 dimensions.
+
+\section{Machine Learning Classifier}
+
+Using the features extracted, the characteristics of participating in the calculation are film meta-data and movie sentiment: the year of release, the number of positive sentiment, the number of negative sentiment, the total number of Sina Weibo, the positive and negative ratio of sentiment, and the training of machine learning classifiers.
+
+Machine learning methods such as Linear Regression, SVR, MLP, Logistic Regression, and Naive Bayes cannot converge on the data set, possibly because the sentiment on actors' social networks does not represent the commercial benefits of the film.
+Actors, as creators of films, have a role to play in the box office, but lack other important features that also have an impact on the box office, so machine learning fitting process can't finish in given time.
+Using the CART decision tree regression algorithm to make box office prediction for the test set film, 
+the experimental results show that the prediction model has a determination coefficient of 96.05\% on the test set and 98.58\% on the training set, which is 2.87\% higher than the current best Sentiment-Network-Logistic model, 
+and the average absolute deviation of the model is 0.1285 million, about 28.56\% of the average box office.
+The explanatories of the decision tree prediction model is more intuitive and more interpretable than linear regression, logical regression, deep neural network and other models, according to the prediction model structure schematic of the movie box office, 
+the characteristics can be sorted according to the importance, so the social network structure characteristics are the most important, the social network text sentiment al characteristics, the film meta-data are important, and the social network characteristics are generally important.
+With Qiu and Tang's logistic regression model on sentiment and twitter index algorithm's 95.71\% in determination of coefficient, the proposed method in this paper has a 2.87\% improvement, 98.58\%.
+
+\section{FC-GRU-CNN Model Classifier}
+
+
+\begin{figure*}
+\begin{center}
+%\fbox{\rule{0pt}{2in} \rule{.9\linewidth}{0pt}}
+  \fbox{\rule{0pt}{2in} \includegraphics[width=0.9\linewidth]{boxofficenet.pdf}}
+\end{center}
+   \caption{FC-GRU-CNN (box office net) forecasting model structure.}
+\label{fig:short}
+\end{figure*}
+
+Look at the box office distribution of 1,296 films released between 2011 and 2015, as shown in Figure 1b.
+Consider box office forecasts as a binary classification task. In order to make the data evenly distributed, the film data was pre-processed by using the median box office of 263.5(10K) as the dividing line.
+So for the movies with box office less than 2.635 million are classified as A-class, more than 2.635 million movies are classified as B-class.
+In the data set division, the data was randomly selected using the 80-20 segmentation ratio, and the training set of 1036 films and the test set of 260 movies were obtained.
+Using the actors' social network representation, the actor is quantified, that is, the fusion of social network measurement features, the shortest path characteristics and the actor's art characteristics, the actor feature matrix,
+for actors without social network measurement data, that is, the unknown characteristics, zero-value initialization. The model structure is shown in Figure 3:
+The whole model is divided into three parts:
+\par$\bullet$ The first part is FC full connection layer, its input feature is the film meta-data and movie-related Sina Weibo sentiment features, in total of 5 dimensions.
+\par$\bullet$ The second part is the GRU layer, the input feature is the actor social network measurement characteristics and art characteristics, the actor table is a long list,
+the longest 225 actors, for less than 225 actors using the front-end padding, the GRU layer is to solve the long-term memory loss of the structure.
+\par$\bullet$ The last part is the 5-layer CNN structure, input for the actors' social network shortest path feature, similarly, the actor table is a long list,
+input less than 225 dimensions is fulfilled by padding, CNN has a good ability to capture multi-dimensional features, and use of Max-pooling layer to solve the problem of multi-dimensional feature extraction.
+Finally, the three parts are merged into one layer and then connect to a Softmax layer, and the L2 regularization method is adopted to avoid overfitting.
+In summary, I choose randomly 10 movies of in test set, as shown in Table 3. The accuracy of the binary classification model in training set reached 99.61\%, the accuracy in the test set is 75\%, compared with other prediction algorithms, see Table 4.
+From the practical point of view, the model of FC-GRU-CNN proposed in this paper converges on the training set and achieves better prediction results in the test set, so it can provide decision-making advice on the task of selecting suitable actors for the film, and in the task of film box office prediction, 75% accuracy can be used for box office prediction tasks.
+
+\begin{table}
+\begin{center}
+\begin{tabular}{|l|c|c|}
+\hline
+Movie& Score &BoxOffice\\
+\hline\hline
+72 hours of sword theft & 1 & 108 \\
+Ballera's Little Magic Fairy& 1 & 1916\\
+It's us. &1& 28\\
+Twin Spirits &1& 310\\
+The dinner is crazy too& 1& 4381\\
+Basement Horror& 0& 704\\
+Tartar Oil Flower Romance& 0& 1\\
+Breaking five& 0& 1\\
+Kidnapping the door dog& 1& 1\\
+Beijing Love Story& 1& 40555\\
+\hline
+\end{tabular}
+\end{center}
+\caption{box office binary classification predictions in 10 movie testset.}
+\end{table}
+
+
+
+\begin{table}
+\begin{center}
+\begin{tabular}{|l|c|}
+\hline
+Model & F1-score \\
+\hline\hline
+Zhou \etal  & 61.54\% \\
+This paper & 75.0\% \\
+\hline
+\end{tabular}
+\end{center}
+\caption{Performance comparison on different model.}
+\end{table}
+
+\section{Conclusion}
+
+Based on the film box office prediction of actor's Sina Weibo sentiment and social network characteristics, this paper discussed the relationship between the movie meta-data,
+the movie Sina Weibo text sentiment, the actor's social network feature, the shortest path feature and the actor's art characteristics.
+Then proposed a FC-GRU-CNN box office binary prediction model, compared with the current best C-LSTM model, the accuracy improves 14\%, in a dataset of 1,296 movies released on China mainland collected from 2011 to 2015, proposed model has an accuracy of 75\% in test set.
+
+%\subsection{Dataset}
+%
+%From 2011 to 2015, collected 3,669 films releasing Chinese mainland and 14,234 actors from the China-Box-Office, and collected the retweets and tweets of 8,508 actors on Sina Weibo social network.
+%The names of 7,369 actors were obtained from 14,234 actors participants records, as a dictionary of actors' names. There are 3,056 actors have opened account that can be collected from the social network.
+%A total of 1,298 films featuring social networking characters were extracted from 3,669 films, including at least one actor with social network ingress characteristics. Then entity alignment was performed, matching a total of 7,369 actors according to the actor's name entity alignment method, of which 3,056 had social network characteristics, while 4,313 actors did not have social network measurement data, which the network node represented as unknown node.
+%
+%\subsection{Feature Introduction}
+%
+%Movie Sina Weibo text features, extract the content of the Sina Weibo containing 1298 movie names from the social media and the posts text, calculate the sentiment al classification, as the sentiment characteristics of the Sina Weibo text.
+%Actor social network measurement characteristics, measured the actor's social network as follows, including fan number, number of media, closeness, number of followers, number of blogs, average blog spacing, average number of tweets, number of retweets, movie mentions of Sina Weibo, total cash.
+%The shortest path feature of the social network structure of the actors, calculated the full-node shortest path of 8508 actors' social networks, and extracted the shortest path characteristics of 8508 dimensions of the 7,369 actors concerned. The calculation of the maximum minimum path for the full node is 8, for illustration purpose, the unreachable distance between nodes is recorded as 9, as Figure 1a.
+%Actors' art characteristics, the average box office as an indicator of the actor's box office impact, using the Chinese box office online actor's participation in the film box office data, to calculate the average film box office.
+%Using the box office data of the Chinese box office online actors participating in the film, the average film box office of the actorised, the average film box office as the actor's box office influence index, this characteristic as the actor's art characteristics. The average box office of 7,369 actors is counted from China's box office network as a feature of their art.
+%Sina Weibo posts text and movie actor participation name list refer to Table 1, for sentiment classification of texts and retweets, first calculate Bigram of the text, then calculate Tfidf of each Bigram, then a Logistic Regression classifier is trained. Use this model to classify sentiment of texts and retweets for each movie-related posts, then get positive number, negative number, total number and positive-negative ratio, the results are shown in Table 2.
+%In summary, the characteristics that need to be computed are movie meta-data, Sina Weibo sentiment, actors' participation name list. For actor representation, actors' network measurement, actors shortest path characteristics and art characteristics are needed. For movie partial representation, film meta-data, e. g., the year of release, and Sina Weibo sentiment characteristics, e. g., positive sentiment, negative sentiment, total sentiment and sentiment positive and negative ratio, are needed.
+%
+%
+%%-------------------------------------------------------------------------
+%
+%\section{Time Bound Of Distance Product Algorithm With Cache Optimized Block Matrix Multiplication}
+%For a fully connected network, the graph has a maximum diameter of $n-1$, so using result reuse method in distance product, that is use the last distance product calculation result, the matrix multiplication times is $log_2(n-1)$.
+%Albert~\cite{albert1999diameter} found that social networks, the Internet and other complex networks have scale-free characteristics and small world phenomenon, thus network diameter is much smaller than the number of network nodes.
+%I present the corresponding nodes counts, diameters and logarithm of diameters in Table 1, from the observation there is formula (1):
+%In social networks, the number of nodes $n$, with cache block size $B*B$, according to the formula (9-10), the matrix product calculation iteration times does not exceed the number of $\lceil{log\Bbb D}\rceil$, recall that Lam \etal proved that matrix multiplication time bound is \(O({2n^3 \over B}+{n^2})\) ,
+%thus Alon \etal algorithm time bound is \(O({log\Bbb D2n^3\over B})\) , use the equation (1) result, time bound is \(O({ \log(\log{N})2n^3\over B})\).
+%With the arithmetic limitation on the floating-point operation, \eg take a network of number of nodes $N<10^{308}$
+%as shown in Table 1, see that the shortest path calculation iterations time is no larger than $\log{\Bbb D}\approx{\log(\log{N})}<7$, that is, the number of calculation iterations does not exceed the magic number 7,
+%bringing a stronger time bound of \(O({14n^3\over B})\).
+%In another words, with the floating-point operation accuracy limitation on computer hardware and complex networks scale-free characteristics, all node pairs shortest path algorithm time bound is \(O({14n^3\over B})\).
+%
+%
+%%-------------------------------------------------------------------------
+%
+%
+%\section{Shortest Path Algorithm With Block Matrix Multiplication}
+%
+%Definition 1 (Outer Product Matrix Multiplication) Given matrices \(\Bbb A \in \Bbb R^{m*r}\), \(\Bbb B \in \Bbb R^{r*n}\) and \(\Bbb C \in \Bbb R^{m*n}\), the outer product is:
+%\begin{equation}
+%\Bbb C = \Bbb C  + \Bbb A(:,k)\bullet \Bbb B(k,:) , k \in (1,r)
+%\end{equation}
+%
+%Given two vectors \(\textsc x\), \(\textsc y\), and matrix \(\Bbb A\), having \(\Bbb A \in \Bbb R^{m*n}\), \(\textsc x \in \Bbb R^{m}\) and \(\textsc y \in \Bbb R^{n}\) the outer product \(\bullet\) is defined by:
+%\begin{equation}
+%a_{ij} = a_{ij} + x_i * y_j, i \in (1,m), j \in (1,n)
+%\end{equation}
+%
+%Definition 2 (Distance Product Matrix Multiplication) Given matrices \(\Bbb A \in \Bbb R^{m*r}\), \(\Bbb B \in \Bbb R^{r*n}\) and \(\Bbb C \in \Bbb R^{m*n}\), the distance product is:
+%\begin{equation}
+%  \Bbb C = \min(\Bbb C, \Bbb A(:,k)\odot \Bbb B(k,:)) , k \in (1,r)
+%\end{equation}
+%
+%Given two vectors \(\textsc x\), \(\textsc y\), and matrix \(\Bbb A\), having \(\Bbb A \in \Bbb R^{m*n}\), \(\textsc x \in \Bbb R^{m}\) and \(\textsc y \in \Bbb R^{n}\) the distance product \(\odot\) is defined by:
+%\begin{equation}
+%a_{ij} = \min(a_{ij} , x_i + y_j), i \in (1,m), j \in (1,n)
+%\end{equation}
+%%-------------------------------------------------------------------------
+%%\begin{figure}[t]
+%%\begin{center}
+%%\fbox{\rule{0pt}{2in} \rule{0.9\linewidth}{0pt}}
+%%   \includegraphics[width=1.0\linewidth]{figure1.pdf}
+%%\end{center}
+%%   \caption{Adjacent matrix, each iterations and the result matrix visualization of actors' social network. (a) initial state after each round of calculation, (b) the result matrix after the first round of calculation, (c) the result matrix of the second round of calculation, (d) the third and in the same time last round of calculation, the all pairs nodes shortest path result matrix.}
+%%\label{fig:long}
+%%\label{fig:onecol}
+%%\end{figure}
+%
+%\begin{figure*}
+%\begin{center}
+%%\fbox{\rule{0pt}{2in} \rule{.9\linewidth}{0pt}}
+%  \fbox{\rule{0pt}{2in} \includegraphics[width=0.9\linewidth]{figure1.pdf}}
+%\end{center}
+%   \caption{Adjacent matrix, each iterations and the result matrix visualization of actors' social network. (a) initial state after each round of calculation, (b) the result matrix after the first round of calculation, (c) the result matrix of the second round of calculation, (d) the third and in the same time last round of calculation, the all pairs nodes shortest path result matrix.}
+%\label{fig:short}
+%\end{figure*}
+%
+%
+%\subsection{Maximum Calculation}
+%
+%Calculate the largest value of the square matrix element $\widetilde X$, such as the formula (4):
+%
+%\subsection{Exponential Calculation}
+%
+%The calculation accuracy of different computer hardware is in line with the IEEE floating-point operation standard~\cite{ieee1985ieee},
+%first of all, transform the input matrix by exponential transformation, to be specific, taking the number of nodes as the base,
+%taking the difference between the largest value of the element $\widetilde X$ and the matrix elements as exponential, as shown in the formula (5).
+%\eg For actors' social network with 8508 nodes, the diameter of the network does not allow to exceed 9.8 and 78.4 when calculating a precision of 32-bit floating-point and 64-bit floating-point,
+%otherwise the exponential operation on the computer platform will overflow.
+%
+%\subsection{Matrix Multiplication}
+%Use different matrix libraries to speed up the matrix multiplication on computer hardware, as shown in Table 3, choose proper device-based optimized matrix multiplication libraries according to different conditions, such as matrix sparseness, calculation hardware, and programming language.
+%
+%%-------------------------------------------------------------------------
+%\subsection{Logarithm Calculation}
+%Take non-zero elements of the matrix multiplication result to the element logarithm process, that is, the number of network nodes as the base, the element in the matrix multiplication result as the true number, then round down the logarithm result,
+%after that take difference between twice of the largest input matrix element value $\widetilde X$ and the logarithm result as result, such as formula (6).
+%
+%\subsection{Distance Product Exchange Law}
+%
+%From the iteration of the shortest path calculation, suppose \(\Bbb A,\ \Bbb B,\ \Bbb C\) is the square matrix, according to the association law of distance product, there is a formula (7):
+%Matrix multiplication has association law, and the distance product is isomorphism to matrix multiplication, so simplify the shortest path iteration process as formula (8):
+%Since matrix multiplication has association law and distance product is isomorphism to matrix multiplication, similarly, distance product has an association law.
+%Under the premise of the shortest path matrix $L^{(n-1)}$ given the adjacent matrix and the $n-1$ edge, calculate the shortest path matrix $L^{(n)}$ with n edges, and extend the shortest path of the $n-1$ edge by edge.
+%Calculating the shortest path matrix $L^{(n)}$ can be completed as formula (9):
+%As can be seen from the nature of the shortest path in the graph, the shortest path from the any of two nodes does not exceed $n-1$, so there is formula (10):
+%Definition 3 Result Reuse in Distance Product According to the nature of the equation (8), the process of calculating the shortest path iteration using the last result of distance product follows in turn, as shown in formula (11).
+%The shortest path needs to be calculated $\lceil{log_2(n-1)}\rceil$ times matrix multiplication, from the formula (10), it can be seen that $(n-1)\leq2^{\lceil{log_2(n-1)}\rceil}$ is the same as the simple shortest path matrix calculation result $L^{(n-1)}$, so there is a formula (12):
+%Obviously, the result reuse method saves $n-2-\lceil{log_2(n-1)}\rceil$ times of matrix multiplication.
+%Observe the shortest path calculation process of the actors' social network, the adjacent matrix is shown in Figure 1a, and the change of result in each iteration is shown in Figure 1b-d, the shortest path result matrix converges gradually, each element stabilizes as iterations goes.
+%
+%
+%\begin{algorithm}
+%\caption{Lower Bounds Convergence Matrix Products in All Pairs Shortest Path}\label{algorithm}
+%\KwData{Adjacent Matrix $\Bbb W$, Matrix Row $n$, Network Diameter $\Bbb D$}
+%\KwResult{Shortest path result $L^{(m)}$}
+%$L^{(1)}\leftarrow \Bbb W$\;
+%$m\leftarrow 1$\;
+%\While{$m\leq \Bbb D$}{
+%  $\Bbb A\leftarrow L^{(m)},\Bbb B\leftarrow L^{(m)},$\;
+%  $x\leftarrow \min{(a_i,b_i)}, y\leftarrow \max{(a_i,b_i)}, i \in (1,n)$\;
+%  Exponential transformation of matrices $\Bbb A\ and\ \Bbb B$\;
+%    $a_{ij}^{'}={(n+1)}^{y-a_{ij}}$\;
+%    $b_{ij}^{'}={(n+1)}^{y-b_{ij}}$\;
+%  \eIf{$L^{(m)}$ is sparse}{
+%    $\odot\leftarrow \bigcirc$//sparse matrix multiplication\;
+%  }{
+%    $\odot\leftarrow \otimes$//dense matrix multiplication\;
+%  }
+%  Given matrix $\Bbb C^{'}$, $\Bbb C^{'} \in \Bbb R^{n\times n}$\;
+%  $\Bbb C^{'}\leftarrow \Bbb A^{'}\odot\Bbb B^{'}$\;
+%  Logrithm transformation of matrix $\Bbb C^{'}$\;
+%  $\Bbb C\leftarrow \log{\Bbb C^{'}}$\;
+%  \If{$L^{(m)} \eq \Bbb C$}{
+%    \bold{return}\ $L^{(m)}$\;
+%  }
+%  $L^{(2m)}\leftarrow \Bbb C$\;
+%  $m\leftarrow 2*m$\;
+%}
+%\bold{return} $L^{(m)}$\;
+%\end{algorithm}
+%
+%
+%\section{Architecture Design}
+%
+%\subsection{Sparseness Judgment}
+%
+%As shown in Table 1, observing the adjacent matrix represented by the network diagram is usually a sparse matrix, and matrix gradually becomes dense during iterations,
+%and one idea of optimization is to use sparse matrix multiplication to speed up the iteration when the matrix is sparse, and when the matrix becomes denser, the sparse matrix multiplication is much time-consuming.
+%Taking the actors' social network as an example, the non-zero element of the adjacent matrix of 8508 nodes is 617958, and the non-zero element of the matrix is 0.8536\% of the total element,
+%which is a typical sparse matrix. Consider the advantages of sparse matrix multiplication algorithm, a threshold for triggering sparse matrix multiplication is set,
+%and when the proportion of non-zero-value elements entered is less than the 10\% threshold, performs sparse matrix multiplication.
+%
+%\subsection{Convergence Judgment}
+%
+%For networks with unknown diameters, the calculation results can be made using convergence method, and for the calculation process of reaching convergence,
+%i.e. $L^{(n-1)}=L^{(n)}$, should be regarded as the program termination of iteration, and the calculation of the matrix product method is completed by the equation (4).
+%
+%\subsection{The Shortest Path Algorithm Fusing Sparseness Judgment And Convergence Judgment}
+%
+%Based on Alon \etal distance product algorithm, utilizing the sparseness judgment of the input matrix and the calculation result convergence judgment,
+%with the network conforming to the power law distribution and the precision of floating-point operation, and the name implies two characteristics of the limitation
+%of floating-point precision on the scale-free social network and the computer hardware, the algorithm process flow is shown in Algorithm 1.
+%
+%\section{Experiment}
+%
+%Firstly, compared to Floyd-Warshall algorithm implemented on CPU, the Alon \etal algorithm implementation with matrix multiplication of block cache optimization on GPU has a time performance improvement, see Table 1.
+%$PowerLawBound_{a-f}$ shows that using different libraries on CPU/GPU, the proposed algorithm has significant performance improvement over Alon \etal algorithm.
+%
+%
+%\begin{table}
+%\begin{center}
+%\begin{tabular}{|l|c|}
+%\hline
+%Algorithm & Time Cost \\
+%\hline\hline
+%Floyd-Warshall & 1055880s \\
+%Alon \etal          & 594.7s \\
+%$PowerLawBound_a$  & 427.9s \\
+%$PowerLawBound_b$ & 328.4s \\
+%$PowerLawBound_c$ & 95.0s \\
+%$PowerLawBound_d$ & 45.0s \\
+%$PowerLawBound_e$ & 19.32s \\
+%$PowerLawBound_f$ & 15.98s \\
+%\hline
+%\end{tabular}
+%\end{center}
+%\caption{Performance comparison on different hardware. (a) CPU numpy library. (b) CPU scipy/numpy library. (c) GPU cuBLAS. (d) CPU openBLAS. (e) GPU CuPy. (f) GPU CuPy-sparse/CuPy.}
+%\end{table}
+%
+%
+%\section{Conclusion}
+%This paper discussed a novel algorithm in all pairs shortest path computation task, using distance product exchange law.
+%The time bound of Alon \etal distance product algorithm with block matrix multiplication is \(O({\log{n}2n^3\over B})\) with $B=\text{SIZE}_{\text{block}}$.
+%To strengthen the conditions, on scale-free social networks, for the precision limit of floating-point operation on hardware, additional condition on the social network diameter is added to avoid floating-point operation overflow during the calculation process.
+%the algorithm has lower time bound \(O({14n^3\over B})\).
+%With strengthened conditions, I proposed a novel algorithm, leveraging matrix sparseness judgment and calculation convergence judgment.
+%\textbf{PowerLaw} refers to the network node numbers conforming to the characteristics that social networks power law distribution, and \textbf{Bound} refers to the floating-point operations arithmetic limitation of accuracy on hardware.
+%The experimental results show that \textbf{PowerLawBound} algorithm improves time performance by 39\% to 36.2 times on CPU/GPU hardware compared to Alon \etal algorithm .
+
+%\begin{quote}
+%\begin{center}
+%    An analysis of the frobnicatable foo filter.
+%\end{center}
+%
+%   In this paper we present a performance analysis of our
+%   previous paper [1], and show it to be inferior to all
+%   previously known methods.  Why the previous paper was
+%   accepted without this analysis is beyond me.
+%
+%   [1] Removed for blind review
+%\end{quote}
+%
+%
+%An example of an acceptable paper:
+%
+%\begin{quote}
+%\begin{center}
+%     An analysis of the frobnicatable foo filter.
+%\end{center}
+%
+%   In this paper we present a performance analysis of the
+%   paper of Smith \etal [1], and show it to be inferior to
+%   all previously known methods.  Why the previous paper
+%   was accepted without this analysis is beyond me.
+%
+%   [1] Smith, L and Jones, C. ``The frobnicatable foo
+%   filter, a fundamental contribution to human knowledge''.
+%   Nature 381(12), 1-213.
+%\end{quote}
+%
+%If you are making a submission to another conference at the same time,
+%which covers similar or overlapping material, you may need to refer to that
+%submission in order to explain the differences, just as you would if you
+%had previously published related work.  In such cases, include the
+%anonymized parallel submission~\cite{Authors14} as additional material and
+%cite it as
+%\begin{quote}
+%[1] Authors. ``The frobnicatable foo filter'', F\&G 2014 Submission ID 324,
+%Supplied as additional material {\tt fg324.pdf}.
+%\end{quote}
+%
+%Finally, you may feel you need to tell the reader that more details can be
+%found elsewhere, and refer them to a technical report.  For conference
+%submissions, the paper must stand on its own, and not {\em require} the
+%reviewer to go to a techreport for further details.  Thus, you may say in
+%the body of the paper ``further details may be found
+%in~\cite{Authors14b}''.  Then submit the techreport as additional material.
+%Again, you may not assume the reviewers will read this material.
+%
+%Sometimes your paper is about a problem which you tested using a tool which
+%is widely known to be restricted to a single institution.  For example,
+%let's say it's 1969, you have solved a key problem on the Apollo lander,
+%and you believe that the CVPR70 audience would like to hear about your
+%solution.  The work is a development of your celebrated 1968 paper entitled
+%``Zero-g frobnication: How being the only people in the world with access to
+%the Apollo lander source code makes us a wow at parties'', by Zeus \etal.
+%
+%You can handle this paper like any other.  Don't write ``We show how to
+%improve our previous work [Anonymous, 1968].  This time we tested the
+%algorithm on a lunar lander [name of lander removed for blind review]''.
+%That would be silly, and would immediately identify the authors. Instead
+%write the following:
+%\begin{quotation}
+%\noindent
+%   We describe a system for zero-g frobnication.  This
+%   system is new because it handles the following cases:
+%   A, B.  Previous systems [Zeus et al. 1968] didn't
+%   handle case B properly.  Ours handles it by including
+%   a foo term in the bar integral.
+%
+%   ...
+%
+%   The proposed system was integrated with the Apollo
+%   lunar lander, and went all the way to the moon, don't
+%   you know.  It displayed the following behaviours
+%   which show how well we solved cases A and B: ...
+%\end{quotation}
+%As you can see, the above text follows standard scientific convention,
+%reads better than the first version, and does not explicitly name you as
+%the authors.  A reviewer might think it likely that the new paper was
+%written by Zeus \etal, but cannot make any decision based on that guess.
+%He or she would have to be sure that no other authors could have been
+%contracted to solve problem B.
+%\medskip
+%
+%\noindent
+%FAQ\medskip\\
+%{\bf Q:} Are acknowledgements OK?\\
+%{\bf A:} No.  Leave them for the final copy.\medskip\\
+%{\bf Q:} How do I cite my results reported in open challenges?
+%{\bf A:} To conform with the double blind review policy, you can report results of other challenge participants together with your results in your paper. For your results, however, you should not identify yourself and should not mention your participation in the challenge. Instead present your results referring to the method proposed in your paper and draw conclusions based on the experimental comparison to other results.\medskip\\
+%
+%\begin{figure}[t]
+%\begin{center}
+%\fbox{\rule{0pt}{2in} \rule{0.9\linewidth}{0pt}}
+%   %\includegraphics[width=0.8\linewidth]{egfigure.eps}
+%\end{center}
+%   \caption{Example of caption.  It is set in Roman so that mathematics
+%   (always set in Roman: $B \sin A = A \sin B$) may be included without an
+%   ugly clash.}
+%\label{fig:long}
+%\label{fig:onecol}
+%\end{figure}
+%
+%\subsection{Miscellaneous}
+%
+%\noindent
+%Compare the following:\\
+%\begin{tabular}{ll}
+% \verb'$conf_a$' &  $conf_a$ \\
+% \verb'$\mathit{conf}_a$' & $\mathit{conf}_a$
+%\end{tabular}\\
+%See The \TeX book, p165.
+%
+%The space after \eg, meaning ``for example'', should not be a
+%sentence-ending space. So \eg is correct, {\em e.g.} is not.  The provided
+%\verb'\eg' macro takes care of this.
+%
+%When citing a multi-author paper, you may save space by using ``et alia'',
+%shortened to ``\etal'' (not ``{\em et.\ al.}'' as ``{\em et}'' is a complete word.)
+%However, use it only when there are three or more authors.  Thus, the
+%following is correct: ``
+%   Frobnication has been trendy lately.
+%   It was introduced by Alpher~\cite{Alpher02}, and subsequently developed by
+%   Alpher and Fotheringham-Smythe~\cite{Alpher03}, and Alpher \etal~\cite{Alpher04}.''
+%
+%This is incorrect: ``... subsequently developed by Alpher \etal~\cite{Alpher03} ...''
+%because reference~\cite{Alpher03} has just two authors.  If you use the
+%\verb'\etal' macro provided, then you need not worry about double periods
+%when used at the end of a sentence as in Alpher \etal.
+%
+%For this citation style, keep multiple citations in numerical (not
+%chronological) order, so prefer \cite{Alpher03,Alpher02,Authors14} to
+%\cite{Alpher02,Alpher03,Authors14}.
+%
+%
+%\begin{figure*}
+%\begin{center}
+%\fbox{\rule{0pt}{2in} \rule{.9\linewidth}{0pt}}
+%\end{center}
+%   \caption{Example of a short caption, which should be centered.}
+%\label{fig:short}
+%\end{figure*}
+%
+%%------------------------------------------------------------------------
+%\section{Formatting your paper}
+%
+%All text must be in a two-column format. The total allowable width of the
+%text area is $6\frac78$ inches (17.5 cm) wide by $8\frac78$ inches (22.54
+%cm) high. Columns are to be $3\frac14$ inches (8.25 cm) wide, with a
+%$\frac{5}{16}$ inch (0.8 cm) space between them. The main title (on the
+%first page) should begin 1.0 inch (2.54 cm) from the top edge of the
+%page. The second and following pages should begin 1.0 inch (2.54 cm) from
+%the top edge. On all pages, the bottom margin should be 1-1/8 inches (2.86
+%cm) from the bottom edge of the page for $8.5 \times 11$-inch paper; for A4
+%paper, approximately 1-5/8 inches (4.13 cm) from the bottom edge of the
+%page.
+%
+%%-------------------------------------------------------------------------
+%\subsection{Margins and page numbering}
+%
+%All printed material, including text, illustrations, and charts, must be kept
+%within a print area 6-7/8 inches (17.5 cm) wide by 8-7/8 inches (22.54 cm)
+%high.
+%%
+%Page numbers should be in footer with page numbers, centered and .75
+%inches from the bottom of the page and make it start at the correct page
+%number rather than the 4321 in the example.  To do this fine the line (around
+%line 20)
+%\begin{verbatim}
+%\setcounter{page}{4321}
+%\end{verbatim}
+%where the number 4321 is your assigned starting page.
+%
+%
+%
+%%-------------------------------------------------------------------------
+%\subsection{Type-style and fonts}
+%
+%Wherever Times is specified, Times Roman may also be used. If neither is
+%available on your word processor, please use the font closest in
+%appearance to Times to which you have access.
+%
+%MAIN TITLE. Center the title 1-3/8 inches (3.49 cm) from the top edge of
+%the first page. The title should be in Times 14-point, boldface type.
+%Capitalize the first letter of nouns, pronouns, verbs, adjectives, and
+%adverbs; do not capitalize articles, coordinate conjunctions, or
+%prepositions (unless the title begins with such a word). Leave two blank
+%lines after the title.
+%
+%AUTHOR NAME(s) and AFFILIATION(s) are to be centered beneath the title
+%and printed in Times 12-point, non-boldface type. This information is to
+%be followed by two blank lines.
+%
+%The ABSTRACT and MAIN TEXT are to be in a two-column format.
+%
+%MAIN TEXT. Type main text in 10-point Times, single-spaced. Do NOT use
+%double-spacing. All paragraphs should be indented 1 pica (approx. 1/6
+%inch or 0.422 cm). Make sure your text is fully justified---that is,
+%flush left and flush right. Please do not place any additional blank
+%lines between paragraphs.
+%
+%Figure and table captions should be 9-point Roman type as in
+%Figures~\ref{fig:onecol} and~\ref{fig:short}.  Short captions should be centred.
+%
+%\noindent Callouts should be 9-point Helvetica, non-boldface type.
+%Initially capitalize only the first word of section titles and first-,
+%second-, and third-order headings.
+%
+%FIRST-ORDER HEADINGS. (For example, {\large \bf 1. Introduction})
+%should be Times 12-point boldface, initially capitalized, flush left,
+%with one blank line before, and one blank line after.
+%
+%SECOND-ORDER HEADINGS. (For example, { \bf 1.1. Database elements})
+%should be Times 11-point boldface, initially capitalized, flush left,
+%with one blank line before, and one after. If you require a third-order
+%heading (we discourage it), use 10-point Times, boldface, initially
+%capitalized, flush left, preceded by one blank line, followed by a period
+%and your text on the same line.
+%
+%%-------------------------------------------------------------------------
+%\subsection{Footnotes}
+%
+%Please use footnotes\footnote {This is what a footnote looks like.  It
+%often distracts the reader from the main flow of the argument.} sparingly.
+%Indeed, try to avoid footnotes altogether and include necessary peripheral
+%observations in
+%the text (within parentheses, if you prefer, as in this sentence).  If you
+%wish to use a footnote, place it at the bottom of the column on the page on
+%which it is referenced. Use Times 8-point type, single-spaced.
+%
+%
+%%-------------------------------------------------------------------------
+%\subsection{References}
+%
+%List and number all bibliographical references in 9-point Times,
+%single-spaced, at the end of your paper. When referenced in the text,
+%enclose the citation number in square brackets, for
+%example~\cite{Authors14}.  Where appropriate, include the name(s) of
+%editors of referenced books.
+%
+%\begin{table}
+%\begin{center}
+%\begin{tabular}{|l|c|}
+%\hline
+%Method & Frobnability \\
+%\hline\hline
+%Theirs & Frumpy \\
+%Yours & Frobbly \\
+%Ours & Makes one's heart Frob\\
+%\hline
+%\end{tabular}
+%\end{center}
+%\caption{Results.   Ours is better.}
+%\end{table}
+%
+%%-------------------------------------------------------------------------
+%\subsection{Illustrations, graphs, and photographs}
+%
+%All graphics should be centered.  Please ensure that any point you wish to
+%make is resolvable in a printed copy of the paper.  Resize fonts in figures
+%to match the font in the body text, and choose line widths which render
+%effectively in print.  Many readers (and reviewers), even of an electronic
+%copy, will choose to print your paper in order to read it.  You cannot
+%insist that they do otherwise, and therefore must not assume that they can
+%zoom in to see tiny details on a graphic.
+%
+%When placing figures in \LaTeX, it's almost always best to use
+%\verb+\includegraphics+, and to specify the  figure width as a multiple of
+%the line width as in the example below
+%{\small\begin{verbatim}
+%   \usepackage[dvips]{graphicx} ...
+%   \includegraphics[width=0.8\linewidth]
+%                   {myfile.eps}
+%\end{verbatim}
+%}
+%
+%
+%%-------------------------------------------------------------------------
+%\subsection{Color}
+%
+%Please refer to the author guidelines on the \confYear~web page for a discussion
+%of the use of color in your document.
+%
+%%------------------------------------------------------------------------
+%\section{Final copy}
+%
+%You must include your signed IEEE copyright release form when you submit
+%your finished paper. We MUST have this form before your paper can be
+%published in the proceedings.
+%
+%Please direct any questions to the production editor in charge of these
+%proceedings at the IEEE Computer Society Press:
+%\url{https://www.computer.org/about/contact}.
+
+
+{\small
+\bibliographystyle{ieee_fullname}
+\bibliography{cpvr_vision}
+}
+
+\end{document}
