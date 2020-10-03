@@ -10,8 +10,9 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{amssymb}
-% Include other packages here, before hyperref.
 \usepackage[linesnumbered,lined,boxed,commentsnumbered]{algorithm2e}
+% Include other packages here, before hyperref.
+
 
 % If you comment hyperref and then uncomment it, you should delete
 % egpaper.aux before re-running latex.  (Or just hit 'q' on the first latex
@@ -75,8 +76,11 @@ This procedure is called distance product epoch.
 Iterate several times to get all node pairs shortest path result.
 Further, analysis time complexity of the distance product calculation and iteration of each epoch.
 For time complexity of distance product, matrix multiplication is the most complex subprocedures;
-(1) For distance product optimization, Zwick proposed distance product with block matrix multiplication, therefore choose proper computation device library with optimized cache for block matrix multiplication.
-(2) For iteration optimization, because Aho proved distance product is isomorphic to the matrix multiplication, and regard to that the distance product association law, optimize the iteration process by last distance product result reuse.
+
+\begin{enumerate}
+\item For distance product optimization, Zwick proposed distance product with block matrix multiplication, therefore choose proper computation device library with optimized cache for block matrix multiplication.
+\item For iteration optimization, because Aho proved distance product is isomorphic to the matrix multiplication, and regard to that the distance product association law, optimize the iteration process by last distance product result reuse.
+\end{enumerate}
 
 %-------------------------------------------------------------------------
 
@@ -181,30 +185,30 @@ Observe the shortest path calculation process of the actors' social network, the
 \caption{Lower Bounds Convergence Matrix Products in All Pairs Shortest Path}\label{algorithm}
 \KwData{Adjacent Matrix $\Bbb W$, Matrix Row $n$, Network Diameter $\Bbb D$}
 \KwResult{Shortest path result $L^{(m)}$}
-$L^{(1)}\leftarrow \Bbb W$\;
-$m\leftarrow 1$\;
-\While{$m\leq \Bbb D$}{
-  $\Bbb A\leftarrow L^{(m)},\Bbb B\leftarrow L^{(m)},$\;
-  $x\leftarrow \min{(a_i,b_i)}, y\leftarrow \max{(a_i,b_i)}, i \in (1,n)$\;
-  Exponential transformation of matrices $\Bbb A\ and\ \Bbb B$\;
-    $a_{ij}^{'}={(n+1)}^{y-a_{ij}}$\;
-    $b_{ij}^{'}={(n+1)}^{y-b_{ij}}$\;
-  \eIf{$L^{(m)}$ is sparse}{
-    $\odot\leftarrow \bigcirc$//sparse matrix multiplication\;
-  }{
-    $\odot\leftarrow \otimes$//dense matrix multiplication\;
+  $L^{(1)}\leftarrow \Bbb W$\;
+  $m\leftarrow 1$\;
+  \While{$m\leq \Bbb D$}{
+    $\Bbb A\leftarrow L^{(m)},\Bbb B\leftarrow L^{(m)},$\;
+    $x\leftarrow \min{(a_i,b_i)}, y\leftarrow \max{(a_i,b_i)}, i \in (1,n)$\;
+    Exponential transformation of matrices $\Bbb A\ and\ \Bbb B$\;
+      $a_{ij}^{'}={(n+1)}^{y-a_{ij}}$\;
+      $b_{ij}^{'}={(n+1)}^{y-b_{ij}}$\;
+    \eIf{$L^{(m)}$ is sparse}{
+      $\odot\leftarrow \bigcirc$//sparse matrix multiplication\;
+    }{
+      $\odot\leftarrow \otimes$//dense matrix multiplication\;
+    }
+    Given matrix $\Bbb C^{'}$, $\Bbb C^{'} \in \Bbb R^{n\times n}$\;
+    $\Bbb C^{'}\leftarrow \Bbb A^{'}\odot\Bbb B^{'}$\;
+    Logrithm transformation of matrix $\Bbb C^{'}$\;
+    $\Bbb C\leftarrow \log{\Bbb C^{'}}$\;
+    \If{$L^{(m)} = \Bbb C$}{
+      {\bf return} $L^{(m)}$\;
+    }
+    $L^{(2m)}\leftarrow \Bbb C$\;
+    $m\leftarrow 2*m$\;
   }
-  Given matrix $\Bbb C^{'}$, $\Bbb C^{'} \in \Bbb R^{n\times n}$\;
-  $\Bbb C^{'}\leftarrow \Bbb A^{'}\odot\Bbb B^{'}$\;
-  Logrithm transformation of matrix $\Bbb C^{'}$\;
-  $\Bbb C\leftarrow \log{\Bbb C^{'}}$\;
-  \If{$L^{(m)} \eq \Bbb C$}{
-    \bold{return}\ $L^{(m)}$\;
-  }
-  $L^{(2m)}\leftarrow \Bbb C$\;
-  $m\leftarrow 2*m$\;
-}
-\bold{return} $L^{(m)}$\;
+  {\bf return} $L^{(m)}$\;
 \end{algorithm}
 
 
