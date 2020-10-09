@@ -48,11 +48,10 @@ Beijing, CN 100084\\
 %%%%%%%%% ABSTRACT
 \begin{abstract}
   For the shortest path calculation task of all nodes in networks, Alon \etal~\cite{alon1997exponent} proposed an algorithm with matrix multiplication.
-  In this paper, with the distance product association law and block matrix multiplication, all-pairs shortest path algorithm has a lowered time-bound of \(O({logn2n^3\over B})\).
-  As an empirical study of social networks, the shortest path algorithm has an improved lower time-bound \(O({14n^3 \over B})\).
-  And I propose an all-pairs shortest path algorithm that leveraging matrix sparseness judgment, convergence judgment, distance product matrix multiplication, distance product association law,
-  scale-free characteristics of the social networks and limitation for floating-point operations on modern hardware.
-  Tested on movie actors' social network dataset, the proposed algorithm has an improvement of 39\% to 36.2 times in performance on CPU/GPU platforms comparing to Alon \etal algorithm.
+  In this paper, with the distance product association law and block matrix multiplication, all-pairs shortest path algorithm has a lowered time-bound of \(O(\log{n}2n^3)\).
+  I propose an all-pairs shortest path algorithm that leveraging matrix sparseness judgment, convergence judgment, distance product matrix multiplication, distance product association law,
+  scale-free characteristics of the social networks and limitation for floating-point operations on modern hardware, which has an improved lower time-bound \(O(14n^3)\).
+  As an empirical study of social networks, I tested on movie actors' social network dataset, the proposed algorithm has an improvement of 39\% to 36.2 times in performance on CPU/GPU platforms comparing to Alon \etal's algorithm.
 \end{abstract}
 
 %%%%%%%%% BODY TEXT
@@ -68,13 +67,13 @@ There was Floyd-Warshall~\cite{floyd1962algorithm,warshall1962theorem} algorithm
 Alon \etal~\cite{alon1997exponent} proposed an algorithm to calculate distance product by matrix multiplication, Zwick~\cite{zwick2002all} optimized distance product using fast matrix multiplication,
 and Garbow and Winograd~\cite{garbow1985scaling} proposed an algorithm for distance product using matrix multiplication with element bound.
 From time-bound of matrix multiplication, Strassen~\cite{strassen1969gaussian}, Coppersmith and Winograd~\cite{coppersmith1987matrix}, Davie and Andrew~\cite{davie2013improved}, Le Gall~\cite{le2014powers} proposed the block matrix multiplication with time-bound of \(O(n ^ {2.807})\), \(O(n^{2.376})\), \(O(n^{2.374})\), \(O(n^{2.373})\).
-Lam \etal~\cite{lam1991cache} proposed that the progressive time complexity of matrix multiplication with a cache block size of $B*B$ is \(O({2n^3 \over B}+{n^2})\) ,
+Lam \etal~\cite{lam1991cache} proposed that the progressive time complexity of matrix multiplication with a cache block size of $\Bbb B$ is \(O({2n^3 \over \Bbb B}+{n^2})\),
 and Goto and Geijn~\cite{goto2008anatomy} proposed a new library, OpenBLAS, which has a higher cache hit rate and improved time cost in matrix computation on X86 CPU, compared to modern BLAS libraries, such as Intel MKL v8.1.1, ESSL v4.2.0, and ATLAS v3.7.11.
 From point of view of matrix sparseness of network adjacent matrix, for sparse matrix multiplication, SciPy and CuPy use SciPy-sparse and CuPy-cuSparse to achieve efficient sparse matrix multiplication on CPU and GPU.
 For dense matrix multiplication, NumPy, SciPy, CuPy, and ND4J use OpenBLAS, cuBLAS, and other libraries to achieve efficient block matrix multiplication on CPU and GPU.
 Therefore, a feasible method for calculating the shortest path of full node pairs is: represents the network by adjacent matrix, then makes all matrix elements exponential, computes matrix multiplication, and finally takes the logarithm of matrix elements.
 This procedure is called a distance product epoch.
-Iterate several times to get all node pairs shortest path result.
+Iterate several times to get all-pairs shortest path result.
 Further, the analysis time complexity of the distance product calculation and iteration of each epoch.
 For time complexity of distance product, matrix multiplication is the most complex sub-procedures;
 
@@ -99,7 +98,7 @@ On the actors' social network, this paper implements Strassen block matrix multi
 On the computer hardware, compared the $8508*8508$ matrix multiplication time-cost.
 The block matrix multiplication based on Strassen and Coppersmith-Winograd takes 6 seconds for one iteration of matrix multiplication, and with the OpenBLAS library it takes only 4 seconds.
 The performance of optimized cache block matrix multiplication, such as the OpenBLAS matrix computation library, is higher than Strassen and Copper-Winograd block matrix multiplication algorithm.
-Therefore, the distance product algorithm proposed by Zwick U with OpenBLAS block matrix multiplication is better than the distance product algorithm with Strassen and Coppersmith-Winograd.
+Therefore, the distance product algorithm proposed by Zwick with OpenBLAS block matrix multiplication is better than the distance product algorithm with Strassen and Coppersmith-Winograd.
 
 %-------------------------------------------------------------------------
 
@@ -108,12 +107,12 @@ Therefore, the distance product algorithm proposed by Zwick U with OpenBLAS bloc
 For a fully connected network, the graph has a maximum diameter of $n-1$, so using the result reuse method in distance product, that is use the last distance product calculation result, the matrix multiplication times are $log_2(n-1)$.
 Albert~\cite{albert1999diameter} found that social networks, the Internet, and other complex networks have scale-free characteristics and small-world phenomena, thus network diameter is much smaller than the number of network nodes.
 I present the corresponding nodes counts, diameters, and logarithm of diameters in Table 1, from the observation there is formula (1):
-In social networks, the number of nodes $n$, with cache block size $B*B$, according to the formula (9-10), the matrix product calculation iteration times does not exceed the number of $\lceil{log\Bbb D}\rceil$, recall that Lam \etal proved that matrix multiplication time-bound is \(O({2n^3 \over B}+{n^2})\),
-thus Alon \etal algorithm time-bound is \(O({log\Bbb D2n^3\over B})\), use the equation (1) result, time-bound is \(O({ \log(\log{N})2n^3\over B})\).
+In social networks, the number of nodes $n$, with cache block size $B*B$, according to the formula (9-10), the matrix product calculation iteration times does not exceed the number of $\lceil{\log{\Bbb D}}\rceil$, recall that Lam \etal proved that matrix multiplication time-bound is \(O({2n^3 \over \Bbb B}+{n^2})\),
+thus Alon \etal algorithm time-bound is \(O(\log{\Bbb D}2n^3\over \Bbb B)\) with cache block size of $\Bbb B$, use the equation (1) result, time-bound is \(O(\log(\log{N})2n^3\over \Bbb B)\).
 With the arithmetic limitation on the floating-point operation, \eg take a network with nodes number of $N<10^{308}$
-as shown in Table 1, see that the shortest path calculation iterations time is no larger than $\log{\Bbb D}\approx{\log(\log{N})}<7$, that is, the number of calculation iterations does not exceed the magic number $7$,
-bringing a stronger time-bound of \(O({14n^3\over B})\).
-In other words, with the floating-point operation accuracy limitation on computer hardware and complex networks scale-free characteristics, all node pairs shortest path algorithm time-bound is \(O({14n^3\over B})\).
+as shown in Table 1, see that the shortest path calculation iterations time is no larger than $\log{\Bbb D} \approx \log(\log{N})<7$, that is, the number of calculation iterations does not exceed the magic number $7$,
+bringing a stronger time-bound of \(O(14n^3\over \Bbb B)\).
+In other words, with the floating-point operation accuracy limitation on computer hardware and complex networks scale-free characteristics, all-pairs shortest path algorithm time-bound is \(O(14n^3\over \Bbb B)\), for $\Bbb B$ is a constant, thus, for simpler representation the time-bound is \(O(14n^3)\).
 
 
 %-------------------------------------------------------------------------
@@ -266,12 +265,12 @@ $Power-LawBound_f$	&	15.98s \\
 \section{Conclusion}
 
 This paper discussed a novel algorithm in all-pairs shortest path computation tasks, using distance product association law.
-The time-bound of Alon \etal distance product algorithm with block matrix multiplication is \(O({\log{n}2n^3\over B})\) with $B=\text{SIZE}_{\text{block}}$.
+The time-bound of Alon \etal distance product algorithm with block matrix multiplication is \(O({\log{n}2n^3\over \Bbb B})\).
 To strengthen the conditions, on scale-free social networks, for the precision limit of floating-point operation on hardware, additional condition on the social network diameter is added to avoid floating-point operation overflow during the calculation process.
-the algorithm has lower time-bound \(O({14n^3\over B})\).
+the algorithm has lower time-bound \(O({14n^3\over \Bbb B})\).
 With strengthened conditions, I proposed a novel algorithm, leveraging matrix sparseness judgment, and calculation convergence judgment.
 \textbf{Power-Law} refers to the network node numbers conforming to the characteristics that social networks power-law distribution, and \textbf{Bound} refers to the floating-point operations arithmetic limitation of accuracy on hardware.
-The experimental results show that \textbf{Power-LawBound} algorithm improves time performance by 39\% to 36.2 times on CPU/GPU hardware compared to Alon \etal algorithm.
+The experimental results show that \textbf{Power-LawBound} algorithm improves time performance by 39\% to 36.2 times on CPU/GPU hardware compared to Alon \etal's algorithm.
 
 {\small
 \bibliographystyle{ieee_fullname}
