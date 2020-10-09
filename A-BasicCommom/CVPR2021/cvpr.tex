@@ -28,7 +28,7 @@
 \begin{document}
 
 %%%%%%%%% TITLE
-\title{Lower Bounds on Rate of Convergence of Matrix Products in All Pairs Shortest Path of Social Network}
+\title{Lower Bounds on Rate of Convergence of Matrix Products in All-Pairs Shortest Path of Social Network}
 
 \author{Dezhou Shen\\
 Department of Computer Science\\
@@ -48,69 +48,72 @@ Beijing, CN 100084\\
 %%%%%%%%% ABSTRACT
 \begin{abstract}
   For the shortest path calculation task of all nodes in networks, Alon \etal~\cite{alon1997exponent} proposed an algorithm with matrix multiplication.
-  In this paper, with the distance product exchange law and block matrix multiplication, all pairs shortest path algorithm has a lowered time bound of \(O({logn2n^3\over B})\).
-  In empirical study of social networks, the shortest path algorithm has an improved lower time bound \(O({14n^3 \over B})\).
-  And I propose an all node pairs shortest path algorithm that leveraging matrix sparseness judgment, convergence judgment, distance product matrix multiplication, distance product exchange law,
+  In this paper, with the distance product association law and block matrix multiplication, all-pairs shortest path algorithm has a lowered time-bound of \(O({logn2n^3\over B})\).
+  As an empirical study of social networks, the shortest path algorithm has an improved lower time-bound \(O({14n^3 \over B})\).
+  And I propose an all-pairs shortest path algorithm that leveraging matrix sparseness judgment, convergence judgment, distance product matrix multiplication, distance product association law,
   scale-free characteristics of the social networks and limitation for floating-point operations on modern hardware.
-  Tested on a movie actors social network dataset, proposed algorithm has a improvement of 39\% to 36.2 times in performance on CPU/GPU platforms comparing to Alon \etal algorithm.
+  Tested on movie actors' social network dataset, the proposed algorithm has an improvement of 39\% to 36.2 times in performance on CPU/GPU platforms comparing to Alon \etal algorithm.
 \end{abstract}
 
 %%%%%%%%% BODY TEXT
 \section{Introduction}
 
+
 In recent years, driven by Asian film industries such as China and India, the global box office has maintained a steady growth trend, and with the rapid development of social network applications, more and more actors use social networks for work communication.
-Therefore, social network has become an important tool for film distribution, marketing, promotion and an important medium for film actors and fans to interact.
+Therefore, the social network has become an important tool for film distribution, marketing, promotion, and an important medium for film actors and fans to interact.
 Previous studies have lacked research on actors' social networks, PageRank, an existing node influence algorithm, is not accurate in evaluating social network influence.
 Social network feature measurement is an important task in social network data mining, some network characteristics, such as betweenness and closeness, need to calculate the distances between nodes.
 As a result, efficient calculation of the shortest path is one of the key problems in social network measurement.
 There was Floyd-Warshall~\cite{floyd1962algorithm,warshall1962theorem} algorithm for calculating node distances, Aho and Hopcroft~\cite{aho1974design} proved that distance product is homogenous to matrix multiplication,
 Alon \etal~\cite{alon1997exponent} proposed an algorithm to calculate distance product by matrix multiplication, Zwick~\cite{zwick2002all} optimized distance product using fast matrix multiplication,
 and Garbow and Winograd~\cite{garbow1985scaling} proposed an algorithm for distance product using matrix multiplication with element bound.
-From time bound of matrix multiplication, Strassen~\cite{strassen1969gaussian}, Coppersmith and Winograd~\cite{coppersmith1987matrix}, Davie and Andrew~\cite{davie2013improved}, Le Gall~\cite{le2014powers} proposed the block matrix multiplication with time bound of \(O(n ^ {2.807})\), \(O(n^{2.376})\), \(O(n^{2.374})\), \(O(n^{2.373})\).
+From time-bound of matrix multiplication, Strassen~\cite{strassen1969gaussian}, Coppersmith and Winograd~\cite{coppersmith1987matrix}, Davie and Andrew~\cite{davie2013improved}, Le Gall~\cite{le2014powers} proposed the block matrix multiplication with time-bound of \(O(n ^ {2.807})\), \(O(n^{2.376})\), \(O(n^{2.374})\), \(O(n^{2.373})\).
 Lam \etal~\cite{lam1991cache} proposed that the progressive time complexity of matrix multiplication with a cache block size of $B*B$ is \(O({2n^3 \over B}+{n^2})\) ,
-and Goto and Geijn~\cite{goto2008anatomy} proposed a new library, OpenBLAS, which has a higher cache hit rate and improved time cost in matrix computation on X86 CPU, compared to modern BLAS libraries, such as Intel MKL v8.1.1, ESSL v4.2.0 and ATLAS v3.7.11.
-From point of view of matrix sparseness of network adjacent matrix, for sparse matrix multiplication, SciPy  and CuPy  use SciPy-sparse and CuPy-cuSparse to achieve efficient sparse matrix multiplication on CPU and GPU.
-For dense matrix multiplication, NumPy, SciPy, CuPy and ND4J use OpenBLAS, cuBLAS and other libraries to achieve efficient block matrix multiplication on CPU and GPU.
-Therefore, a feasible method for calculating shortest path of full node pairs is: represents the network by adjacent matrix, then makes all matrix elements exponential, computes matrix multiplication and finally takes logarithm of matrix elements.
-This procedure is called distance product epoch.
+and Goto and Geijn~\cite{goto2008anatomy} proposed a new library, OpenBLAS, which has a higher cache hit rate and improved time cost in matrix computation on X86 CPU, compared to modern BLAS libraries, such as Intel MKL v8.1.1, ESSL v4.2.0, and ATLAS v3.7.11.
+From point of view of matrix sparseness of network adjacent matrix, for sparse matrix multiplication, SciPy and CuPy use SciPy-sparse and CuPy-cuSparse to achieve efficient sparse matrix multiplication on CPU and GPU.
+For dense matrix multiplication, NumPy, SciPy, CuPy, and ND4J use OpenBLAS, cuBLAS, and other libraries to achieve efficient block matrix multiplication on CPU and GPU.
+Therefore, a feasible method for calculating the shortest path of full node pairs is: represents the network by adjacent matrix, then makes all matrix elements exponential, computes matrix multiplication, and finally takes the logarithm of matrix elements.
+This procedure is called a distance product epoch.
 Iterate several times to get all node pairs shortest path result.
-Further, analysis time complexity of the distance product calculation and iteration of each epoch.
-For time complexity of distance product, matrix multiplication is the most complex subprocedures;
+Further, the analysis time complexity of the distance product calculation and iteration of each epoch.
+For time complexity of distance product, matrix multiplication is the most complex sub-procedures;
 
 \begin{enumerate}
-\item For distance product optimization, Zwick proposed distance product with block matrix multiplication, therefore choose proper computation device library with optimized cache for block matrix multiplication.
+\item For distance product optimization, Zwick proposed a distance product with block matrix multiplication, therefore choose proper computation device library with optimized cache for block matrix multiplication.
 \item For iteration optimization, because Aho proved distance product is isomorphic to the matrix multiplication, and regard to that the distance product association law, optimize the iteration process by last distance product result reuse.
 \end{enumerate}
 
 %-------------------------------------------------------------------------
 
 \section{Dataset And Hardware}
-From January 1, 2011 to March 31, 2015, I collected the film actors' social network following relationship, profile information, and text message on Sina Weibo which is one of the popular social media in China.
-In all, collected 8508 actors, 577775 edges and 12526114 Sina Weibo posts.
-I used a server with two Intel Xeon E5-2620 v4 CPUs and one NVIDIA GeForce GTX 1080 Ti GPU, in total 32 cores with frequency of 2.1Ghz, 128G system memory and 11G GPU memory in my experiment.
+From January 1, 2011, to March 31, 2015, I collected the film actors' social network following relationship, profile information, and text message on Sina Weibo which is one of the popular social media in China.
+In all, collected 8508 actors, 577775 edges, and 12526114 Sina Weibo posts.
+I used a server with two Intel Xeon E5-2620 v4 CPUs and one NVIDIA GeForce GTX 1080 Ti GPU, in total 32 cores with a frequency of 2.1Ghz, 128G system memory, and 11G GPU memory in my experiment.
 
 
 %-------------------------------------------------------------------------
 
 \section{Comparison On Block Matrix Multiplication Implementtation}
-On the actors' social network, this paper implements Strassen block matrix multiplication, Copper-Winograd block matrix multiplication and OpenBLAS matrix multiplication. On the computer hardware, compared the $8508*8508$ matrix multiplication time-cost.
-The block matrix multiplication based on Strassen and Coppersmith-Winograd takes 6 seconds for one iteration of matrix multiplication, and with OpenBLAS library it takes only 4 seconds.
-The performance of optimized cache block matrix multiplication, such as OpenBLAS matrix computation library, is higher than Strassen and Copper-Winograd block matrix multiplication algorithm.
-Therefore, distance product algorithm proposed by Zwick U with OpenBLAS block matrix multiplication is obviously better than distance product algorithm with Strassen and Coppersmith-Winograd.
 
+On the actors' social network, this paper implements Strassen block matrix multiplication, Copper-Winograd block matrix multiplication, and OpenBLAS matrix multiplication.
+On the computer hardware, compared the $8508*8508$ matrix multiplication time-cost.
+The block matrix multiplication based on Strassen and Coppersmith-Winograd takes 6 seconds for one iteration of matrix multiplication, and with the OpenBLAS library it takes only 4 seconds.
+The performance of optimized cache block matrix multiplication, such as the OpenBLAS matrix computation library, is higher than Strassen and Copper-Winograd block matrix multiplication algorithm.
+Therefore, the distance product algorithm proposed by Zwick U with OpenBLAS block matrix multiplication is better than the distance product algorithm with Strassen and Coppersmith-Winograd.
 
 %-------------------------------------------------------------------------
 
-\section{Time Bound Of Distance Product Algorithm With Cache Optimized Block Matrix Multiplication}
-For a fully connected network, the graph has a maximum diameter of $n-1$, so using result reuse method in distance product, that is use the last distance product calculation result, the matrix multiplication times is $log_2(n-1)$.
-Albert~\cite{albert1999diameter} found that social networks, the Internet and other complex networks have scale-free characteristics and small world phenomenon, thus network diameter is much smaller than the number of network nodes.
-I present the corresponding nodes counts, diameters and logarithm of diameters in Table 1, from the observation there is formula (1):
-In social networks, the number of nodes $n$, with cache block size $B*B$, according to the formula (9-10), the matrix product calculation iteration times does not exceed the number of $\lceil{log\Bbb D}\rceil$, recall that Lam \etal proved that matrix multiplication time bound is \(O({2n^3 \over B}+{n^2})\) ,
-thus Alon \etal algorithm time bound is \(O({log\Bbb D2n^3\over B})\) , use the equation (1) result, time bound is \(O({ \log(\log{N})2n^3\over B})\).
-With the arithmetic limitation on the floating-point operation, \eg take a network of number of nodes $N<10^{308}$
-as shown in Table 1, see that the shortest path calculation iterations time is no larger than $\log{\Bbb D}\approx{\log(\log{N})}<7$, that is, the number of calculation iterations does not exceed the magic number 7,
-bringing a stronger time bound of \(O({14n^3\over B})\).
-In another words, with the floating-point operation accuracy limitation on computer hardware and complex networks scale-free characteristics, all node pairs shortest path algorithm time bound is \(O({14n^3\over B})\).
+\section{Time-Bound Of Distance Product Algorithm With Cache Optimized Block Matrix Multiplication}
+
+For a fully connected network, the graph has a maximum diameter of $n-1$, so using the result reuse method in distance product, that is use the last distance product calculation result, the matrix multiplication times are $log_2(n-1)$.
+Albert~\cite{albert1999diameter} found that social networks, the Internet, and other complex networks have scale-free characteristics and small-world phenomena, thus network diameter is much smaller than the number of network nodes.
+I present the corresponding nodes counts, diameters, and logarithm of diameters in Table 1, from the observation there is formula (1):
+In social networks, the number of nodes $n$, with cache block size $B*B$, according to the formula (9-10), the matrix product calculation iteration times does not exceed the number of $\lceil{log\Bbb D}\rceil$, recall that Lam \etal proved that matrix multiplication time-bound is \(O({2n^3 \over B}+{n^2})\),
+thus Alon \etal algorithm time-bound is \(O({log\Bbb D2n^3\over B})\), use the equation (1) result, time-bound is \(O({ \log(\log{N})2n^3\over B})\).
+With the arithmetic limitation on the floating-point operation, \eg take a network with nodes number of $N<10^{308}$
+as shown in Table 1, see that the shortest path calculation iterations time is no larger than $\log{\Bbb D}\approx{\log(\log{N})}<7$, that is, the number of calculation iterations does not exceed the magic number $7$,
+bringing a stronger time-bound of \(O({14n^3\over B})\).
+In other words, with the floating-point operation accuracy limitation on computer hardware and complex networks scale-free characteristics, all node pairs shortest path algorithm time-bound is \(O({14n^3\over B})\).
 
 
 %-------------------------------------------------------------------------
@@ -142,7 +145,7 @@ a_{ij} = \min(a_{ij} , x_i + y_j), i \in (1,m), j \in (1,n)
 \begin{center}
   \fbox{\rule{0pt}{2in} \includegraphics[width=0.9\linewidth]{figure1.pdf}}
 \end{center}
-   \caption{Adjacent matrix, each iterations and the result matrix visualization of actors' social network. (a) initial state after each round of calculation, (b) the result matrix after the first round of calculation, (c) the result matrix of the second round of calculation, (d) the third and in the same time last round of calculation, the all pairs nodes shortest path result matrix.}
+   \caption{Adjacent matrix, each iterations and the result matrix visualization of actors' social network. (a) initial state after each round of calculation, (b) the result matrix after the first round of calculation, (c) the result matrix of the second round of calculation, (d) the third and in the same time last round of calculation, the all-pairs nodes shortest path result matrix.}
 \label{fig:short}
 \end{figure*}
 
@@ -156,8 +159,8 @@ Calculate the largest value of the square matrix element $\widetilde X$, such as
 The calculation accuracy of different computer hardware is in line with the IEEE floating-point operation standard~\cite{ieee1985ieee},
 first of all, transform the input matrix by exponential transformation, to be specific, taking the number of nodes as the base,
 taking the difference between the largest value of the element $\widetilde X$ and the matrix elements as exponential, as shown in the formula (5).
-\eg For actors' social network with 8508 nodes, the diameter of the network does not allow to exceed 9.8 and 78.4 when calculating a precision of 32-bit floating-point and 64-bit floating-point,
-otherwise the exponential operation on the computer platform will overflow.
+\eg For actors' social network with 8508 nodes, the diameter of the network does not allow to exceed 9.8 and 78.4 when calculating precision of 32-bit floating-point and 64-bit floating-point,
+otherwise, the exponential operation on the computer platform will overflow.
 
 \subsection{Matrix Multiplication}
 Use different matrix libraries to speed up the matrix multiplication on computer hardware, as shown in Table 3, choose proper device-based optimized matrix multiplication libraries according to different conditions, such as matrix sparseness, calculation hardware, and programming language.
@@ -165,16 +168,16 @@ Use different matrix libraries to speed up the matrix multiplication on computer
 %-------------------------------------------------------------------------
 \subsection{Logarithm Calculation}
 Take non-zero elements of the matrix multiplication result to the element logarithm process, that is, the number of network nodes as the base, the element in the matrix multiplication result as the true number, then round down the logarithm result,
-after that take difference between twice of the largest input matrix element value $\widetilde X$ and the logarithm result as result, such as formula (6).
+after that take difference between twice the largest input matrix element value $\widetilde X$ and the logarithm result as result, such as formula (6).
 
 \subsection{Distance Product Exchange Law}
 
 From the iteration of the shortest path calculation, suppose \(\Bbb A,\ \Bbb B,\ \Bbb C\) is the square matrix, according to the association law of distance product, there is a formula (7):
-Matrix multiplication has association law, and the distance product is isomorphism to matrix multiplication, so simplify the shortest path iteration process as formula (8):
-Since matrix multiplication has association law and distance product is isomorphism to matrix multiplication, similarly, distance product has an association law.
+Matrix multiplication has an association law, and the distance product is isomorphism to matrix multiplication, so simplify the shortest path iteration process as formula (8):
+Since matrix multiplication has an association law and distance product is isomorphism to matrix multiplication, similarly, distance product has an association law.
 Under the premise of the shortest path matrix $L^{(n-1)}$ given the adjacent matrix and the $n-1$ edge, calculate the shortest path matrix $L^{(n)}$ with n edges, and extend the shortest path of the $n-1$ edge by edge.
 Calculating the shortest path matrix $L^{(n)}$ can be completed as formula (9):
-As can be seen from the nature of the shortest path in the graph, the shortest path from the any of two nodes does not exceed $n-1$, so there is formula (10):
+As can be seen from the nature of the shortest path in the graph, the shortest path from any of two nodes does not exceed $n-1$, so there is formula (10):
 Definition 3 Result Reuse in Distance Product According to the nature of the equation (8), the process of calculating the shortest path iteration using the last result of distance product follows in turn, as shown in formula (11).
 The shortest path needs to be calculated $\lceil{log_2(n-1)}\rceil$ times matrix multiplication, from the formula (10), it can be seen that $(n-1)\leq2^{\lceil{log_2(n-1)}\rceil}$ is the same as the simple shortest path matrix calculation result $L^{(n-1)}$, so there is a formula (12):
 Obviously, the result reuse method saves $n-2-\lceil{log_2(n-1)}\rceil$ times of matrix multiplication.
@@ -182,15 +185,15 @@ Observe the shortest path calculation process of the actors' social network, the
 
 
 \begin{algorithm}
-\caption{Lower Bounds Convergence Matrix Products in All Pairs Shortest Path}\label{algorithm}
+\caption{Lower Bounds Convergence Matrix Products in All-Pairs Shortest Path}\label{algorithm}
 \KwData{Adjacent Matrix $\Bbb W$, Matrix Row $n$, Network Diameter $\Bbb D$}
-\KwResult{Shortest path result $L^{(m)}$}
+\KwResult{The shortest path result $L^{(m)}$}
   $L^{(1)}\leftarrow \Bbb W$\;
   $m\leftarrow 1$\;
   \While{$m\leq \Bbb D$}{
     $\Bbb A\leftarrow L^{(m)},\Bbb B\leftarrow L^{(m)},$\;
     $x\leftarrow \min{(a_i,b_i)}, y\leftarrow \max{(a_i,b_i)}, i \in (1,n)$\;
-    Exponential transformation of matrices $\Bbb A\ and\ \Bbb B$\;
+    The exponential transformation of matrices $\Bbb A\ and\ \Bbb B$\;
       $a_{ij}^{'}={(n+1)}^{y-a_{ij}}$\;
       $b_{ij}^{'}={(n+1)}^{y-b_{ij}}$\;
     \eIf{$L^{(m)}$ is sparse}{
@@ -198,9 +201,9 @@ Observe the shortest path calculation process of the actors' social network, the
     }{
       $\odot\leftarrow \otimes$//dense matrix multiplication\;
     }
-    Given matrix $\Bbb C^{'}$, $\Bbb C^{'} \in \Bbb R^{n\times n}$\;
+    Given matrices $\Bbb C^{'}$, $\Bbb C^{'} \in \Bbb R^{n\times n}$\;
     $\Bbb C^{'}\leftarrow \Bbb A^{'}\odot\Bbb B^{'}$\;
-    Logrithm transformation of matrix $\Bbb C^{'}$\;
+    The logrithm transformation of matrix $\Bbb C^{'}$\;
     $\Bbb C\leftarrow \log{\Bbb C^{'}}$\;
     \If{$L^{(m)} = \Bbb C$}{
       {\bf return} $L^{(m)}$\;
@@ -216,27 +219,27 @@ Observe the shortest path calculation process of the actors' social network, the
 
 \subsection{Sparseness Judgment}
 
-As shown in Table 1, observing the adjacent matrix represented by the network diagram is usually a sparse matrix, and matrix gradually becomes dense during iterations,
+As shown in Table 1, observing the adjacent matrix represented by the network diagram is usually a sparse matrix, and the matrix gradually becomes dense during iterations,
 and one idea of optimization is to use sparse matrix multiplication to speed up the iteration when the matrix is sparse, and when the matrix becomes denser, the sparse matrix multiplication is much time-consuming.
-Taking the actors' social network as an example, the non-zero element of the adjacent matrix of 8508 nodes is 617958, and the non-zero element of the matrix is 0.8536\% of the total element,
-which is a typical sparse matrix. Consider the advantages of sparse matrix multiplication algorithm, a threshold for triggering sparse matrix multiplication is set,
+Taking the actors' social network as an example, the non-zero elements of the adjacent matrix of 8508 nodes is 617958, and the percentage of non-zero elements in the matrix is 0.8536\%, which is a typical sparse matrix.
+Consider the advantages of sparse matrix multiplication algorithm, a threshold for triggering sparse matrix multiplication is set,
 and when the proportion of non-zero-value elements entered is less than the 10\% threshold, performs sparse matrix multiplication.
 
 \subsection{Convergence Judgment}
 
-For networks with unknown diameters, the calculation results can be made using convergence method, and for the calculation process of reaching convergence,
+For networks with unknown diameters, the calculation results can be made using the convergence method, and for the calculation process of reaching convergence,
 i.e. $L^{(n-1)}=L^{(n)}$, should be regarded as the program termination of iteration, and the calculation of the matrix product method is completed by the equation (4).
 
 \subsection{The Shortest Path Algorithm Fusing Sparseness Judgment And Convergence Judgment}
 
 Based on Alon \etal distance product algorithm, utilizing the sparseness judgment of the input matrix and the calculation result convergence judgment,
-with the network conforming to the power law distribution and the precision of floating-point operation, and the name implies two characteristics of the limitation
+with the network conforming to the power-law distribution and the precision of floating-point operation, and the name implies two characteristics of the limitation
 of floating-point precision on the scale-free social network and the computer hardware, the algorithm process flow is shown in Algorithm 1.
 
 \section{Experiment}
 
 Firstly, compared to Floyd-Warshall algorithm implemented on CPU, the Alon \etal algorithm implementation with matrix multiplication of block cache optimization on GPU has a time performance improvement, see Table 1.
-$PowerLawBound_{a-f}$ shows that using different libraries on CPU/GPU, the proposed algorithm has significant performance improvement over Alon \etal algorithm.
+$Power-LawBound_{a-f}$ shows that using different libraries on CPU/GPU, the proposed algorithm has significant performance improvement over Alon \etal algorithm.
 
 
 \begin{table}
@@ -247,12 +250,12 @@ Algorithm	& Time Cost \\
 \hline\hline
 Floyd-Warshall &	1055880s \\
 Alon \etal          &	594.7s \\
-$PowerLawBound_a$ 	&	427.9s \\
-$PowerLawBound_b$	&	328.4s \\
-$PowerLawBound_c$	&	95.0s \\
-$PowerLawBound_d$	&	45.0s \\
-$PowerLawBound_e$	&	19.32s \\
-$PowerLawBound_f$	&	15.98s \\
+$Power-LawBound_a$ 	&	427.9s \\
+$Power-LawBound_b$	&	328.4s \\
+$Power-LawBound_c$	&	95.0s \\
+$Power-LawBound_d$	&	45.0s \\
+$Power-LawBound_e$	&	19.32s \\
+$Power-LawBound_f$	&	15.98s \\
 \hline
 \end{tabular}
 \end{center}
@@ -261,13 +264,14 @@ $PowerLawBound_f$	&	15.98s \\
 
 
 \section{Conclusion}
-This paper discussed a novel algorithm in all pairs shortest path computation task, using distance product exchange law.
-The time bound of Alon \etal distance product algorithm with block matrix multiplication is \(O({\log{n}2n^3\over B})\) with $B=\text{SIZE}_{\text{block}}$.
+
+This paper discussed a novel algorithm in all-pairs shortest path computation tasks, using distance product association law.
+The time-bound of Alon \etal distance product algorithm with block matrix multiplication is \(O({\log{n}2n^3\over B})\) with $B=\text{SIZE}_{\text{block}}$.
 To strengthen the conditions, on scale-free social networks, for the precision limit of floating-point operation on hardware, additional condition on the social network diameter is added to avoid floating-point operation overflow during the calculation process.
-the algorithm has lower time bound \(O({14n^3\over B})\).
-With strengthened conditions, I proposed a novel algorithm, leveraging matrix sparseness judgment and calculation convergence judgment.
-\textbf{PowerLaw} refers to the network node numbers conforming to the characteristics that social networks power law distribution, and \textbf{Bound} refers to the floating-point operations arithmetic limitation of accuracy on hardware.
-The experimental results show that \textbf{PowerLawBound} algorithm improves time performance by 39\% to 36.2 times on CPU/GPU hardware compared to Alon \etal algorithm .
+the algorithm has lower time-bound \(O({14n^3\over B})\).
+With strengthened conditions, I proposed a novel algorithm, leveraging matrix sparseness judgment, and calculation convergence judgment.
+\textbf{Power-Law} refers to the network node numbers conforming to the characteristics that social networks power-law distribution, and \textbf{Bound} refers to the floating-point operations arithmetic limitation of accuracy on hardware.
+The experimental results show that \textbf{Power-LawBound} algorithm improves time performance by 39\% to 36.2 times on CPU/GPU hardware compared to Alon \etal algorithm.
 
 {\small
 \bibliographystyle{ieee_fullname}
