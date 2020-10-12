@@ -1,0 +1,259 @@
+% This version of CVPR template is provided by Ming-Ming Cheng.
+% Please leave an issue if you found a bug:
+% https://github.com/MCG-NKU/CVPR_Template.
+
+\documentclass[review]{cvpr}
+%\documentclass[final]{cvpr}
+
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[linesnumbered,lined,boxed,commentsnumbered]{algorithm2e}
+% Include other packages here, before hyperref.
+
+
+% If you comment hyperref and then uncomment it, you should delete
+% egpaper.aux before re-running latex.  (Or just hit 'q' on the first latex
+% run, let it finish, and you should be clear).
+\usepackage[pagebackref=true,breaklinks=true,colorlinks,bookmarks=false]{hyperref}
+
+
+\def\cvprPaperID{7777} % *** Enter the CVPR Paper ID here
+\def\confYear{CVPR 2021}
+%\setcounter{page}{4321} % For final version only
+
+
+\begin{document}
+
+%%%%%%%%% TITLE
+\title{Enhance Image Classification Performance Via Unsupervised Pre-trained Transformers Language Models}
+
+\author{Dezhou Shen\\
+Department of Computer Science\\
+Tsinghua University\\
+Beijing, CN 100084\\
+{\tt\small sdz15@mails.tsinghua.edu.cn}
+% For a paper whose authors are all at the same institution,
+% omit the following lines up until the closing ``}''.
+% Additional authors and addresses can be added with ``\and'',
+% just like the second author.
+% To save space, use either the email address or home page, not both
+}
+
+\maketitle
+
+
+%%%%%%%%% ABSTRACT
+\begin{abstract}
+
+  Image classification and categorization are essential for the capability of telling the difference between images for a machine.
+  As \underline{B}idirectional \underline{E}ncoder \underline{R}epresentations from \underline{T}ransformers became popular in many tasks of natural language processing recent years,
+  it is intuitive to use these pre-trained language models for enhancing the computer vision tasks, \eg image classification.
+  In this paper, by encoding image pixels using pre-trained transformers, then connect to a fully connected layer,
+  the classification model outperforms the Wide ResNet model and the linear-probe iGPT-L model,
+  and achieved an accuracy of $97.72\%$\~$99.60\%$ on the CIFAR-10 image set, and an accuracy of $98.27\%$\~ on the CIFAR-100 image set.
+
+\end{abstract}
+
+%%%%%%%%% BODY TEXT
+\section{Introduction}
+
+  Unsupervised pre-training is important in modern research of deep learning.
+  Lee \etal~\cite{lee2009convolutional} used pre-training approaches
+  in Computer Vision tasks in 2009, and later from 2010 to 2016, Nair and Hinton~\cite{nair2010rectified} proved that the pre-training process is supplementary in the CV tasks,
+  thus, can be omitted in some cases.
+  However, it started to flourish in natural language processing domain since Mikolov \etal~\cite{mikolov2013distributed} had proposed Word2Vec.
+  Not long before Devin \etal~\cite{devlin2018bert}'s BERT language model dominates in most frequent used tasks in natural language processing,
+  which is close resemble of Vicent \etal~\cite{vincent2008extracting}'s Denoising Autoencoder model, which was initially designed for images.
+  Pre-training process become one of the most important procedures in deep learning.
+
+%-------------------------------------------------------------------------
+
+\section{Recent Work}
+
+  Chen \etal~\cite{chen2020generative} trained image representation by sequence Transformers and tested on CIFAR-10 to show its outperforming to Wide-ResNet
+which inspired from unsupervised natural language representation learning.
+  Wang \etal~\cite{wang2019development} reviewed that convolutional neural networks had been proposed in 1960s, and had its implementation in 1980s,
+and until LeCun \etal~\cite{lecun1990handwritten}'s first experiment on handwritten digit recognition, CNN's great potential had been revealed.
+  In the 2010s, Krizhevsky \etal~\cite{krizhevsky2012imagenet} proposed the deep architecture, AlexNet, by concatenating multiple components of CNN layers.
+Several years later, a lot of variants of AlexNet had been proposed by researchers and the accuracy of ImageNet had been greatly improved, \eg ZFNet~\cite{zeiler2014visualizing}, VGG~\cite{simonyan2014very}, GoogLeNet~\cite{szegedy2015going}, ResNet~\cite{he2016deep},
+Wide-ResNet~\cite{zagoruyko2016wide}, ResNeXt~\cite{xie2017aggregated}, inception-ResNet-v2~\cite{szegedy2016inception}, DenseNet~\cite{huang2016deep}.
+  Lu and Weng~\cite{lu2007survey} concluded that for multi-source image classification task, additional information such as signatures, texture, context and ancillary data can be combined to achieve better performance.
+And it is difficult in handling the dichotomy between pixels and natural language texts in a single model.
+  Cui \etal~\cite{cui2019pre, cui2020revisiting} proposed several whole-word-masking pre-trained Chinese language models,
+which are improved versions of BERT~\cite{devlin2018bert} and RoBERTa~\cite{liu2019roberta} pre-trained language models, namely RBT3, RBTL3, and RoBERTa-wwm-ext-large.
+These models achieved better performance in Chinese machine reading comprehension and Chinese document classification tasks.
+
+%-------------------------------------------------------------------------
+
+\section{Image Classification via Pre-trained Transformers Language Models}
+
+On the actors' social network, this paper implements Strassen block matrix multiplication, Copper-Winograd block matrix multiplication, and OpenBLAS matrix multiplication.
+On the computer hardware, compared the $8508*8508$ matrix multiplication time-cost.
+The block matrix multiplication based on Strassen and Coppersmith-Winograd takes 6 seconds for one iteration of matrix multiplication, and with the OpenBLAS library it takes only 4 seconds.
+The performance of optimized cache block matrix multiplication, such as the OpenBLAS matrix computation library, is higher than Strassen and Copper-Winograd block matrix multiplication algorithm.
+Therefore, the distance product algorithm proposed by Zwick with OpenBLAS block matrix multiplication is better than the distance product algorithm with Strassen and Coppersmith-Winograd.
+
+%-------------------------------------------------------------------------
+
+\section{Pre-trained Transformers Language Models}
+
+For a fully connected network, the graph has a maximum diameter of $n-1$, so using the result reuse method in distance product, that is use the last distance product calculation result, the matrix multiplication times are $log_2(n-1)$.
+Albert~\cite{albert1999diameter} found that social networks, the Internet, and other complex networks have scale-free characteristics and small-world phenomena, thus network diameter is much smaller than the number of network nodes.
+I present the corresponding nodes counts, diameters, and logarithm of diameters in Table 1, from the observation there is formula (1):
+In social networks, the number of nodes $n$, with cache block size $B*B$, according to the formula (9-10), the matrix product calculation iteration times does not exceed the number of $\lceil{\log{\Bbb D}}\rceil$, recall that Lam \etal proved that matrix multiplication time-bound is \(O({2n^3 \over \Bbb B}+{n^2})\),
+thus Alon \etal algorithm time-bound is \(O(\log{\Bbb D}2n^3\over \Bbb B)\) with cache block size of $\Bbb B$, use the equation (1) result, time-bound is \(O(\log(\log{N})2n^3\over \Bbb B)\).
+With the arithmetic limitation on the floating-point operation, \eg take a network with nodes number of $N<10^{308}$
+as shown in Table 1, see that the shortest path calculation iterations time is no larger than $\log{\Bbb D} \approx \log(\log{N})<7$, that is, the number of calculation iterations does not exceed the magic number $7$,
+bringing a stronger time-bound of \(O(14n^3\over \Bbb B)\).
+In other words, with the floating-point operation accuracy limitation on computer hardware and complex networks scale-free characteristics, all-pairs shortest path algorithm time-bound is \(O(14n^3\over \Bbb B)\), for $\Bbb B$ is a constant, thus, for simpler representation the time-bound is \(O(14n^3)\).
+
+
+%-------------------------------------------------------------------------
+
+
+\section{Image Classification Model}
+
+\begin{figure*}
+\begin{center}
+  \fbox{\rule{0pt}{2in} \includegraphics[width=0.9\linewidth]{classification.pdf}}
+\end{center}
+   \caption{Concat, encoder, representation, and extraction layers for image classification task.}
+\label{fig:short}
+\end{figure*}
+
+%-------------------------------------------------------------------------
+
+
+
+\subsection{Maximum Calculation}
+
+Calculate the largest value of the square matrix element $\widetilde X$, such as the formula (4):
+
+\subsection{Exponential Calculation}
+
+The calculation accuracy of different computer hardware is in line with the IEEE floating-point operation standard~\cite{ieee1985ieee},
+first of all, transform the input matrix by exponential transformation, to be specific, taking the number of nodes as the base,
+taking the difference between the largest value of the element $\widetilde X$ and the matrix elements as exponential, as shown in the formula (5).
+\eg For actors' social network with 8508 nodes, the diameter of the network does not allow to exceed 9.8 and 78.4 when calculating precision of 32-bit floating-point and 64-bit floating-point,
+otherwise, the exponential operation on the computer platform will overflow.
+
+\subsection{Matrix Multiplication}
+Use different matrix libraries to speed up the matrix multiplication on computer hardware, as shown in Table 3, choose proper device-based optimized matrix multiplication libraries according to different conditions, such as matrix sparseness, calculation hardware, and programming language.
+
+%-------------------------------------------------------------------------
+\subsection{Logarithm Calculation}
+Take non-zero elements of the matrix multiplication result to the element logarithm process, that is, the number of network nodes as the base, the element in the matrix multiplication result as the true number, then round down the logarithm result,
+after that take difference between twice the largest input matrix element value $\widetilde X$ and the logarithm result as result, such as formula (6).
+
+\subsection{Distance Product Exchange Law}
+
+From the iteration of the shortest path calculation, suppose \(\Bbb A,\ \Bbb B,\ \Bbb C\) is the square matrix, according to the association law of distance product, there is a formula (7):
+Matrix multiplication has an association law, and the distance product is isomorphism to matrix multiplication, so simplify the shortest path iteration process as formula (8):
+Since matrix multiplication has an association law and distance product is isomorphism to matrix multiplication, similarly, distance product has an association law.
+Under the premise of the shortest path matrix $L^{(n-1)}$ given the adjacent matrix and the $n-1$ edge, calculate the shortest path matrix $L^{(n)}$ with n edges, and extend the shortest path of the $n-1$ edge by edge.
+Calculating the shortest path matrix $L^{(n)}$ can be completed as formula (9):
+As can be seen from the nature of the shortest path in the graph, the shortest path from any of two nodes does not exceed $n-1$, so there is formula (10):
+Definition 3 Result Reuse in Distance Product According to the nature of the equation (8), the process of calculating the shortest path iteration using the last result of distance product follows in turn, as shown in formula (11).
+The shortest path needs to be calculated $\lceil{log_2(n-1)}\rceil$ times matrix multiplication, from the formula (10), it can be seen that $(n-1)\leq2^{\lceil{log_2(n-1)}\rceil}$ is the same as the simple shortest path matrix calculation result $L^{(n-1)}$, so there is a formula (12):
+Obviously, the result reuse method saves $n-2-\lceil{log_2(n-1)}\rceil$ times of matrix multiplication.
+Observe the shortest path calculation process of the actors' social network, the adjacent matrix is shown in Figure 1a, and the change of result in each iteration is shown in Figure 1b-d, the shortest path result matrix converges gradually, each element stabilizes as iterations goes.
+
+
+\begin{algorithm}
+\caption{Lower Bounds Convergence Matrix Products in All-Pairs Shortest Path}\label{algorithm}
+\KwData{Adjacent Matrix $\Bbb W$, Matrix Row $n$, Network Diameter $\Bbb D$}
+\KwResult{The shortest path result $L^{(m)}$}
+  $L^{(1)}\leftarrow \Bbb W$\;
+  $m\leftarrow 1$\;
+  \While{$m\leq \Bbb D$}{
+    $\Bbb A\leftarrow L^{(m)},\Bbb B\leftarrow L^{(m)},$\;
+    $x\leftarrow \min{(a_i,b_i)}, y\leftarrow \max{(a_i,b_i)}, i \in (1,n)$\;
+    The exponential transformation of matrices $\Bbb A\ and\ \Bbb B$\;
+      $a_{ij}^{'}={(n+1)}^{y-a_{ij}}$\;
+      $b_{ij}^{'}={(n+1)}^{y-b_{ij}}$\;
+    \eIf{$L^{(m)}$ is sparse}{
+      $\odot\leftarrow \bigcirc$//sparse matrix multiplication\;
+    }{
+      $\odot\leftarrow \otimes$//dense matrix multiplication\;
+    }
+    Given matrices $\Bbb C^{'}$, $\Bbb C^{'} \in \Bbb R^{n\times n}$\;
+    $\Bbb C^{'}\leftarrow \Bbb A^{'}\odot\Bbb B^{'}$\;
+    The logrithm transformation of matrix $\Bbb C^{'}$\;
+    $\Bbb C\leftarrow \log{\Bbb C^{'}}$\;
+    \If{$L^{(m)} = \Bbb C$}{
+      {\bf return} $L^{(m)}$\;
+    }
+    $L^{(2m)}\leftarrow \Bbb C$\;
+    $m\leftarrow 2*m$\;
+  }
+  {\bf return} $L^{(m)}$\;
+\end{algorithm}
+
+
+\section{Architecture Design}
+
+\subsection{Sparseness Judgment}
+
+As shown in Table 1, observing the adjacent matrix represented by the network diagram is usually a sparse matrix, and the matrix gradually becomes dense during iterations,
+and one idea of optimization is to use sparse matrix multiplication to speed up the iteration when the matrix is sparse, and when the matrix becomes denser, the sparse matrix multiplication is much time-consuming.
+Taking the actors' social network as an example, the non-zero elements of the adjacent matrix of 8508 nodes is 617958, and the percentage of non-zero elements in the matrix is 0.8536\%, which is a typical sparse matrix.
+Consider the advantages of sparse matrix multiplication algorithm, a threshold for triggering sparse matrix multiplication is set,
+and when the proportion of non-zero-value elements entered is less than the 10\% threshold, performs sparse matrix multiplication.
+
+\subsection{Convergence Judgment}
+
+For networks with unknown diameters, the calculation results can be made using the convergence method, and for the calculation process of reaching convergence,
+i.e. $L^{(n-1)}=L^{(n)}$, should be regarded as the program termination of iteration, and the calculation of the matrix product method is completed by the equation (4).
+
+\subsection{The Shortest Path Algorithm Fusing Sparseness Judgment And Convergence Judgment}
+
+Based on Alon \etal distance product algorithm, utilizing the sparseness judgment of the input matrix and the calculation result convergence judgment,
+with the network conforming to the power-law distribution and the precision of floating-point operation, and the name implies two characteristics of the limitation
+of floating-point precision on the scale-free social network and the computer hardware, the algorithm process flow is shown in Algorithm 1.
+
+\section{Experiment}
+
+Firstly, compared to Floyd-Warshall algorithm implemented on CPU, the Alon \etal algorithm implementation with matrix multiplication of block cache optimization on GPU has a time performance improvement, see Table 1.
+$Power-LawBound_{a-f}$ shows that using different libraries on CPU/GPU, the proposed algorithm has significant performance improvement over Alon \etal algorithm.
+
+
+\begin{table}
+\begin{center}
+\begin{tabular}{|l|c|}
+\hline
+Algorithm	& Time Cost \\
+\hline\hline
+Floyd-Warshall~\cite{floyd1962algorithm,warshall1962theorem}  &	1055880s \\
+Alon \etal          &	594.7s \\
+$Power-LawBound_a$ 	&	427.9s \\
+$Power-LawBound_b$	&	328.4s \\
+$Power-LawBound_c$	&	95.0s \\
+$Power-LawBound_d$	&	45.0s \\
+$Power-LawBound_e$	&	19.32s \\
+$Power-LawBound_f$	&	15.98s \\
+\hline
+\end{tabular}
+\end{center}
+\caption{Performance comparison on different hardware. (a) CPU numpy library. (b) CPU scipy/numpy library. (c) GPU cuBLAS. (d) CPU openBLAS. (e) GPU CuPy. (f) GPU CuPy-sparse/CuPy.}
+\end{table}
+
+
+\section{Conclusion}
+
+This paper discussed a novel algorithm in all-pairs shortest path computation tasks, using distance product association law.
+The time-bound of Alon \etal distance product algorithm with block matrix multiplication is \(O({\log{n}2n^3\over \Bbb B})\).
+To strengthen the conditions, on scale-free social networks, for the precision limit of floating-point operation on hardware, additional condition on the social network diameter is added to avoid floating-point operation overflow during the calculation process.
+the algorithm has lower time-bound \(O({14n^3\over \Bbb B})\).
+With strengthened conditions, I proposed a novel algorithm, leveraging matrix sparseness judgment, and calculation convergence judgment.
+\textbf{Power-Law} refers to the network node numbers conforming to the characteristics that social networks power-law distribution, and \textbf{Bound} refers to the floating-point operations arithmetic limitation of accuracy on hardware.
+The experimental results show that \textbf{Power-LawBound} algorithm improves time performance by 39\% to 36.2 times on CPU/GPU hardware compared to Alon \etal's algorithm.
+
+{\small
+\bibliographystyle{ieee_fullname}
+\bibliography{cpvr_classification}
+}
+
+\end{document}
