@@ -53,7 +53,7 @@ Beijing, CN 100084\\
   it is intuitive to use these pre-trained language models for enhancing the computer vision tasks, \eg image classification.
   In this paper, by encoding image pixels using pre-trained transformers, then connect to a fully connected layer,
   the classification model outperforms the Wide ResNet model and the linear-probe iGPT-L model,
-  and achieved an accuracy of $97.72\%$\~$99.60\%$ on the CIFAR-10 image set, and an accuracy of $98.27\%$\~ on the CIFAR-100 image set.
+  and achieved an accuracy of $97.72\%~99.60\%$ on the CIFAR-10 image set, and an accuracy of $98.27\%~98.95\%$ on the CIFAR-100 image set.
 
 \end{abstract}
 
@@ -84,33 +84,53 @@ Wide-ResNet~\cite{zagoruyko2016wide}, ResNeXt~\cite{xie2017aggregated}, inceptio
 And it is difficult in handling the dichotomy between pixels and natural language texts in a single model.
   Cui \etal~\cite{cui2019pre, cui2020revisiting} proposed several whole-word-masking pre-trained Chinese language models,
 which are improved versions of BERT~\cite{devlin2018bert} and RoBERTa~\cite{liu2019roberta} pre-trained language models, namely RBT3, RBTL3, and RoBERTa-wwm-ext-large.
-These models achieved better performance in Chinese machine reading comprehension and Chinese document classification tasks.
+These models achieved better performance in Chinese machine reading comprehension, Chinese document classification and other downstream natural language tasks.
 
 %-------------------------------------------------------------------------
 
 \section{Image Classification via Pre-trained Transformers Language Models}
 
-On the actors' social network, this paper implements Strassen block matrix multiplication, Copper-Winograd block matrix multiplication, and OpenBLAS matrix multiplication.
-On the computer hardware, compared the $8508*8508$ matrix multiplication time-cost.
-The block matrix multiplication based on Strassen and Coppersmith-Winograd takes 6 seconds for one iteration of matrix multiplication, and with the OpenBLAS library it takes only 4 seconds.
-The performance of optimized cache block matrix multiplication, such as the OpenBLAS matrix computation library, is higher than Strassen and Copper-Winograd block matrix multiplication algorithm.
-Therefore, the distance product algorithm proposed by Zwick with OpenBLAS block matrix multiplication is better than the distance product algorithm with Strassen and Coppersmith-Winograd.
+Three of the most popular approaches for image classification task are per-pixel, subpixel, and heterogeneous.
+Lu and Weng found that, for per-pixel approach, non-parametric classifiers, \eg neural networks, support vector machines and decision trees,
+are most well known algorithms for their performance and generalization advantages in late 1990s and 2000s.
+Fern{\'a}ndez \etal~\cite{fernandez2014we} compared different classifiers in small datasets, and they found that the random forest algorithm ranks first among the 179 classifiers.
 
 %-------------------------------------------------------------------------
+\section{Per-pixel Encoder}
 
-\section{Pre-trained Transformers Language Models}
+For the per-pixel image classification approach, for every RGB channel of pixel in a image,
+each pixel had its pixel-channel code, ranges from $0x00$ to $0xff$ for different colors.
+Thus, taking these pixels in a image is identical to ASCII characters in a document.
+Generality speaking, the performance of the pre-trained language models achieved in document classification task, can be transferred to image classification naturally.
 
-For a fully connected network, the graph has a maximum diameter of $n-1$, so using the result reuse method in distance product, that is use the last distance product calculation result, the matrix multiplication times are $log_2(n-1)$.
-Albert~\cite{albert1999diameter} found that social networks, the Internet, and other complex networks have scale-free characteristics and small-world phenomena, thus network diameter is much smaller than the number of network nodes.
-I present the corresponding nodes counts, diameters, and logarithm of diameters in Table 1, from the observation there is formula (1):
-In social networks, the number of nodes $n$, with cache block size $B*B$, according to the formula (9-10), the matrix product calculation iteration times does not exceed the number of $\lceil{\log{\Bbb D}}\rceil$, recall that Lam \etal proved that matrix multiplication time-bound is \(O({2n^3 \over \Bbb B}+{n^2})\),
-thus Alon \etal algorithm time-bound is \(O(\log{\Bbb D}2n^3\over \Bbb B)\) with cache block size of $\Bbb B$, use the equation (1) result, time-bound is \(O(\log(\log{N})2n^3\over \Bbb B)\).
-With the arithmetic limitation on the floating-point operation, \eg take a network with nodes number of $N<10^{308}$
-as shown in Table 1, see that the shortest path calculation iterations time is no larger than $\log{\Bbb D} \approx \log(\log{N})<7$, that is, the number of calculation iterations does not exceed the magic number $7$,
-bringing a stronger time-bound of \(O(14n^3\over \Bbb B)\).
-In other words, with the floating-point operation accuracy limitation on computer hardware and complex networks scale-free characteristics, all-pairs shortest path algorithm time-bound is \(O(14n^3\over \Bbb B)\), for $\Bbb B$ is a constant, thus, for simpler representation the time-bound is \(O(14n^3)\).
+\par Recall that Kim~\cite{kim2014convolutional} had proved that unsupervised pre-trained language model $word2vec$ and CNN outperformed many other machine learning algorithms,
+\eg support vector machines and conditional random field, in many dataset such as, movie reviews, Stanford sentiment treebank, and TREC question.
+Adhikari \etal~\cite{adhikari2019docbert} showed the BERT and BERT-large model had achieved higher accuracy in the Routers, IMDB, and Yelp dataset which classification ranges from 5 to 90.
+Cui \etal's pre-trained language model, namely RBT3, RBTL3, and RoBERTa-wwm-ext-large, had improved performances over many other machine learning algorithms.
+BERT and RoBERTa-wwm-ext-large models both achieved an f1-score of 97.8\% in the THUCNews dataset, which contains 65 thousands of news in 10 domains.
 
+\par I used RBTL3 and RoBERTa-wwm-ext-large pre-trained language model in two Chinese Judicial dataset, which have 2 and 4 main domains.
+The $Case-2$ dataset annotated civil and criminal cases, and the $Case-4$ dataset annotated by civil, criminal, intellectual property, and administrative cases.
+The $Case-2$ dataset has $19508$ training documents and $2000$ test documents, and the $Case-4$ dataset has $34789$ training documents and $2013$ test documents.
 
+\par From table-1, by combining pre-trained language model with fully connected layer as the document classification model,
+the test accuracy exceeds the other popular machine learning algorithms.
+Therefore, the pixel channels of image can be properly represented by these pre-trained language models.
+
+\begin{table}
+\begin{center}
+\begin{tabular}{|l|c|r|}
+\hline
+Language Model 	& Dataset & Accuracy \\
+\hline\hline
+RoBERTa-wwm-ext-large & Case-2	&	99.8\% \\
+RoBERTa-wwm-ext-large & Case-4	&	98.95\% \\
+RBTL3  & Case-4	&	96.35\% \\
+\hline
+\end{tabular}
+\end{center}
+\caption{Comparision of accuracy of the pre-trained language models on different dataset in the document classification task.}
+\end{table}
 %-------------------------------------------------------------------------
 
 
@@ -124,132 +144,80 @@ In other words, with the floating-point operation accuracy limitation on compute
 \label{fig:short}
 \end{figure*}
 
+We design a simple classification models without too many layers, as Figure-1 shows.
+And use the CIFAR-10 and CIFAR-100 dataset as an example to show the architecture of the model.
+The model architecture has seven functional layers:
+\begin{itemize}
+\item {\bf Input layer}
+\item {\bf Concat layer}
+\item {\bf Trim layer}
+\item {\bf Encoder layer}
+\item {\bf Embedding layer}
+\item {\bf Feature Extraction layer}
+\item {\bf Output layer}
+\end{itemize}
+
+\par The CIFAR-10 dataset contains 60000 colour images with a resolution of 32x32 in 10 classes, and the CIFAR-100 dataset has 100 classes containing 600 images each.
+Encode the image by the sequence of RGB channel values, in the order of Red-channel, Green-channel, and Blue-channel,
+then encode other meta-data if provided, as a sequence of ASCII character.
+In the Concat layer, the pixel-channel value and meta data are concatenated, put a special token of $\textbf{[CLS]}$ at the start,
+and put a $\textbf{[SEP]}$ token between channel vules and meta values, put a special token of $\textbf{[SEP]}$ at the end.
+In the Trim layer, due to the limit on the max sequence of BERT language model, sequence larger than $512$ need to be trimmed before sending to BERT model.
+Keep the first 256 characters and last 256 characters of the concatenated sequence, trimmed result contrains the first 255 red-channel value,
+some blue-channel value, and all the meta value in common cases.
+In the Encoder layer and the Embedding layer, trimmed sequence of values are encoded by BERT-like models,
+and get the encoded representation of the token $\textbf{[CLS]}$ as the images' language model embeddings.
+In the Feature-Extraction layer, a combination of one dropout layer, one fully connected layer, and one softmax layer is used.
+In the Output layer, the classification label of the image is feed in the model.
+
 %-------------------------------------------------------------------------
 
 
+\section{Image Classification Model}
 
-\subsection{Maximum Calculation}
+\subsection{Experiments and Results}
 
-Calculate the largest value of the square matrix element $\widetilde X$, such as the formula (4):
-
-\subsection{Exponential Calculation}
-
-The calculation accuracy of different computer hardware is in line with the IEEE floating-point operation standard~\cite{ieee1985ieee},
-first of all, transform the input matrix by exponential transformation, to be specific, taking the number of nodes as the base,
-taking the difference between the largest value of the element $\widetilde X$ and the matrix elements as exponential, as shown in the formula (5).
-\eg For actors' social network with 8508 nodes, the diameter of the network does not allow to exceed 9.8 and 78.4 when calculating precision of 32-bit floating-point and 64-bit floating-point,
-otherwise, the exponential operation on the computer platform will overflow.
-
-\subsection{Matrix Multiplication}
-Use different matrix libraries to speed up the matrix multiplication on computer hardware, as shown in Table 3, choose proper device-based optimized matrix multiplication libraries according to different conditions, such as matrix sparseness, calculation hardware, and programming language.
-
-%-------------------------------------------------------------------------
-\subsection{Logarithm Calculation}
-Take non-zero elements of the matrix multiplication result to the element logarithm process, that is, the number of network nodes as the base, the element in the matrix multiplication result as the true number, then round down the logarithm result,
-after that take difference between twice the largest input matrix element value $\widetilde X$ and the logarithm result as result, such as formula (6).
-
-\subsection{Distance Product Exchange Law}
-
-From the iteration of the shortest path calculation, suppose \(\Bbb A,\ \Bbb B,\ \Bbb C\) is the square matrix, according to the association law of distance product, there is a formula (7):
-Matrix multiplication has an association law, and the distance product is isomorphism to matrix multiplication, so simplify the shortest path iteration process as formula (8):
-Since matrix multiplication has an association law and distance product is isomorphism to matrix multiplication, similarly, distance product has an association law.
-Under the premise of the shortest path matrix $L^{(n-1)}$ given the adjacent matrix and the $n-1$ edge, calculate the shortest path matrix $L^{(n)}$ with n edges, and extend the shortest path of the $n-1$ edge by edge.
-Calculating the shortest path matrix $L^{(n)}$ can be completed as formula (9):
-As can be seen from the nature of the shortest path in the graph, the shortest path from any of two nodes does not exceed $n-1$, so there is formula (10):
-Definition 3 Result Reuse in Distance Product According to the nature of the equation (8), the process of calculating the shortest path iteration using the last result of distance product follows in turn, as shown in formula (11).
-The shortest path needs to be calculated $\lceil{log_2(n-1)}\rceil$ times matrix multiplication, from the formula (10), it can be seen that $(n-1)\leq2^{\lceil{log_2(n-1)}\rceil}$ is the same as the simple shortest path matrix calculation result $L^{(n-1)}$, so there is a formula (12):
-Obviously, the result reuse method saves $n-2-\lceil{log_2(n-1)}\rceil$ times of matrix multiplication.
-Observe the shortest path calculation process of the actors' social network, the adjacent matrix is shown in Figure 1a, and the change of result in each iteration is shown in Figure 1b-d, the shortest path result matrix converges gradually, each element stabilizes as iterations goes.
-
-
-\begin{algorithm}
-\caption{Lower Bounds Convergence Matrix Products in All-Pairs Shortest Path}\label{algorithm}
-\KwData{Adjacent Matrix $\Bbb W$, Matrix Row $n$, Network Diameter $\Bbb D$}
-\KwResult{The shortest path result $L^{(m)}$}
-  $L^{(1)}\leftarrow \Bbb W$\;
-  $m\leftarrow 1$\;
-  \While{$m\leq \Bbb D$}{
-    $\Bbb A\leftarrow L^{(m)},\Bbb B\leftarrow L^{(m)},$\;
-    $x\leftarrow \min{(a_i,b_i)}, y\leftarrow \max{(a_i,b_i)}, i \in (1,n)$\;
-    The exponential transformation of matrices $\Bbb A\ and\ \Bbb B$\;
-      $a_{ij}^{'}={(n+1)}^{y-a_{ij}}$\;
-      $b_{ij}^{'}={(n+1)}^{y-b_{ij}}$\;
-    \eIf{$L^{(m)}$ is sparse}{
-      $\odot\leftarrow \bigcirc$//sparse matrix multiplication\;
-    }{
-      $\odot\leftarrow \otimes$//dense matrix multiplication\;
-    }
-    Given matrices $\Bbb C^{'}$, $\Bbb C^{'} \in \Bbb R^{n\times n}$\;
-    $\Bbb C^{'}\leftarrow \Bbb A^{'}\odot\Bbb B^{'}$\;
-    The logrithm transformation of matrix $\Bbb C^{'}$\;
-    $\Bbb C\leftarrow \log{\Bbb C^{'}}$\;
-    \If{$L^{(m)} = \Bbb C$}{
-      {\bf return} $L^{(m)}$\;
-    }
-    $L^{(2m)}\leftarrow \Bbb C$\;
-    $m\leftarrow 2*m$\;
-  }
-  {\bf return} $L^{(m)}$\;
-\end{algorithm}
-
-
-\section{Architecture Design}
-
-\subsection{Sparseness Judgment}
-
-As shown in Table 1, observing the adjacent matrix represented by the network diagram is usually a sparse matrix, and the matrix gradually becomes dense during iterations,
-and one idea of optimization is to use sparse matrix multiplication to speed up the iteration when the matrix is sparse, and when the matrix becomes denser, the sparse matrix multiplication is much time-consuming.
-Taking the actors' social network as an example, the non-zero elements of the adjacent matrix of 8508 nodes is 617958, and the percentage of non-zero elements in the matrix is 0.8536\%, which is a typical sparse matrix.
-Consider the advantages of sparse matrix multiplication algorithm, a threshold for triggering sparse matrix multiplication is set,
-and when the proportion of non-zero-value elements entered is less than the 10\% threshold, performs sparse matrix multiplication.
-
-\subsection{Convergence Judgment}
-
-For networks with unknown diameters, the calculation results can be made using the convergence method, and for the calculation process of reaching convergence,
-i.e. $L^{(n-1)}=L^{(n)}$, should be regarded as the program termination of iteration, and the calculation of the matrix product method is completed by the equation (4).
-
-\subsection{The Shortest Path Algorithm Fusing Sparseness Judgment And Convergence Judgment}
-
-Based on Alon \etal distance product algorithm, utilizing the sparseness judgment of the input matrix and the calculation result convergence judgment,
-with the network conforming to the power-law distribution and the precision of floating-point operation, and the name implies two characteristics of the limitation
-of floating-point precision on the scale-free social network and the computer hardware, the algorithm process flow is shown in Algorithm 1.
-
-\section{Experiment}
-
-Firstly, compared to Floyd-Warshall algorithm implemented on CPU, the Alon \etal algorithm implementation with matrix multiplication of block cache optimization on GPU has a time performance improvement, see Table 1.
-$Power-LawBound_{a-f}$ shows that using different libraries on CPU/GPU, the proposed algorithm has significant performance improvement over Alon \etal algorithm.
+Use the proposed model, and we tried different pre-trained language models to see the impact on classification accuracy.
+From the table-2, from line 2 and line 4, for the same size of dataset with larger classes, it need more epochs and training time for the classification model.
+From line 2 and line 3, for the same RoBERTa language model with different numbers of transformer layers, 24 layers of transformers had better accuracy than 3 layers,
+however, its training cost grows for the larger language model.
+From line 3 and line 5, for the same fine-tuned language model, classes number has some impact on the accuracy,
+the less classes the dataset has, the more accuracy the model can achieve.
 
 
 \begin{table}
 \begin{center}
-\begin{tabular}{|l|c|}
+\begin{tabular}{|l|c|c|r|}
 \hline
-Algorithm	& Time Cost \\
+Language Model 	& Dataset & Epoch & Accuracy \\
 \hline\hline
-Floyd-Warshall~\cite{floyd1962algorithm,warshall1962theorem}  &	1055880s \\
-Alon \etal          &	594.7s \\
-$Power-LawBound_a$ 	&	427.9s \\
-$Power-LawBound_b$	&	328.4s \\
-$Power-LawBound_c$	&	95.0s \\
-$Power-LawBound_d$	&	45.0s \\
-$Power-LawBound_e$	&	19.32s \\
-$Power-LawBound_f$	&	15.98s \\
+RBT3   & CIFAR-10 & 1	&	84.89\% \\
+RBTL3  & CIFAR-10 & 1	&	97.72\% \\
+RoBERTa-wwm-ext-large  & CIFAR-10 & 6	&	99.60\% \\
+RBTL3  & CIFAR-100 & 6  & 	98.27\% \\
+RoBERTa-wwm-ext-large & CIFAR-100 & 16 &	98.95\% \\
 \hline
 \end{tabular}
 \end{center}
-\caption{Performance comparison on different hardware. (a) CPU numpy library. (b) CPU scipy/numpy library. (c) GPU cuBLAS. (d) CPU openBLAS. (e) GPU CuPy. (f) GPU CuPy-sparse/CuPy.}
+\caption{Comparision of accuracy of the pre-trained language models on the CIFAR-10 and CIFAR-100 datasets in the image classification task.}
 \end{table}
+
+
+\subsection{Discussion}
+
+ Compare to iGPT-L's accuracy of 96.3\% on the unaugmented CIFAR-10 dataset and 82.8\% on the CIFAR-100 dataset, our models has preferable better results.
+The reason that the model's outstanding performance lie in the large pre-trained data for BERT, on top of that fine-tuned by RoBERTa, and use extra language corpus of
+$5.4$ billions of tokens of wiki data and other resources.
+The transformers in the pre-trained language models use multiple layers for representing images, and maybe used in other Computer Vision task, \eg object detection, gesture prediction.
 
 
 \section{Conclusion}
 
-This paper discussed a novel algorithm in all-pairs shortest path computation tasks, using distance product association law.
-The time-bound of Alon \etal distance product algorithm with block matrix multiplication is \(O({\log{n}2n^3\over \Bbb B})\).
-To strengthen the conditions, on scale-free social networks, for the precision limit of floating-point operation on hardware, additional condition on the social network diameter is added to avoid floating-point operation overflow during the calculation process.
-the algorithm has lower time-bound \(O({14n^3\over \Bbb B})\).
-With strengthened conditions, I proposed a novel algorithm, leveraging matrix sparseness judgment, and calculation convergence judgment.
-\textbf{Power-Law} refers to the network node numbers conforming to the characteristics that social networks power-law distribution, and \textbf{Bound} refers to the floating-point operations arithmetic limitation of accuracy on hardware.
-The experimental results show that \textbf{Power-LawBound} algorithm improves time performance by 39\% to 36.2 times on CPU/GPU hardware compared to Alon \etal's algorithm.
+This paper proposed a novel idea by using pre-trained language models for images representation, and take image classification as an exmaple for its performance.
+Tests showed that the proposed model outperforms the iGPT-L model without augmentment on the image dataset,
+the model achieved accuracy of $97.72\%~99.60\%$ on the CIFAR-10 image set,
+and accuracy of $98.27\%~98.95\%$ on the CIFAR-100 image set.
+
 
 {\small
 \bibliographystyle{ieee_fullname}
