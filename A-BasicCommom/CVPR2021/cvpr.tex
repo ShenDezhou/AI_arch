@@ -238,7 +238,7 @@ of floating-point precision on the scale-free social network and the computer ha
 \section{Experiment}
 
 Firstly, compared to Floyd-Warshall algorithm implemented on CPU, the Alon \etal algorithm implementation with matrix multiplication of block cache optimization on GPU has a time performance improvement, see Table 1.
-$Power-LawBound_{a-f}$ shows that using different libraries on CPU/GPU, the proposed algorithm has significant performance improvement over Alon \etal algorithm.
+$Power-LawBound(a-f)$ shows that using different libraries on CPU/GPU, the proposed algorithm has significant performance improvement over Alon \etal algorithm.
 
 
 \begin{table}
@@ -248,13 +248,13 @@ $Power-LawBound_{a-f}$ shows that using different libraries on CPU/GPU, the prop
 Algorithm	& Time Cost \\
 \hline\hline
 Floyd-Warshall~\cite{floyd1962algorithm,warshall1962theorem}  &	1055880s \\
-Alon \etal          &	594.7s \\
-$Power-LawBound_a$ 	&	427.9s \\
-$Power-LawBound_b$	&	328.4s \\
-$Power-LawBound_c$	&	95.0s \\
-$Power-LawBound_d$	&	45.0s \\
-$Power-LawBound_e$	&	19.32s \\
-$Power-LawBound_f$	&	15.98s \\
+Alon \etal~\cite{alon1997exponent}  &	594.7s \\
+$Power-LawBound(a)$ &	427.9s \\
+$Power-LawBound(b)$	&	328.4s \\
+$Power-LawBound(c)$	&	95.0s \\
+$Power-LawBound(d)$	&	45.0s \\
+$Power-LawBound(e)$	&	19.32s \\
+$Power-LawBound(f)$	&	15.98s \\
 \hline
 \end{tabular}
 \end{center}
