@@ -53,7 +53,7 @@ Beijing, CN 100084\\
   FC-GRU-CNN architecture exploits the long-term memory ability of GRU layer in long sequences of film cast,
   the mapping ability of CNN layer in retrieving all-pairs shortest path feature of the actors' social relationship,
   and non-linear capability of deep FC layer for movie text sentiments and other characteristics.
-  The proposed model accuracy is 14\% higher than Shi \etal's model.
+  The proposed model accuracy is 14\% higher than Read \etal's model.
 
 \end{abstract}
 
@@ -70,7 +70,7 @@ Beijing, CN 100084\\
   though the traditional explanation of the film box-office prediction algorithm is sufficing, however, the prediction accuracy is not satisfactory.
   This paper presents a model, named FC-GRU-CNN, for movie box-office prediction, combining characteristics of film meta-data, actors' social network measurement,
   all-pairs shortest path, social network text sentiments, and actors' artisticcontribution characteristics,
-  as a result, it is 14\% higher in accuracy than Shi \etal ~\cite{shi2019c}'s model.
+  as a result, it is 14\% higher in accuracy than Read \etal ~\cite{read2016earning}'s model.
 
 %-------------------------------------------------------------------------
 
@@ -93,8 +93,8 @@ Beijing, CN 100084\\
 
 \subsection{Neural Network Model}
 
-  Shi \etal~\cite{shi2019c} proposed a C-LSTM classification model, using single-layer CNN for extracting the high-order dimensional representation of text,
-  and connecting to LSTM layers for sentence representation, the trained neural network model has an accuracy of 87.8\%.
+  Read \etal ~\cite{read2016earning} proposed a CNN-RNN classification model, using CNN layers for extracting the high-order dimensional representation of images,
+  and connecting to LSTM layers for description representation, the trained neural network model has accuracy of 56.8\% on Caltech-UCSD Birds dataset and accuracy of 65.6\% on Flowers dataset.
 
 %\subsection{Boosting, Bagging and Stacking Ensembles}
 
@@ -196,7 +196,7 @@ according to the prediction model structure schematic of movie box-office,
 the characteristics can be sorted according to the importance, the social network structure characteristics are the most important,
 the social network text sentiments characteristics, the film meta-data are important, and the social network characteristics are generally important.
 Compared to Qiu and Tang~\cite{qiu2018microblog}'s logistic regression model on sentiments and twitter index algorithm's 95.71\% determination of coefficient,
-The Cartisticmodel in this paper has a determination of coefficient of 98.58\% which has a 2.87\% improvement.
+The model in this paper has a determination of coefficient of 98.58\% which has a 2.87\% improvement.
 
 \section{FC-GRU-CNN Box-Office Prediction Model}
 
@@ -231,7 +231,7 @@ Finally, the three parts are merged into one layer and then connect to a Softmax
 
 In summary, randomly choose 10 movies as a test set, as shown in Table 1.
 The accuracy of the binary classification model on the training set reached 99.61\%, the accuracy on the test set is 75\%.
-Compared to Zhou \etal model, see Table 2, the proposed FC-GRU-CNN model converges on the training set and achieves better prediction results on the test set.
+Compared to Read \etal model, see Table 2, the proposed FC-GRU-CNN model converges on the training set and achieves better prediction results on the test set.
 Therefore, it can provide decision-making advice in the task of selecting suitable actors for to-be-cast film,
 and in the box-office prediction task, the model can provide reasonable predictions in the market.
 
@@ -265,7 +265,7 @@ Beijing Love Story& 1& 40555\\
 \hline
 Model & F1-score \\
 \hline\hline
-Zhou \etal  & 61.54\% \\
+Read \etal  & 61.54\% \\
 This paper & 75.0\% \\
 \hline
 \end{tabular}
@@ -276,7 +276,7 @@ This paper & 75.0\% \\
 \section{Conclusion}
 
 According to the NEN(Non-Euclidean Net) box-office prediction model, this paper discussed the relationship between the movie meta-data, Sina Weibo text sentiments, social relationship representations, network characteristics, and actors' artistic contribution in detail.
-I proposed an FC-GRU-CNN box-office prediction model, and tested on a dataset of $1296$ movies released in China mainland from 2011 to 2015, compared to Zhou \etal's model, accuracy improves 14\%.
+I proposed an FC-GRU-CNN box-office prediction model, and tested on a dataset of $1296$ movies released in China mainland from 2011 to 2015, compared to Read \etal's model, accuracy improves 14\%.
 
 {\small
 \bibliographystyle{ieee_fullname}
