@@ -85,6 +85,8 @@ And it is difficult in handling the dichotomy between pixels and natural languag
   Cui \etal~\cite{cui2019pre, cui2020revisiting} proposed several whole-word-masking pre-trained Chinese language models,
 which are improved versions of BERT~\cite{devlin2018bert} and RoBERTa~\cite{liu2019roberta} pre-trained language models, namely RBT3, RBTL3, and RoBERTa-wwm-ext-large.
 These models achieved better performance in Chinese machine reading comprehension, Chinese document classification and other downstream natural language tasks.
+  He and Peng~\cite{he2017fine} combined vision stream and language stream as two parallel channels for extracting multi-source information in the imaege classification,
+and tested on the CUB-200-2011 image dataset and achieved $85.55\%$ by combining GoogLeNet~\cite{szegedy2015going} and CNN-RNN~\cite{reed2016learning}, the result outperformed many competitors.
 
 %-------------------------------------------------------------------------
 
@@ -107,9 +109,10 @@ there is independent probability $15\%$ of appearing in $\Bbb S$,
 name the token $M$ as the BERT mask.
 Train the language model by minimizing the BERT objective of the "masked" elements $x_M$
 conditioned on the "unmasked" ones $x_{\left[1,n\right]\backslash M}$.
-\[
+
+\begin{equation}
   \lambda = \mathop{\Bbb E}\limits_{x\sim\Bbb X} \mathop{\Bbb E}\limits_{M} \sum_{i\in S}{\bigl[-\log{p(x_i\mid x_{\left[1,n \right]\backslash M})\bigr]}}
-\]
+\end{equation}
 
 \par The transformer decoder takes the image pixels and meta characters sequence $x_1,\cdots,x_n$ and produces a $d$-dimensional
 embedding for each position.
@@ -167,6 +170,7 @@ RBTL3  & Case-4	&	96.35\% \\
 I design a simple classification models without too many layers, as Figure-1 shows.
 And use the CIFAR-10 and CIFAR-100 dataset as an example to show the architecture of the model.
 The model architecture has seven functional layers:
+
 \begin{itemize}
 \item {\bf Input layer}
 \item {\bf Concat layer}
@@ -187,9 +191,12 @@ Keep the first 256 characters and last 256 characters of the concatenated sequen
 some blue-channel value, and all the meta value in common cases.
 In the Encoder layer and the Embedding layer, trimmed sequence of values are encoded by BERT-like models,
 and get the encoded representation of the token $\textbf{[CLS]}$ as the images' language model embeddings.
-In the Feature-Extraction layer, a combination of one dropout layer, one fully connected layer, and one softmax layer is used.
+In the Feature-Extraction layer, a combination of one dropout layer, one fully connected layer, and one softmax layer, as equation-2, is used.
 In the Output layer, the classification label of the image is feed in the model.
 
+\begin{equation}
+  \sigma(\textbf{z})_j = {e^{\textbf{z}_j} \over {\sum_{k=1}^{\textit{K}} e^{\textbf{z}_k}}}, j=1,\cdots,\textit{K}.
+\end{equation}
 %-------------------------------------------------------------------------
 
 
@@ -199,13 +206,15 @@ In the Output layer, the classification label of the image is feed in the model.
 \subsection{Training}
 
 As Cui \etal~\cite{cui2019pre} reported that the training of RBT3 language model was based on Devlin \etal's
-Chinese BERT-base language model and the training of RBTL3 and RoBERTa-large language model used randomized initialization.
 Moreover, the pre-trained Chinese language models use extra 5 billion training tokens comparing to Devlin \etal's 0.4 billion tokens.
 I use a batch size of 512 and train for $1\sim16$ epochs using AdamW with $\beta_1=0.99$, $\beta_2=0.999$, and weight decay of $10^{-8}$.
 I set the learning rate to $10^{-4}$ and no warmed up or decay are used.
 The dropout rate is $0.05$.
 
 \par When fine-tuning, I check the accuracy of the trained model on the test set, and stopped training when it converges on $10^{-3}\sim10^{-4}$.
+
+\par The experiment was performed on a Google Cloud TPU v3, with 32GB of RAM, and 8 chips with 16GB of high speed of memory each,
+which can provide 420 tera-flops of computation capability.
 
 
 \subsection{Results}
