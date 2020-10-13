@@ -70,7 +70,7 @@ Beijing, CN 100084\\
   though the traditional explanation of the film box-office prediction algorithm is sufficing, however, the prediction accuracy is not satisfactory.
   This paper presents a model, named FC-GRU-CNN, for movie box-office prediction, combining characteristics of film meta-data, actors' social network measurement,
   all-pairs shortest path, social network text sentiments, and actors' artisticcontribution characteristics,
-  as a result, it is 14\% higher in accuracy than Read \etal ~\cite{read2016earning}'s model.
+  as a result, it is 14\% higher in accuracy than Read \etal ~\cite{read2016learning}'s model.
 
 %-------------------------------------------------------------------------
 
@@ -93,7 +93,7 @@ Beijing, CN 100084\\
 
 \subsection{Neural Network Model}
 
-  Read \etal ~\cite{read2016earning} proposed a CNN-RNN classification model, using CNN layers for extracting the high-order dimensional representation of images,
+  Read \etal ~\cite{read2016learning} proposed a CNN-RNN classification model, using CNN layers for extracting the high-order dimensional representation of images,
   and connecting to LSTM layers for description representation, the trained neural network model has accuracy of 56.8\% on Caltech-UCSD Birds dataset and accuracy of 65.6\% on Flowers dataset.
 
 %\subsection{Boosting, Bagging and Stacking Ensembles}
@@ -164,11 +164,11 @@ while the social network characteristics, movie-related Sina Weibo sentiment and
 
 \par \noindent Definition 1 (\textbf{Network Embedding})  A network $\Bbb G=(\Bbb V,\Bbb E)$, $\Bbb V$ represents a set of nodes consisting of $n$ nodes, and $\Bbb E$ represents an edge set of $m$ edges.
 For each edge $e\in \Bbb E$, the ordered pair is $e=(u,v)$, $u,v \in \Bbb V$ and the weight is $A_{ij}$.
-A network can be represented as an adjacent matrix, $A\in \Bbb R^{(n*n)}$, and the goal of network embedding is to learn an all-pairs representation, $U\in \Bbb R^{(n*m)}$, $m < n$, where $m$ is an embedding dimension.
+A network can be represented as an adjacent matrix, $A\in \Bbb R^{(n\times n)}$, and the goal of network embedding is to learn an all-pairs representation, $U\in \Bbb R^{(n\times m)}$, $m < n$, where $m$ is an embedding dimension.
 
 \par \noindent Definition 2 (\textbf{Shortest Path Network Embedding})  In a network represented as a $\Bbb G=(\Bbb V,\Bbb E)$, $\Bbb V$ represents a node set of $n$ nodes, and $\Bbb E$ represents an edge set of $m$ edges.
 For each edge $e\in \Bbb E$, the ordered pair is $e=(u,v)$, $u,v \in \Bbb V$ and the weight is $A_{ij}$.
-A network can be represented as an adjacent matrix, $A\in \Bbb R^{(n*n)}$, and the goal of the shortest path network embedding is to learn all-pairs shortest path representation, $U\in \Bbb R^{(n*n)}$, where $n$ is an embedding dimension.
+A network can be represented as an adjacent matrix, $A\in \Bbb R^{(n\times n)}$, and the goal of the shortest path network embedding is to learn all-pairs shortest path representation, $U\in \Bbb R^{(n\times n)}$, where $n$ is an embedding dimension.
 
 \par For the task in box-office forecast, because of the significant impact the actors on the box-office, in addition to the measurement of the film meta-data and the sentiments of the movie social media,
 the actors' contribution is required to compute by leveraging actors in the movie cast.

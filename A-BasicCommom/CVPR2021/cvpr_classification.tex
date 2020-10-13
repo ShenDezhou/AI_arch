@@ -53,7 +53,7 @@ Beijing, CN 100084\\
   it is intuitive to use these pre-trained language models for enhancing the computer vision tasks, \eg image classification.
   In this paper, by encoding image pixels using pre-trained transformers, then connect to a fully connected layer,
   the classification model outperforms the Wide ResNet model and the linear-probe iGPT-L model,
-  and achieved an accuracy of $97.72\%\sim99.60\%$ on the CIFAR-10 image set, and an accuracy of $98.27\%\sim98.95\%$ on the CIFAR-100 image set.
+  and achieved an accuracy of $99.60\%\sim99.74\%$ on the CIFAR-10 image set, and an accuracy of $98.27\%\sim98.95\%$ on the CIFAR-100 image set.
 
 \end{abstract}
 
@@ -232,8 +232,8 @@ the less classes the dataset has, the more accuracy the model can achieve.
 \hline
 Language Model 	& Dataset & Epoch & Accuracy \\
 \hline\hline
-RBT3   & CIFAR-10 & 1	&	84.89\% \\
-RBTL3  & CIFAR-10 & 1	&	97.72\% \\
+RBT3   & CIFAR-10 & 1	&	99.74\% \\
+RBTL3  & CIFAR-10 & 6	&	99.72\% \\
 RoBERTa-large  & CIFAR-10 & 6	&	99.60\% \\
 RBTL3  & CIFAR-100 & 6  & 	98.27\% \\
 RoBERTa-large & CIFAR-100 & 16 &	98.95\% \\
@@ -257,7 +257,7 @@ The transformers in the pre-trained language models use multiple layers for repr
 
 This paper proposed a novel idea by using pre-trained language models for images representation, and take image classification as an example for its performance in Computer Vision tasks.
 Tests showed that the proposed model outperforms the iGPT-L model without augmentation on the image dataset,
-the model achieved accuracy of $97.72\%\sim99.60\%$ on the CIFAR-10 image set,
+the model achieved accuracy of $99.60\%\sim99.74\%$ on the CIFAR-10 image set,
 and accuracy of $98.27\%\sim98.95\%$ on the CIFAR-100 image set.
 
 

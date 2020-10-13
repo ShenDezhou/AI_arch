@@ -20,7 +20,7 @@
 \usepackage[pagebackref=true,breaklinks=true,colorlinks,bookmarks=false]{hyperref}
 
 
-\def\cvprPaperID{6666} % *** Enter the CVPR Paper ID here
+\def\cvprPaperID{6666} % \times \times \times  Enter the CVPR Paper ID here
 \def\confYear{CVPR 2021}
 %\setcounter{page}{4321} % For final version only
 
@@ -95,7 +95,7 @@ I used a server with two Intel Xeon E5-2620 v4 CPUs and one NVIDIA GeForce GTX 1
 \section{Comparison On Block Matrix Multiplication Implementtation}
 
 On the actors' social network, this paper implements Strassen block matrix multiplication, Copper-Winograd block matrix multiplication, and OpenBLAS matrix multiplication.
-On the computer hardware, compared the $8508*8508$ matrix multiplication time-cost.
+On the computer hardware, compared the $8508\times 8508$ matrix multiplication time-cost.
 The block matrix multiplication based on Strassen and Coppersmith-Winograd takes 6 seconds for one iteration of matrix multiplication, and with the OpenBLAS library it takes only 4 seconds.
 The performance of optimized cache block matrix multiplication, such as the OpenBLAS matrix computation library, is higher than Strassen and Copper-Winograd block matrix multiplication algorithm.
 Therefore, the distance product algorithm proposed by Zwick with OpenBLAS block matrix multiplication is better than the distance product algorithm with Strassen and Coppersmith-Winograd.
@@ -107,12 +107,12 @@ Therefore, the distance product algorithm proposed by Zwick with OpenBLAS block 
 For a fully connected network, the graph has a maximum diameter of $n-1$, so using the result reuse method in distance product, that is use the last distance product calculation result, the matrix multiplication times are $log_2(n-1)$.
 Albert~\cite{albert1999diameter} found that social networks, the Internet, and other complex networks have scale-free characteristics and small-world phenomena, thus network diameter is much smaller than the number of network nodes.
 I present the corresponding nodes counts, diameters, and logarithm of diameters in Table 1, from the observation there is formula (1):
-In social networks, the number of nodes $n$, with cache block size $B*B$, according to the formula (9-10), the matrix product calculation iteration times does not exceed the number of $\lceil{\log{\Bbb D}}\rceil$, recall that Lam \etal proved that matrix multiplication time-bound is \(O({2n^3 \over \Bbb B}+{n^2})\),
-thus Alon \etal algorithm time-bound is \(O(\log{\Bbb D}2n^3\over \Bbb B)\) with cache block size of $\Bbb B$, use the equation (1) result, time-bound is \(O(\log(\log{N})2n^3\over \Bbb B)\).
+In social networks, the number of nodes $n$, with cache block size $B\times B$, according to the formula (9-10), the matrix product calculation iteration times does not exceed the number of $\lceil{\log{\Bbb D}}\rceil$, recall that Lam \etal proved that matrix multiplication time-bound is \(O({2n^3 \over \Bbb B}+{n^2})\),
+thus Alon \etal algorithm time-bound is \(O({\log{\Bbb D}2n^3\over{ \Bbb B}})\) with cache block size of $\Bbb B$, use the equation (1) result, time-bound is \(O({\log(\log{N})2n^3\over \Bbb B})\).
 With the arithmetic limitation on the floating-point operation, \eg take a network with nodes number of $N<10^{308}$
 as shown in Table 1, see that the shortest path calculation iterations time is no larger than $\log{\Bbb D} \approx \log(\log{N})<7$, that is, the number of calculation iterations does not exceed the magic number $7$,
-bringing a stronger time-bound of \(O(14n^3\over \Bbb B)\).
-In other words, with the floating-point operation accuracy limitation on computer hardware and complex networks scale-free characteristics, all-pairs shortest path algorithm time-bound is \(O(14n^3\over \Bbb B)\), for $\Bbb B$ is a constant, thus, for simpler representation the time-bound is \(O(14n^3)\).
+bringing a stronger time-bound of \(O({14n^3\over {\Bbb B}})\).
+In other words, with the floating-point operation accuracy limitation on computer hardware and complex networks scale-free characteristics, all-pairs shortest path algorithm time-bound is \(O({14n^3\over \Bbb B})\), for $\Bbb B$ is a constant, thus, for simpler representation the time-bound is \(O(14n^3)\).
 
 
 %-------------------------------------------------------------------------
@@ -120,22 +120,22 @@ In other words, with the floating-point operation accuracy limitation on compute
 
 \section{Shortest Path Algorithm With Block Matrix Multiplication}
 
-Definition 1 (Outer Product Matrix Multiplication) Given matrices \(\Bbb A \in \Bbb R^{m*r}\), \(\Bbb B \in \Bbb R^{r*n}\) and \(\Bbb C \in \Bbb R^{m*n}\), the outer product is:
+Definition 1 (Outer Product Matrix Multiplication) Given matrices \(\Bbb A \in \Bbb R^{m\times r}\), \(\Bbb B \in \Bbb R^{r\times n}\) and \(\Bbb C \in \Bbb R^{m\times n}\), the outer product is:
 \begin{equation}
 \Bbb C = \Bbb C  + \Bbb A(:,k)\bullet \Bbb B(k,:) , k \in (1,r)
 \end{equation}
 
-Given two vectors \(\textsc x\), \(\textsc y\), and matrix \(\Bbb A\), having \(\Bbb A \in \Bbb R^{m*n}\), \(\textsc x \in \Bbb R^{m}\) and \(\textsc y \in \Bbb R^{n}\) the outer product \(\bullet\) is defined by:
+Given two vectors \(\textsc x\), \(\textsc y\), and matrix \(\Bbb A\), having \(\Bbb A \in \Bbb R^{m\times n}\), \(\textsc x \in \Bbb R^{m}\) and \(\textsc y \in \Bbb R^{n}\) the outer product \(\bullet\) is defined by:
 \begin{equation}
-a_{ij} = a_{ij} + x_i * y_j, i \in (1,m), j \in (1,n)
+a_{ij} = a_{ij} + x_i \times  y_j, i \in (1,m), j \in (1,n)
 \end{equation}
 
-Definition 2 (Distance Product Matrix Multiplication) Given matrices \(\Bbb A \in \Bbb R^{m*r}\), \(\Bbb B \in \Bbb R^{r*n}\) and \(\Bbb C \in \Bbb R^{m*n}\), the distance product is:
+Definition 2 (Distance Product Matrix Multiplication) Given matrices \(\Bbb A \in \Bbb R^{m\times r}\), \(\Bbb B \in \Bbb R^{r\times n}\) and \(\Bbb C \in \Bbb R^{m\times n}\), the distance product is:
 \begin{equation}
   \Bbb C = \min(\Bbb C, \Bbb A(:,k)\odot \Bbb B(k,:)) , k \in (1,r)
 \end{equation}
 
-Given two vectors \(\textsc x\), \(\textsc y\), and matrix \(\Bbb A\), having \(\Bbb A \in \Bbb R^{m*n}\), \(\textsc x \in \Bbb R^{m}\) and \(\textsc y \in \Bbb R^{n}\) the distance product \(\odot\) is defined by:
+Given two vectors \(\textsc x\), \(\textsc y\), and matrix \(\Bbb A\), having \(\Bbb A \in \Bbb R^{m\times n}\), \(\textsc x \in \Bbb R^{m}\) and \(\textsc y \in \Bbb R^{n}\) the distance product \(\odot\) is defined by:
 \begin{equation}
 a_{ij} = \min(a_{ij} , x_i + y_j), i \in (1,m), j \in (1,n)
 \end{equation}
@@ -208,7 +208,7 @@ Observe the shortest path calculation process of the actors' social network, the
       {\bf return} $L^{(m)}$\;
     }
     $L^{(2m)}\leftarrow \Bbb C$\;
-    $m\leftarrow 2*m$\;
+    $m\leftarrow 2\times m$\;
   }
   {\bf return} $L^{(m)}$\;
 \end{algorithm}
