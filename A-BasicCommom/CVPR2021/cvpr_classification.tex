@@ -53,7 +53,7 @@ Beijing, CN 100084\\
   it is intuitive to use these pre-trained language models for enhancing the computer vision tasks, \eg image classification.
   In this paper, by encoding image pixels using pre-trained transformers, then connect to a fully connected layer,
   the classification model outperforms the Wide ResNet model and the linear-probe iGPT-L model,
-  and achieved accuracy of $99.60\%\sim99.74\%$ on the CIFAR-10 image set and accuracy of $98.27\%\sim98.95\%$ on the CIFAR-100 image set.
+  and achieved accuracy of $99.60\%\sim99.74\%$ on the CIFAR-10 image set and accuracy of $99.10\%\sim99.76\%$ on the CIFAR-100 image set.
 
 \end{abstract}
 
@@ -146,7 +146,7 @@ Therefore, the pixel channels of an image can be properly represented by these p
 Language Model 	& Dataset & Accuracy \\
 \hline\hline
 RoBERTa-wwm-ext-large & Case-2	&	99.8\% \\
-RoBERTa-wwm-ext-large & Case-4	&	98.95\% \\
+RoBERTa-wwm-ext-large & Case-4	&	99.76\% \\
 RBTL3  & Case-4	&	96.35\% \\
 \hline
 \end{tabular}
@@ -221,13 +221,22 @@ and gives the token-recovery capability to the downstream task model.
 
 \subsection{Training}
 
+\begin{figure*}
+\begin{center}
+  \fbox{\rule{0pt}{2in} \includegraphics[width=0.9\linewidth]{roberta-cifar.pdf}}
+\end{center}
+   \caption{Training epochs of accuracy on the CIFAR-10 and CIFAR-100 dataset}
+\label{fig:short}
+\end{figure*}
+
+
 As Cui \etal~\cite{cui2020revisiting} reported that the training of the RBT3 language model was based on Devlin \etal's
 Moreover, the pre-trained Chinese language models use extra 5 billion training tokens comparing to Devlin \etal's 0.4 billion tokens.
 I use a batch size of 512 and train for $1\sim16$ epochs using AdamW with $\beta_1=0.99$, $\beta_2=0.999$, and weight decay of $10^{-8}$.
 I set the learning rate to $10^{-4}$ and no warmed up or decay are used.
 The dropout rate is $0.05$.
 
-\par When fine-tuning, I check the accuracy of the trained model on the test set and stopped training when it converges on $10^{-3}\sim10^{-4}$.
+\par When fine-tuning, as figure-2, I check the accuracy of the trained model on the test set and stopped training when it converges on $10^{-3}\sim10^{-4}$.
 
 \par The experiment was performed on a Google Cloud TPU v3, with 32GB of RAM, and 8 chips with 16GB of the high speed of memory each,
 which can provide 420 tera-flops of computation capability.
@@ -251,8 +260,10 @@ Language Model 	& Dataset & Epoch & Accuracy \\
 RBT3   & CIFAR-10 & 6	&	99.74\% \\
 RBTL3  & CIFAR-10 & 6	&	99.72\% \\
 RoBERTa-large  & CIFAR-10 & 6	&	99.60\% \\
-RBTL3  & CIFAR-100 & 6  & 	98.27\% \\
-RoBERTa-large & CIFAR-100 & 16 &	98.95\% \\
+\hline
+RBT3   & CIFAR-100 & 6	&	99.74\% \\
+RBTL3  & CIFAR-100 & 6  & 	99.10\% \\
+RoBERTa-large & CIFAR-100 & 16 &	99.76\% \\
 \hline
 \end{tabular}
 \end{center}
@@ -274,7 +285,7 @@ The transformers in the pre-trained language models use multiple layers for repr
 TThis paper proposed a novel idea by using pre-trained language models for image representation and take image classification as an example of its performance in Computer Vision tasks.
 Tests showed that the proposed model outperforms the iGPT-L model without augmentation on the image dataset,
 the model achieved accuracy of $99.60\%\sim99.74\%$ on the CIFAR-10 image set,
-and accuracy of $98.27\%\sim98.95\%$ on the CIFAR-100 image set.
+and accuracy of $99.10\%\sim99.76\%$ on the CIFAR-100 image set.
 
 
 {\small
