@@ -48,10 +48,10 @@ Beijing, CN 100084\\
 \begin{abstract}
 
   In the film industry, visualizing actor stars' social media for analyzing audience intention towards movies is essential to movie producers.
-  However, non-Euclidean social media is hard to analyze, I propose an FC-GRU-CNN architecture, also named as \underline{N}on-\underline{E}uclidean \underline{N}et, for social media visualization.
-  On the analysis of social media , social relationship representations, network characteristics and media sentiments are key factors.
-  FC-GRU-CNN architecture exploits the long-term memory ability of GRU layer in long sequences of film cast,
-  the mapping ability of CNN layer in retrieving all-pairs shortest path feature of the actors' social relationship,
+  However, non-Euclidean social media is hard to analyze, I propose an FC-GRU-CNN architecture, named as \underline{N}on-\underline{E}uclidean \underline{N}et, for social media visualization.
+  On the analysis of social media, social relationship representations, network characteristics and media sentiments are key factors.
+  FC-GRU-CNN architecture exploits the long-term memory ability of the GRU layer in long sequences of film cast,
+  the mapping ability of the CNN layer in retrieving all-pairs shortest path feature of the actors' social relationship,
   and non-linear capability of deep FC layer for movie text sentiments and other characteristics.
   The proposed model accuracy is 14\% higher than Read \etal's model.
 
@@ -66,10 +66,10 @@ Beijing, CN 100084\\
   it is difficult to use linear functions to build box-office prediction models.
   By analyzing the social network characteristics of movie actors, sentiments of movies in Sina Weibo posts, all-pairs shortest path,
   it is easy to get the priority of each characteristic by analysis of feature importance,
-  the existing prediction algorithm only makes use of the film meta-data, lacks the study on the social network characteristics of the actors,
+  the existing prediction algorithm only makes use of the film metadata, lacks the study on the social network characteristics of the actors,
   though the traditional explanation of the film box-office prediction algorithm is sufficing, however, the prediction accuracy is not satisfactory.
-  This paper presents a model, named FC-GRU-CNN, for movie box-office prediction, combining characteristics of film meta-data, actors' social network measurement,
-  all-pairs shortest path, social network text sentiments, and actors' artisticcontribution characteristics,
+  This paper presents a model, named FC-GRU-CNN, for movie box-office prediction, combining characteristics of film metadata, actors' social network measurement,
+  all-pairs shortest path, social network text sentiments, and actors' artistic contribution characteristics,
   as a result, it is 14\% higher in accuracy than Read \etal ~\cite{read2016learning}'s model.
 
 %-------------------------------------------------------------------------
@@ -81,12 +81,11 @@ Beijing, CN 100084\\
   Fern{\'a}ndez \etal ~\cite{fernandez2014we} showed that the best classifiers are the random forest,
   followed by SVM, neural networks, and boosting ensembles among 17 families.
 
-%\subsection{Random Forest}
 
 \subsection{Support Vector Machines}
 
-  Jiang and Wang~\cite{jiang2018predicting} collected 34 high-grossing films from 2015 to 2017, using 10 features, such as film meta-data, director awards, and actor awards, then I used voting feature selection algorithms to select important features,
-  training SVM models for film box-office and user-comment-score prediction.
+  Jiang and Wang~\cite{jiang2018predicting} collected 34 high-grossing films from 2015 to 2017, using 10 features, such as film metadata, director awards, and actor awards, then I used voting feature selection algorithms to select important features,
+  training SVM models for film box-office and user-comment score prediction.
   Quader \etal~\cite{quader2017machine} collected 755 film reviews in four film review sites from 2012 to 2015, collected characteristics including film ratings, MPAA categories,
   director total box-office, actor total box-office, release time, budget, screen numbers, user reviews, and review text sentiments,
   the trained SVM model has a prediction accuracy of 44.4\%.
@@ -94,13 +93,13 @@ Beijing, CN 100084\\
 \subsection{Neural Network Model}
 
   Read \etal ~\cite{read2016learning} proposed a CNN-RNN classification model, using CNN layers for extracting the high-order dimensional representation of images,
-  and connecting to LSTM layers for description representation, the trained neural network model has accuracy of 56.8\% on Caltech-UCSD Birds dataset and accuracy of 65.6\% on Flowers dataset.
+  and connecting to LSTM layers for description representation, the trained neural network model has accuracy of 56.8\% on Caltech-UCSD Birds dataset and accuracy of 65.6\% on the Flowers dataset.
 
 %\subsection{Boosting, Bagging and Stacking Ensembles}
 
 \subsection{Partial Least Squares, Principal Component Regression, and Generalized Linear Model}
 
-  Zhu and Tang~\cite{zhu2019film} collected 20 films with more than 300 million box-offices in 2017, using 13 features, such as search engine user search times, number of social network fans, and other movie meta-data,
+  Zhu and Tang~\cite{zhu2019film} collected 20 films with more than 300 million box-offices in 2017, using 13 features, such as search engine user search times, number of social network fans, and other movie metadata,
   and constructed a partial-least-square model with a margin of error of 87.7\% and an average absolute error of 26.6\%.
   Qiu and Tang~\cite{qiu2018microblog} collected 10 movies with more than 1 billion box-offices from the Chinese film market in 2017, used Sina Weibo texts, movie web index, and the film reviews to predict box-office.
 
@@ -112,15 +111,15 @@ Beijing, CN 100084\\
   Jain~\cite{jain2013prediction} collected 4800 Twitter texts relating to movie names which written between 2 weeks before release and 4 weeks after release,
   using the sentiments positive-negative ratio to predict box-office profit, the model has an accuracy of 50\% on eight films released in 2012.
   Chi \etal~\cite{chi2019does} collected reviews from 150 films released in 2017, found that the number of reviews was positively related to box-office
-  and the number of reviews was significantly positive for the first-week of the film box-office.
-  Josh \etal~\cite{joshi2010movie} collected film review text in MetaCritic releasing from 2005 to 2009, using film meta-data, n-gram model,
-  part-of-speech n-gram model and dependency characteristics, and the Elastic-Net model has a determination of coefficient of 67.1\% in predicting the first-week box-office.
+  and the number of reviews was significantly positive for the first week of the film box-office.
+  Josh \etal~\cite{joshi2010movie} collected film review text in MetaCritic releasing from 2005 to 2009, using film metadata, n-gram model,
+  part-of-speech n-gram model and dependency characteristics, and the Elastic-Net model have a determination of the coefficient of 67.1\% in predicting the first week box-office.
 
 \subsection{Summary}
 
   Using social networks to predict movie box-office, feature selection includes the selection of user behavior characteristics,
   social network release date characteristics, text sentiments characteristics,
-  researchers prefer to use logistic regression, support vector machine, and neural network in predicting movie box-office.
+  researchers prefer to use the logistic regression, support vector machine, and neural network in predicting movie box-office.
 
 %-------------------------------------------------------------------------
 
@@ -138,7 +137,7 @@ Beijing, CN 100084\\
 \item {\bf Average post interval}: the greater the average hair interval, the higher box-office gets.
 \item {\bf Average characters length of each post}: the longer the number of characters, the higher box-office, but the degree of relevance is not obvious.
 \item {\bf Number of retweets}: the more retweet posts, the higher box-office gets.
-\item {\bf Box-office history}: the higher average score of actors' box-office, the higher box-office attendance of participating in the film gets.
+\item {\bf Box-office history}: the higher the average score of actors' box-office, the higher the box-office attendance of participating in the film gets.
 \end{itemize}
 
 While the negative correlation characteristics associated with box-office are:
@@ -149,16 +148,16 @@ While the negative correlation characteristics associated with box-office are:
 \end{itemize}
 
 \par Then, I calculated the Pearson correlation between average box-office per movie and actors' social network characteristics, the post and retweet correlation is $-0.108\%$, social media activity correlation is $-3.203\%$, co-occurrence correlation is $15.08\%$.
-First of all, the actors' average box-office per movie is positively related to the influence of the actors, that is, the higher number of co-occurrence in Sina Weibo, the higher average box-office per movie.
+First of all, the actors' average box-office per movie is positively related to the influence of the actors, that is, the higher number of co-occurrence in Sina Weibo, the higher the average box-office per movie.
 Secondly, the actors Sina Weibo activity and the average box-office per movie showed a slight negative correlation, that is,
 the number of actors' followers, the number of tweets, the interval between the posts, the length of posts, the number of movie-related posts showed a negative impact on average box-office per movie.
 Finally, the number of actors retweets and tweets is not related to the average box-office per movie, thus they are independent.
 Then, using Sina Weibo text sentiments and actor social network characteristics trained a decision tree model to predict movie box-office,
-determination of the coefficient in training-set is 98.58\%, and determination of the coefficient on the test-set is 96.05\%.
+determination of the coefficient in the training set is 98.58\%, and the determination of the coefficient on the test set is 96.05\%.
 
 \par In summary, the decision tree structure shows that the influence of the actors in social networks is the main factor affecting box-office,
-followed by the movie-relating Sina Weibo sentiments and the film meta-data is the secondary determinant,
-while the social network characteristics, movie-related Sina Weibo sentiment and other film meta-data are the least significant factors.
+followed by the movie-relating Sina Weibo sentiments and the film metadata is the secondary determinant,
+while the social network characteristics, movie-related Sina Weibo sentiment, and other film metadata are the least significant factors.
 
 \section{Representation Learning for Social Relationship, Network Characteristics And artisticContribution}
 
@@ -170,33 +169,33 @@ A network can be represented as an adjacent matrix, $A\in \Bbb R^{(n\times n)}$,
 For each edge $e\in \Bbb E$, the ordered pair is $e=(u,v)$, $u,v \in \Bbb V$ and the weight is $A_{ij}$.
 A network can be represented as an adjacent matrix, $A\in \Bbb R^{(n\times n)}$, and the goal of the shortest path network embedding is to learn all-pairs shortest path representation, $U\in \Bbb R^{(n\times n)}$, where $n$ is an embedding dimension.
 
-\par For the task in box-office forecast, because of the significant impact the actors on the box-office, in addition to the measurement of the film meta-data and the sentiments of the movie social media,
+\par For the task in box-office forecast, because of the significant impact the actors on the box-office, in addition to the measurement of the film metadata and the sentiments of the movie social media,
 the actors' contribution is required to compute by leveraging actors in the movie cast.
 A film, led by several leading actors, obtained the names of $7369$ actors who participated in films between 2011 and 2015 are collected as an actors' dictionary, and then used the shortest path features of the actors' social network.
-Combining social network measurement features, the shortest path network embedding, and the artisticfeatures to construct the actor representation vector.
+Combining social network measurement features, the shortest path network embedding, and the artistic features to construct the actor representation vector.
 For actors who have no accounts on social networks, marked as unknown, and initialized with zero vectors.
-Actor representation vectors include network characteristics of 10 dimensions, shortest path features of 8380 dimensions, artisticfeatures of 1 dimension.
-In total, 10-dimension features include fans number, betweenness, closeness, followers, post number, average post interval, average word count per post, retweet number, movie-related post number, co-occurrence number, the shortest path with 8380 dimensions.
+Actor representation vectors include network characteristics of 10 dimensions, shortest path features of 8380 dimensions, artistic features of 1 dimension.
+In total, 10-dimension features include fans number, betweenness, closeness, followers, post number, average post publish interval, average word count per post, retweet number, movie-related post number, co-occurrence number, the shortest path with 8380 dimensions.
 
 \section{Machine Learning Classifier}
 
-Using the features extracted, the characteristics of participating in the calculation are film meta-data and movie sentiment:
+Using the features extracted, the characteristics of participating in the calculation are film metadata and movie sentiment:
 the year of release, the number of positive sentiment, the number of negative sentiment, the total number of Sina Weibo posts,
 the positive and negative ratio of sentiment, and the training of machine learning classifiers.
 
 Machine learning methods such as Linear Regression, SVN, MLP, Logistic Regression, and Na{\'i}ve Bayes cannot converge on the data set,
 possibly because the sentiments on actors' social networks do not represent the commercial benefits of the film.
-Actors, as creators of films, have a role to play in the box-office, but lack of other important features that also has a significant impact on the box-office,
+Actors, as creators of films, have a role to play in the box-office, but lack of other important features that also have a significant impact on the box-office,
 so the machine learning fitting process can't converge in a given time.
-Using the Cartisticdecision tree regression algorithm to make box-office prediction for the test set film,
+Using the cart decision tree regression algorithm to make box-office prediction for the test set film,
 the experimental results show that the prediction model has a determination coefficient of 96.05\% on the test set and 98.58\% on the training set, which is 2.87\% higher than the Qiu and Tang~\cite{qiu2018microblog} model,
 and the average absolute deviation of the model is $0.1285$ million, about 28.56\% of the average box-office.
-The explanation of the decision tree prediction model is more intuitive and more interpretable than linear regression, logical regression, deep neural network and other models,
+The explanation of the decision tree prediction model is more intuitive and more interpretable than linear regression, logical regression, deep neural network, and other models,
 according to the prediction model structure schematic of movie box-office,
 the characteristics can be sorted according to the importance, the social network structure characteristics are the most important,
-the social network text sentiments characteristics, the film meta-data are important, and the social network characteristics are generally important.
-Compared to Qiu and Tang~\cite{qiu2018microblog}'s logistic regression model on sentiments and twitter index algorithm's 95.71\% determination of coefficient,
-The model in this paper has a determination of coefficient of 98.58\% which has a 2.87\% improvement.
+the social network text sentiments characteristics, the film metadata are important, and the social network characteristics are generally important.
+Compared to Qiu and Tang~\cite{qiu2018microblog}'s logistic regression model on sentiments and the determination of the coefficient of twitter index algorithm is 95.71\% ,
+The model in this paper has a determination of the coefficient of 98.58\% which has a 2.87\% improvement.
 
 \section{FC-GRU-CNN Box-Office Prediction Model}
 
@@ -212,18 +211,18 @@ The model in this paper has a determination of coefficient of 98.58\% which has 
 Look at the box-office distribution of $1296$ films released between 2011 and 2015,
 Consider box-office forecasts as a binary classification task.
 To make the data evenly distributed, the film data were pre-processed by using the median box-office of $2.635$ million as the dividing line.
-So for the movies with box-office, less than $2.635$ million are classified as A-class, movies with box-office more than $2.635$ million are classified as B-class.
-In the dataset division, the data were randomly selected using the $80-20$ segmentation ratio, and the training set of $1036$ films and the test set of $260$ movies were collected.
+So for the movies with  less than $2.635$ million box-office are classified as A-class, movies with more than $2.635$ million box-office are classified as B-class.
+In the dataset division, the data were randomly selected using the $80\%:20\%$ segmentation ratio, and the training set of $1036$ films and the test set of $260$ movies were collected.
 Using the actors' social network representation, the actor is quantified, that is,
-the fusion of social network features, the shortest path characteristics, and the actors' artisticcharacteristics.
+the fusion of social network features, the shortest path characteristics, and the actors' artistic characteristics.
 For actors without social network data, use zero-value initialization in the actor feature matrix for the unknown characteristics.
 As shown in Figure 1, the model is divided into three parts:
 
 \begin{itemize}
-\item The first partisticis the Fully Connected layer, its input feature is the film meta-data and movie-related Sina Weibo sentiments, in a total of 5 dimensions.
-\item The second partisticis the GRU layer, the input feature is the actor social network measurement characteristics and artisticcharacteristics, the film cast is a long list,
+\item The first part is the fully connected layer, its input feature is the film metadata and movie-related Sina Weibo sentiments, in a total of 5 dimensions.
+\item The second part is the GRU layer, the input feature is the actor social network measurement characteristics and artistic characteristics, the film cast is a long list,
 the longest 225 actors, for less than 225 actors using the front-end padding, the GRU layer is to solve the long-term memory loss of the structure.
-\item The last partisticis the 5 CNN layers, input from the actors' social network shortest path feature, similarly, the film cast is a long list,
+\item The last part is the 5 CNN layers, input from the actors' social network shortest path feature, similarly, the film cast is a long list,
 input less than 225 dimensions is fulfilled by padding, CNN has a good ability to capture multi-dimensional features, and use of Max-pooling layer to solve the problem of multi-dimension feature extraction.
 \end{itemize}
 Finally, the three parts are merged into one layer and then connect to a Softmax layer, and the $L_2$ regularization method is adopted to avoid overfitting.
@@ -232,7 +231,7 @@ Finally, the three parts are merged into one layer and then connect to a Softmax
 In summary, randomly choose 10 movies as a test set, as shown in Table 1.
 The accuracy of the binary classification model on the training set reached 99.61\%, the accuracy on the test set is 75\%.
 Compared to Read \etal model, see Table 2, the proposed FC-GRU-CNN model converges on the training set and achieves better prediction results on the test set.
-Therefore, it can provide decision-making advice in the task of selecting suitable actors for to-be-cast film,
+Therefore, it can provide decision-making advice in the task of selecting suitable actors for a to-be-cast film,
 and in the box-office prediction task, the model can provide reasonable predictions in the market.
 
 \begin{table}
@@ -254,7 +253,7 @@ Beijing Love Story& 1& 40555\\
 \hline
 \end{tabular}
 \end{center}
-\caption{box-office model predictions in movie testset(10 samples).}
+\caption{box-office model predictions in movie test dataset with 10 samples.}
 \end{table}
 
 
@@ -270,13 +269,13 @@ This paper & 75.0\% \\
 \hline
 \end{tabular}
 \end{center}
-\caption{Performance comparison on different model.}
+\caption{Performance comparison on the models.}
 \end{table}
 
 \section{Conclusion}
 
-According to the NEN(Non-Euclidean Net) box-office prediction model, this paper discussed the relationship between the movie meta-data, Sina Weibo text sentiments, social relationship representations, network characteristics, and actors' artistic contribution in detail.
-I proposed an FC-GRU-CNN box-office prediction model, and tested on a dataset of $1296$ movies released in China mainland from 2011 to 2015, compared to Read \etal's model, accuracy improves 14\%.
+According to the NEN(Non-Euclidean Net) box-office prediction model, this paper discussed the relationship between the movie metadata, Sina Weibo text sentiments, social relationship representations, network characteristics, and actors' artistic contribution in detail.
+I proposed an FC-GRU-CNN box-office prediction model, testing on a dataset of $1296$ movies released in China mainland from 2011 to 2015, the model accuracy improves 14\% compared to Read \etal's model.
 
 {\small
 \bibliographystyle{ieee_fullname}

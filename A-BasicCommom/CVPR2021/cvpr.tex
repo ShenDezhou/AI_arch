@@ -96,7 +96,7 @@ I used a server with two Intel Xeon E5-2620 v4 CPUs and one NVIDIA GeForce GTX 1
 
 On the actors' social network, this paper implements Strassen block matrix multiplication, Copper-Winograd block matrix multiplication, and OpenBLAS matrix multiplication.
 On the computer hardware, compared the $8508\times 8508$ matrix multiplication time-cost.
-The block matrix multiplication based on Strassen and Coppersmith-Winograd takes 6 seconds for one iteration of matrix multiplication, and with the OpenBLAS library it takes only 4 seconds.
+The block matrix multiplication based on Strassen and Coppersmith-Winograd takes 6 seconds for one iteration of matrix multiplication, and with the OpenBLAS library, it takes only 4 seconds.
 The performance of optimized cache block matrix multiplication, such as the OpenBLAS matrix computation library, is higher than Strassen and Copper-Winograd block matrix multiplication algorithm.
 Therefore, the distance product algorithm proposed by Zwick with OpenBLAS block matrix multiplication is better than the distance product algorithm with Strassen and Coppersmith-Winograd.
 
@@ -112,7 +112,7 @@ thus Alon \etal algorithm time-bound is \(O({\log{\Bbb D}2n^3\over{ \Bbb B}})\) 
 With the arithmetic limitation on the floating-point operation, \eg take a network with nodes number of $N<10^{308}$
 as shown in Table 1, see that the shortest path calculation iterations time is no larger than $\log{\Bbb D} \approx \log(\log{N})<7$, that is, the number of calculation iterations does not exceed the magic number $7$,
 bringing a stronger time-bound of \(O({14n^3\over {\Bbb B}})\).
-In other words, with the floating-point operation accuracy limitation on computer hardware and complex networks scale-free characteristics, all-pairs shortest path algorithm time-bound is \(O({14n^3\over \Bbb B})\), for $\Bbb B$ is a constant, thus, for simpler representation the time-bound is \(O(14n^3)\).
+In other words, with the floating-point operation accuracy limitation on computer hardware and complex networks scale-free characteristics, all-pairs shortest path algorithm time-bound is \(O({14n^3\over \Bbb B})\), for $\Bbb B$ is a constant, thus, for simpler representation, the time-bound is \(O(14n^3)\).
 
 
 %-------------------------------------------------------------------------
@@ -180,7 +180,7 @@ As can be seen from the nature of the shortest path in the graph, the shortest p
 Definition 3 Result Reuse in Distance Product According to the nature of the equation (8), the process of calculating the shortest path iteration using the last result of distance product follows in turn, as shown in formula (11).
 The shortest path needs to be calculated $\lceil{log_2(n-1)}\rceil$ times matrix multiplication, from the formula (10), it can be seen that $(n-1)\leq2^{\lceil{log_2(n-1)}\rceil}$ is the same as the simple shortest path matrix calculation result $L^{(n-1)}$, so there is a formula (12):
 Obviously, the result reuse method saves $n-2-\lceil{log_2(n-1)}\rceil$ times of matrix multiplication.
-Observe the shortest path calculation process of the actors' social network, the adjacent matrix is shown in Figure 1a, and the change of result in each iteration is shown in Figure 1b-d, the shortest path result matrix converges gradually, each element stabilizes as iterations goes.
+Observe the shortest path calculation process of the actors' social network, the adjacent matrix is shown in Figure 1a, and the change of result in each iteration is shown in Figure 1b-d, the shortest path result matrix converges gradually, each element stabilizes as iterations go.
 
 
 \begin{algorithm}
