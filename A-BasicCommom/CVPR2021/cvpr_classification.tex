@@ -232,7 +232,7 @@ and gives the token-recovery capability to the downstream task model.
 
 As Cui \etal~\cite{cui2020revisiting} reported that the training of the RBT3 language model was based on Devlin \etal's
 Moreover, the pre-trained Chinese language models use extra 5 billion training tokens comparing to Devlin \etal's 0.4 billion tokens.
-I use a batch size of 512 and train for $1\sim16$ epochs using AdamW with $\beta_1=0.99$, $\beta_2=0.999$, and weight decay of $10^{-8}$.
+I use a batch size of 512 and train for $6\sim16$ epochs using AdamW with $\beta_1=0.99$, $\beta_2=0.999$, and weight decay of $10^{-8}$.
 I set the learning rate to $10^{-4}$ and no warmed up or decay are used.
 The dropout rate is $0.05$.
 
@@ -261,7 +261,7 @@ RBT3   & CIFAR-10 & 6	&	99.74\% \\
 RBTL3  & CIFAR-10 & 6	&	99.72\% \\
 RoBERTa-large  & CIFAR-10 & 6	&	99.60\% \\
 \hline
-RBT3   & CIFAR-100 & 6	&	93.71\% \\
+RBT3   & CIFAR-100 & 12	&	99.66\% \\
 RBTL3  & CIFAR-100 & 6  & 	99.10\% \\
 RoBERTa-large & CIFAR-100 & 16 &	99.76\% \\
 \hline
