@@ -107,7 +107,7 @@ In pre-training, I use BERT objectives and the sequence Transformer architecture
 $C$ represents all possible tokens, and such that for each index $i \in \Bbb S$,
 there is independent probability $15\%$ of appearing in $\Bbb S$,
 name the token $M$ as the BERT mask.
-Train the language model by minimizing the BERT objective of the "masked" elements $x_M$
+As equation (1), train the language model by minimizing the BERT objective of the "masked" elements $x_M$
 conditioned on the "unmasked" ones $x_{\left[1,n\right]\backslash M}$.
 
 \begin{equation}
@@ -135,7 +135,7 @@ BERT and RoBERTa-wwm-ext-large models both achieved an f1-score of 97.8\% in the
 The \textit{Case-2} dataset annotated civil and criminal cases, and the \textit{Case-4} dataset annotated by civil, criminal, intellectual property, and administrative cases.
 The \textit{Case-2} dataset has $19508$ training documents and $2000$ test documents, and the \textit{Case-4} dataset has $34789$ training documents and $2013$ test documents.
 
-\par From table-1, by combining the pre-trained language model with fully connected layer as the document classification model,
+\par From table (1), by combining the pre-trained language model with fully connected layer as the document classification model,
 the test accuracy exceeds the other popular machine learning algorithms.
 Therefore, the pixel channels of an image can be properly represented by these pre-trained language models.
 
@@ -190,7 +190,7 @@ Keep the first 256 characters and last 256 characters of the concatenated sequen
 some blue-channel value, and all the meta value in common cases.
 In the Encoder layer and the Embedding layer, trimmed sequence of values are encoded by BERT-like models,
 and get the encoded representation of the token $\textbf{[CLS]}$ as the images' language model embeddings.
-In the Feature-Extraction layer, a combination of one dropout layer, one fully connected layer, and one softmax layer, as equation-2, is used.
+In the Feature-Extraction layer, a combination of one dropout layer, one fully connected layer, and one softmax layer, as equation (2), is used.
 In the Output layer, the classification label of the image is feed in the model.
 
 \begin{equation}
