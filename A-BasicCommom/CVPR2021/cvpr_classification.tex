@@ -48,7 +48,7 @@ Beijing, CN 100084\\
 %%%%%%%%% ABSTRACT
 \begin{abstract}
 
-  Image classification and categorization are essential for the capability of telling the difference between images for a machine.
+  Image classification and categorization are essential to the capability of telling the difference between images for a machine.
   As \underline{B}idirectional \underline{E}ncoder \underline{R}epresentations from \underline{T}ransformers became popular in many tasks of natural language processing recent years,
   it is intuitive to use these pre-trained language models for enhancing the computer vision tasks, \eg image classification.
   In this paper, by encoding image pixels using pre-trained transformers, then connect to a fully connected layer,
@@ -151,7 +151,7 @@ RBTL3  & Case-4	&	96.35\% \\
 \hline
 \end{tabular}
 \end{center}
-\caption{Comparision of accuracy of the pre-trained language models on different dataset in the document classification task.}
+\caption{Comparision of accuracy of the pre-trained language models on different datasets in the document classification task.}
 \end{table}
 %-------------------------------------------------------------------------
 
@@ -162,17 +162,17 @@ RBTL3  & Case-4	&	96.35\% \\
 \begin{center}
   \fbox{\rule{0pt}{2in} \includegraphics[width=0.9\linewidth]{classification.pdf}}
 \end{center}
-   \caption{Concat, encoder, representation, and extraction layers for image classification task.}
+   \caption{Concatenation, encoder, representation, and extraction layers for image classification task.}
 \label{fig:short}
 \end{figure*}
 
-I design simple classification models without too many layers, as Figure-1 shows.
+I design simple classification models without too many layers, as Figure (1) shows.
 And use the CIFAR-10 and CIFAR-100 dataset as an example to show the architecture of the model.
 The model architecture has seven functional layers:
 
 \begin{itemize}
 \item {\bf Input layer}
-\item {\bf Concat layer}
+\item {\bf Concatenation layer}
 \item {\bf Trim layer}
 \item {\bf Encoder layer}
 \item {\bf Embedding layer}
@@ -183,7 +183,7 @@ The model architecture has seven functional layers:
 \par The CIFAR-10 dataset contains 60000 color images with a resolution of 32x32 in 10 classes, and the CIFAR-100 dataset has 100 classes containing 600 images each.
 Encode the image by the sequence of RGB channel values, in the order of Red-channel, Green-channel, and Blue-channel,
 then encode other meta-data if provided, as a sequence of ASCII characters.
-In the Concat layer, the pixel-channel value and metadata are concatenated, put a special token of $\textbf{[CLS]}$ at the start,
+In the Concatenation layer, the pixel-channel value and metadata are concatenated, put a special token of $\textbf{[CLS]}$ at the start,
 and put a $\textbf{[SEP]}$ token between channel values and metadata, put a special token of $\textbf{[SEP]}$ at the end.
 In the Trim layer, due to the limit on the max sequence of the BERT language model, a sequence larger than $512$ needs to be trimmed before sending it to the BERT model.
 Keep the first 256 characters and last 256 characters of the concatenated sequence, trimmed result contains the first 255 red-channel value,
@@ -225,18 +225,18 @@ and gives the token-recovery capability to the downstream task model.
 \begin{center}
   \fbox{\rule{0pt}{2in} \includegraphics[width=0.9\linewidth]{roberta-cifar.pdf}}
 \end{center}
-   \caption{Training epochs of accuracy on the CIFAR-10 and CIFAR-100 dataset}
+   \caption{Accuracy of the image classification models with the pre-trained language encoder on the CIFAR-10 and CIFAR-100 dataset in the training epochs.}
 \label{fig:short}
 \end{figure*}
 
 
-As Cui \etal~\cite{cui2020revisiting} reported that the training of the RBT3 language model was based on Devlin \etal's
-Moreover, the pre-trained Chinese language models use extra 5 billion training tokens comparing to Devlin \etal's 0.4 billion tokens.
+As Cui \etal~\cite{cui2020revisiting} reported that the training of the RBT3 language model was based on Devlin \etal's model,
+moreover, the pre-trained Chinese language models use extra 5 billion training tokens comparing to Devlin \etal's 0.4 billion tokens.
 I use a batch size of 512 and train for $6\sim16$ epochs using AdamW with $\beta_1=0.99$, $\beta_2=0.999$, and weight decay of $10^{-8}$.
 I set the learning rate to $10^{-4}$ and no warmed up or decay are used.
 The dropout rate is $0.05$.
 
-\par When fine-tuning, as figure-2, I check the accuracy of the trained model on the test set and stopped training when it converges on $10^{-3}\sim10^{-4}$.
+\par When fine-tuning, as Figure (2), I check the accuracy of the trained model on the test set and stopped training when it converges on $10^{-3}\sim10^{-4}$.
 
 \par The experiment was performed on a Google Cloud TPU v3, with 32GB of RAM, and 8 chips with 16GB of the high speed of memory each,
 which can provide 420 tera-flops of computation capability.
@@ -283,6 +283,7 @@ The transformers in the pre-trained language models use multiple layers for repr
 \section{Conclusion}
 
  This paper proposed a novel idea by using pre-trained language models for image representation and take image classification as an example of its performance in Computer Vision tasks.
+ The finding might benefit various subjects, namely Education, Medical, Chemistry, Physics, Cosmology, Geography, Climate and Materials Science for their specific research.
 Tests showed that the proposed model outperforms the iGPT-L model without augmentation on the image dataset,
 the model achieved accuracy of $99.60\%\sim99.74\%$ on the CIFAR-10 image set,
 and accuracy of $99.10\%\sim99.76\%$ on the CIFAR-100 image set.
