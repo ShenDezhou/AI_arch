@@ -1,12 +1,5 @@
 import joblib
 import gensim
-# import torch
-# import torch.nn as nn
-# import torch.nn.functional as F
-# import torch.utils.data as tud
-# import torch.optim as optim
-# from torch.nn.parameter import Parameter
-
 from collections import Counter
 import numpy as np
 import random
@@ -18,10 +11,11 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 def eval(analogy_file, similarity_file):
     model = joblib.load("word2vec.model")
-    analog = model.wv.most_similar(positive=['张','三'], negative=['李'], topn=1)
-    print(analog)
-    similarity = model.wv.similarity('张','李')
-    print(similarity)
+    vocab = list(model.wv.vocab.keys())
+    analog = model.wv.most_similar(positive=vocab[0:2], negative=vocab[-1:1], topn=1)
+    print('a+b-c',vocab[0:2],vocab[-1],analog)
+    similarity = model.wv.similarity(*vocab[0:2])
+    print(vocab[0:2],'sim score:', similarity)
     #model.wv.save_word2vec_format(fname="wv.txt")
 
     idx_to_word = [word for word in model.wv.vocab.keys()]
@@ -59,6 +53,6 @@ def eval(analogy_file, similarity_file):
 
 
     evals = evaluate(analogy_file, embedding_weights = model.wv)
-    print(evals)
+    print("analogy score:", evals)
     evals = evaluate(similarity_file, embedding_weights = model.wv)
-    print(evals)
+    print("similarity score:", evals)

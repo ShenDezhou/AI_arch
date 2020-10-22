@@ -18,7 +18,11 @@ parser.add_argument(
     help='model vector dimension')
 
 parser.add_argument(
-    '-min', '--min_count', default=50,
+    '-l', '--en', default=False,
+    help='corpus is English')
+
+parser.add_argument(
+    '-m', '--min_count', default=1,
     help='model vocabulary minimal')
 
 parser.add_argument(
@@ -39,7 +43,6 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-X = LineSentence(args.config_file) #类似迭代器
 
 class LawaIterable(object):
     def __init__(self, lines):
@@ -47,20 +50,26 @@ class LawaIterable(object):
 
     def __iter__(self):
         for line in self.lines:
-            line = lawa.lcut(line[0])
-            yield " ".join(line)
+            line = line[0]
+            yield [" ".join(lawa.lcut(line))]
 
-model = Word2Vec(LawaIterable(X), size=args.dimension, min_count=args.min_count, sg=1, hs=1, workers=args.worker, iter=args.epoch)
-# model.build_vocab(X, update=True)
-# model.train(X)
-print(model.wv.keys())
-print(model.wv.most_similar(positive=['be'], topn=10))
-# acc=model.accuracy('q.txt')
-# print(acc)
-joblib.dump(model, "word2vec.model", compress=3)
-model.wv.save_word2vec_format(fname="wv.txt")
+f = open(args.config_file, 'r', encoding='utf-8')
+if args.en == "en":
+    X = LineSentence(f)  # 类似迭代器
+else:
+    X = LineSentence(f)  # 类似迭代器
+    X = LawaIterable(X)
 
-if args.analogy_file:
-    eval(args.analogy_file, args.similarity_file)
+for i in range(1,5):
+    model = Word2Vec(X, size=args.dimension * i, min_count=int(args.min_count), sg=1, hs=1, workers=int(args.worker), iter=int(args.epoch))
+    joblib.dump(model, "word2vec.model", compress=3)
+    model.wv.save_word2vec_format(fname="wv.txt")
+    print('vocab:', len(model.wv.vocab.keys()), model.wv.vocab.keys())
+    vocab = list(model.wv.vocab.keys())
+    print('center word',vocab[-1], model.wv.most_similar(positive=[vocab[-1]], topn=10))
 
+    if args.analogy_file:
+        eval(args.analogy_file, args.similarity_file)
+
+f.close()
 print('FIN')
