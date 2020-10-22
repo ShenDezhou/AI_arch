@@ -4,9 +4,9 @@ from gensim.models import Word2Vec
 import joblib
 import lawa
 from evaluate import eval
-lawa.load_userdict('dic/Chinese.dic')
+#lawa.load_userdict('dic/Chinese.dic')
 
-lawa.load_userdict('dic/english.dic')
+#lawa.load_userdict('dic/english.dic')
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -51,7 +51,7 @@ class LawaIterable(object):
     def __iter__(self):
         for line in self.lines:
             line = line[0]
-            yield [" ".join(lawa.lcut(line))]
+            yield list(lawa.cut(line))
 
 f = open(args.config_file, 'r', encoding='utf-8')
 if args.en == "en":
