@@ -101,6 +101,8 @@
 \RequirePackage{silence}
 \hbadness=10000 \vbadness=10000 \vfuzz=30pt \hfuzz=30pt
 \WarningFilter{latexfont}{Font shape declaration}
+\WarningFilter{latex}{Font shape declaration}
+\WarningFilter{hyperref}{Token not allowed in a PDF string}
 \RequirePackage{etoolbox}
 
 \newtoggle{cvprrebuttal}
@@ -120,7 +122,7 @@
 \newcommand{\AlgRef}[1]{Algorithm~\ref{#1}}
 \newcommand{\equref}[1]{Equ.~(\ref{#1})}
 
-% Breaking lines for URLs in the bib 
+% Breaking lines for URLs in the bib
 \RequirePackage[hyphens]{url}
 \Urlmuskip=0mu plus 1mu\relax
 
@@ -458,12 +460,12 @@
       \lineskip .5em
       \begin{tabular}[t]{c}
         \iftoggle{cvprfinal}{
-          \@author  
+          \@author
         }{
           \iftoggle{cvprrebuttal}{}{
             Anonymous \confYear~submission\\
             \vspace*{1pt}\\
-            Paper ID \cvprPaperID 
+            Paper ID \cvprPaperID
           }
         }
       \end{tabular}
@@ -568,7 +570,8 @@
       \AtTextUpperLeft{%
         \put(\LenToUnit{-35pt},\LenToUnit{-\cvprruleroffset}){%left ruler
           \cvprruler{\cvprrulercount}}
-        \put(\LenToUnit{\textwidth\kern 30pt},\LenToUnit{-\cvprruleroffset}){%right ruler
+        %\put(\LenToUnit{\textwidth\kern 30pt},\LenToUnit{-\cvprruleroffset})
+        \put(\LenToUnit{\dimexpr \textwidth+30pt},\LenToUnit{-\cvprruleroffset}){%right ruler
           \cvprruler{\cvprrulercount}}
       }
     \def\pid{\parbox{1in}{\begin{center}\bf\sf{\small CVPR}\\\#\cvprPaperID\end{center}}}

@@ -51,9 +51,9 @@ Beijing, CN 100084\\
   However, non-Euclidean social media is hard to analyze, I propose an FC-GRU-CNN architecture, named as \underline{N}on-\underline{E}uclidean \underline{N}et, for social media visualization.
   On the analysis of social media, social relationship representations, network characteristics and media sentiments are key factors.
   FC-GRU-CNN architecture exploits the long-term memory ability of the GRU layer in long sequences of film cast,
-  the mapping ability of the CNN layer in retrieving all-pairs shortest path feature of the actors' social relationship,
-  and non-linear capability of deep FC layer for movie text sentiments and other characteristics.
-  The proposed model accuracy is 14\% higher than Reed \etal's model.
+  the mapping ability of the CNN layer in retrieving all-pairs shortest path of the actors' social relationship,
+  and non-linear capability of deep fully connected layer for movie text sentiments and other characteristics.
+  The proposed model accuracy is 14\% higher than Reed \etal~\cite{reed2016learning}'s model.
 
 \end{abstract}
 
@@ -70,7 +70,7 @@ Beijing, CN 100084\\
   though the traditional explanation of the film box-office prediction algorithm is sufficing, however, the prediction accuracy is not satisfactory.
   This paper presents a model, named FC-GRU-CNN, for movie box-office prediction, combining characteristics of film metadata, actors' social network measurement,
   all-pairs shortest path, social network text sentiments, and actors' artistic contribution characteristics,
-  as a result, it is 14\% higher in accuracy than Reed \etal ~\cite{reed2016learning}'s model.
+  as a result, it is 14\% higher in accuracy than Reed \etal~\cite{reed2016learning}'s model.
 
 %-------------------------------------------------------------------------
 
@@ -92,7 +92,7 @@ Beijing, CN 100084\\
 
 \subsection{Neural Network Model}
 
-  Reed \etal ~\cite{reed2016learning} proposed a CNN-RNN classification model, using CNN layers for extracting the high-order dimensional representation of images,
+  Reed \etal proposed a CNN-RNN classification model, using CNN layers for extracting the high-order dimensional representation of images,
   and connecting to LSTM layers for description representation, the trained neural network model has accuracy of 56.8\% on Caltech-UCSD Birds dataset and accuracy of 65.6\% on the Flowers dataset.
 
 %\subsection{Boosting, Bagging and Stacking Ensembles}
@@ -159,7 +159,7 @@ determination of the coefficient in the training set is 98.58\%, and the determi
 followed by the movie-relating Sina Weibo sentiments and the film metadata is the secondary determinant,
 while the social network characteristics, movie-related Sina Weibo sentiment, and other film metadata are the least significant factors.
 
-\section{Representation Learning for Social Relationship, Network Characteristics And artisticContribution}
+\section{Representation Learning for Social Relationship, Network Characteristics and artisticContribution}
 
 \par \noindent Definition 1 (\textbf{Network Embedding})  A network $\Bbb G=(\Bbb V,\Bbb E)$, $\Bbb V$ represents a set of nodes consisting of $n$ nodes, and $\Bbb E$ represents an edge set of $m$ edges.
 For each edge $e\in \Bbb E$, the ordered pair is $e=(u,v)$, $u,v \in \Bbb V$ and the weight is $A_{ij}$.
@@ -228,11 +228,11 @@ input less than 225 dimensions is fulfilled by padding, CNN has a good ability t
 Finally, the three parts are merged into one layer and then connect to a Softmax layer, and the $L_2$ regularization method is adopted to avoid overfitting.
 
 
-In summary, randomly choose 10 movies as a test set, as shown in Table 1.
+In summary, randomly choose 10 movies as the test set, as shown in Table 1.
 The accuracy of the binary classification model on the training set reached 99.61\%, the accuracy on the test set is 75\%.
 Compared to Reed \etal model, see Table 2, the proposed FC-GRU-CNN model converges on the training set and achieves better prediction results on the test set.
 Therefore, it can provide decision-making advice in the task of selecting suitable actors for a to-be-cast film,
-and in the box-office prediction task, the model can provide reasonable predictions in the market.
+and in the box-office prediction task, the model can provide more accurate predictions in the market.
 
 \begin{table}
 \begin{center}
@@ -269,17 +269,102 @@ This paper & 75.0\% \\
 \hline
 \end{tabular}
 \end{center}
-\caption{Performance comparison on the models.}
+\caption{Performance comparison on the prediction models.}
 \end{table}
 
 \section{Conclusion}
 
-According to the NEN(Non-Euclidean Net) box-office prediction model, this paper discussed the relationship between the movie metadata, Sina Weibo text sentiments, social relationship representations, network characteristics, and actors' artistic contribution in detail.
-I proposed an FC-GRU-CNN box-office prediction model, testing on a dataset of $1296$ movies released in China mainland from 2011 to 2015, the model accuracy improves 14\% compared to Reed \etal's model.
+According to the box-office prediction model, this paper discussed the relationship between the movie metadata, Sina Weibo text sentiments, social relationship representations, network characteristics, and actors' artistic contribution in detail.
+I proposed an FC-GRU-CNN box-office prediction model, tested on a dataset with $1296$ movies released in China mainland from 2011 to 2015, the model accuracy improves 14\% compared to Reed \etal's model.
 
 {\small
 \bibliographystyle{ieee_fullname}
-\bibliography{cpvr_movienet}
+%\bibliography{cpvr_movienet}
+\begin{thebibliography}{10}
+
+
+\bibitem{reed2016learning}
+Scott Reed, Zeynep Akata, Honglak Lee, and Bernt Schiele.
+\newblock Learning deep representations of fine-grained visual descriptions.
+\newblock In {\em Learning deep representations of fine-grained visual
+  descriptions}, volume 2016-December, pages 49 -- 58, Las Vegas, NV, United
+  states, 2016.
+
+
+\bibitem{fernandez2014we}
+Manuel Fern{\'a}ndez-Delgado, Eva Cernadas, Sen{\'e}n Barro, and Dinani Amorim.
+\newblock Do we need hundreds of classifiers to solve real world classification
+  problems?
+\newblock {\em The journal of machine learning research}, 15(1):3133--3181,
+  2014.
+
+
+\bibitem{jiang2018predicting}
+Luyao Jiang and Zhengduo Wang.
+\newblock Predicting box office and audience rating of chinese films using
+  machine learning.
+\newblock In {\em Proceedings of the 2018 International Conference on Education
+  Technology Management}, pages 58--62, 2018.
+
+
+\bibitem{quader2017machine}
+Nahid Quader, Md~Osman Gani, Dipankar Chaki, and Md~Haider Ali.
+\newblock A machine learning approach to predict movie box-office success.
+\newblock In {\em 2017 20th International Conference of Computer and
+  Information Technology (ICCIT)}, pages 1--7. IEEE, 2017.
+
+
+\bibitem{zhu2019film}
+Huike Zhu and Zhongjun Tang.
+\newblock Film box office forecasting methods based on partial least squares
+  regression model.
+\newblock In {\em Proceedings of the 11th International Conference on Computer
+  Modeling and Simulation}, pages 234--238, 2019.
+
+
+
+\bibitem{qiu2018microblog}
+Xiaoyang Qiu and Tiffany~Ya Tang.
+\newblock Microblog mood predicts the box office performance.
+\newblock In {\em Proceedings of the 2018 Artificial Intelligence and Cloud
+  Computing Conference}, pages 129--133, 2018.
+
+
+
+\bibitem{asur2010predicting}
+Sitaram Asur and Bernardo~A Huberman.
+\newblock Predicting the future with social media.
+\newblock In {\em 2010 IEEE/WIC/ACM international conference on web
+  intelligence and intelligent agent technology}, volume~1, pages 492--499.
+  IEEE, 2010.
+
+
+\bibitem{jain2013prediction}
+Vasu Jain.
+\newblock Prediction of movie success using sentiment analysis of tweets.
+\newblock {\em The International Journal of Soft Computing and Software
+  Engineering}, 3(3):308--313, 2013.
+
+
+\bibitem{chi2019does}
+Jianyu Chi, Enshu Gu, and Kewei Li.
+\newblock How does online word-of-mouth impact movie box office: An empirical
+  investigation of china.
+\newblock In {\em Proceedings of the 2019 International Conference on
+  Artificial Intelligence and Computer Science}, pages 730--735, 2019.
+
+
+\bibitem{joshi2010movie}
+Mahesh Joshi, Dipanjan Das, Kevin Gimpel, and Noah~A Smith.
+\newblock Movie reviews and revenues: An experiment in text regression.
+\newblock In {\em Human Language Technologies: The 2010 Annual Conference of
+  the North American Chapter of the Association for Computational Linguistics},
+  pages 293--296, 2010.
+
+
+
+\end{thebibliography}
+
 }
 
 \end{document}
