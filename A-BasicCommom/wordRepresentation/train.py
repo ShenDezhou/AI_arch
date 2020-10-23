@@ -4,7 +4,7 @@ import itertools
 from gensim.models.word2vec import LineSentence
 from gensim.models import Word2Vec
 import joblib
-import lawa
+
 from evaluate import eval
 
 parser = argparse.ArgumentParser()
@@ -55,7 +55,7 @@ parser.add_argument(
 
 
 parser.add_argument(
-    '-w', '--window_size', default=5,
+    '-y', '--window_size', default=5,
     help='model context window size')
 
 parser.add_argument(
@@ -79,10 +79,11 @@ class LawaIterable(object):
 if args.en == "en":
     X = LineSentence(args.config_file)  # 类似迭代器
 else:
+    import lawa
     X = LawaIterable(args.config_file)
 
 
-model = Word2Vec(X, size=args.dimension, min_count=int(args.min_count), window=int(args.window_size), sg=int(args.skip_gram), hs=int(args.hierarchical_softmax) * int(args.negative_sampling), negative=int(args.negative_sampling), workers=int(args.worker), iter=int(args.epoch),
+model = Word2Vec(X, size=int(args.dimension), min_count=int(args.min_count), window=int(args.window_size), sg=int(args.skip_gram), hs=int(args.hierarchical_softmax) * int(args.negative_sampling), negative=int(args.negative_sampling), workers=int(args.worker), iter=int(args.epoch),
                  max_vocab_size=int(args.max_vocab_size))
 joblib.dump(model, "word2vec.model", compress=3)
 model.wv.save_word2vec_format(fname="word2vec.txt")

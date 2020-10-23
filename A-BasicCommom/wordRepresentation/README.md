@@ -1,13 +1,24 @@
 # 1. 介绍
 对于word2vec模型，能够用作词向量，为下游任务服务。
 
+训练命令：
+`
+python train.py -c "/content/drive/My Drive/cbxx/data/corpus/corpus.txt" -d 512 -l en -u "data/en/analogy-19568.txt" -v "data/en/wordsim-353.txt:data/en/simlex-999.csv:data/en/wordsim_relatedness_252.txt:data/en/wordsim_similarity_203.txt:data/en/MEN_sim-3000.txt:data/en/SCWS-2003.csv" -m 10
+`
+
+测试命令：
+`
+python test.py -u "data/en/analogy-19568.txt" -v "data/en/wordsim-353.txt:data/en/simlex-999.csv:data/en/wordsim_relatedness_252.txt:data/en/wordsim_similarity_203.txt:data/en/MEN_sim-3000.txt:data/en/SCWS-2003.csv"
+`
+
 # 2. 命令行参数说明
 命令行参数
 -----------------
 参数|  说明  |  默认值
 ----|-------|-------
 -m  | 最小词频阈值| 10|
--w  | 窗口大小  | 5|
+-w  | 工人数|  8|
+-y  | 窗口大小  | 5|
 -d  |词向量维度 | 1024|
 -l  |是否分词   | en(不分词）
 -i  |Hierachical Softmax| 1(是)|
@@ -32,8 +43,8 @@
 
 # 5. 模型效果
 最终词表数为15955。
-在wordsim353测试集上，准确率达到了63。19%。
-在Google Analogy测试集上，准确率达到了61.49%。
+在wordsim353测试集上，准确率达到了62.90%。
+在Google Analogy测试集上，准确率达到了61.35%。
 
 #6. 文件说明
 
@@ -42,7 +53,7 @@ train.py  模型训练文件
 test.py   模型测试文件
 env.tar.gz  python环境依赖包
 word2vec.txt 词向量文件
-README.me    实验报告
+README.md    实验报告
 
 
 #7. 额外数据
