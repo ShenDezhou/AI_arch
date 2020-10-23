@@ -1,12 +1,6 @@
 import joblib
-import gensim
-from collections import Counter
-import numpy as np
-import random
-import math
 import pandas as pd
 import scipy
-import sklearn
 from sklearn.metrics.pairwise import cosine_similarity
 
 def eval(analogy_file, similarity_file):
@@ -23,13 +17,15 @@ def eval(analogy_file, similarity_file):
 
     # 评估模型
     def evaluate(filename, embedding_weights):
+        miss = 0
         if filename.endswith('.csv'):
             data = pd.read_csv(filename, sep=',', header=None)
+            miss += 1
         else:
             if 'analogy' in filename:
                 acclist = model.accuracy(filename)
                 correct = len(acclist[-1]['correct'])
-                total = correct + len(acclist[-1]['incorrect'])
+                total = correct + len(acclist[-1]['incorrect']) + miss
                 if total:
                     return correct * 1.0 / total
                 return 0
@@ -51,8 +47,13 @@ def eval(analogy_file, similarity_file):
         spears = scipy.stats.spearmanr(human_similarity, model_similarity)
         return spears.correlation
 
-
+    total = []
     evals = evaluate(analogy_file, embedding_weights = model.wv)
+    total.append(evals)
     print("analogy score:", evals)
-    evals = evaluate(similarity_file, embedding_weights = model.wv)
-    print("similarity score:", evals)
+    if isinstance(similarity_file, list):
+        for sim in similarity_file:
+            evals = evaluate(sim, embedding_weights = model.wv)
+            print("similarity score:", evals)
+            total.append(evals)
+    print("average weighted score:", sum(total))
