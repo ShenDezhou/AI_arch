@@ -27,4 +27,5 @@ out/
 data/
 dataset/
 dic/
+word2vec*
 

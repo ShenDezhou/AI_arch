@@ -1,7 +1,7 @@
 import joblib
 import pandas as pd
-import scipy
 from sklearn.metrics.pairwise import cosine_similarity
+from scipy.stats import spearmanr
 from gensim.models import KeyedVectors
 
 def eval(analogy_file, similarity_file):
@@ -36,6 +36,7 @@ def eval(analogy_file, similarity_file):
 
         human_similarity = []
         model_similarity = []
+
         for row in data.itertuples(index=False):
             word1, word2 = row[0], row[1]
             # OOV 不计算精度
@@ -46,7 +47,8 @@ def eval(analogy_file, similarity_file):
                 word1_embed, word2_embed = embedding_weights[[word1]], embedding_weights[[word2]]
                 model_similarity.append(float(cosine_similarity(word1_embed, word2_embed)))
                 human_similarity.append(float(row[2]))
-        spears = scipy.stats.spearmanr(human_similarity, model_similarity)
+
+        spears = spearmanr(human_similarity, model_similarity)
         return spears.correlation
 
     total = []
