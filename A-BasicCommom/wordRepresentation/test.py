@@ -15,6 +15,6 @@ parser.add_argument(
 args = parser.parse_args()
 
 if args.analogy_file:
-    eval(args.analogy_file, args.similarity_file.split(":"))
+    eval(args.analogy_file.split(":"), args.similarity_file.split(":"))
 
 print('FIN')

@@ -6,7 +6,7 @@ from gensim.models import KeyedVectors
 
 def eval(analogy_file, similarity_file):
     # model = joblib.load("word2vec.model")
-    model = KeyedVectors.load_word2vec_format('word2vec.txt', binary=False)
+    model = KeyedVectors.load_word2vec_format('word2vec-1024.txt', binary=False)
     vocab = list(model.wv.vocab.keys())
     analog = model.wv.most_similar(positive=vocab[0:2], negative=vocab[-1:1], topn=1)
     print('a+b-c',vocab[0:2],vocab[-1],analog)
@@ -41,6 +41,8 @@ def eval(analogy_file, similarity_file):
             word1, word2 = row[0], row[1]
             # OOV 不计算精度
             if word1 not in word_to_idx or word2 not in word_to_idx:
+                model_similarity.append(0.5)
+                human_similarity.append(float(row[2]))
                 continue
             else:
                 # word1_idx, word2_idx = word_to_idx[word1], word_to_idx[word2]
@@ -52,12 +54,24 @@ def eval(analogy_file, similarity_file):
         return spears.correlation
 
     total = []
-    evals = evaluate(analogy_file, embedding_weights = model.wv)
-    total.append(evals)
-    print("analogy score:", evals)
+    if isinstance(analogy_file, list):
+        for ana in analogy_file:
+            evals = evaluate(ana, embedding_weights=model.wv)
+            total.append(evals)
+            print("analogy score:", evals)
+    else:
+        evals = evaluate(analogy_file, embedding_weights = model.wv)
+        total.append(evals)
+        print("analogy score:", evals)
+
     if isinstance(similarity_file, list):
         for sim in similarity_file:
             evals = evaluate(sim, embedding_weights = model.wv)
             print("similarity score:", evals)
             total.append(evals)
+    else:
+        evals = evaluate(similarity_file, embedding_weights=model.wv)
+        print("similarity score:", evals)
+        total.append(evals)
+
     print("average weighted score:", sum(total))
