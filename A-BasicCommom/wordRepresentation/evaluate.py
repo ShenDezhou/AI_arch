@@ -5,8 +5,8 @@ from scipy.stats import spearmanr
 from gensim.models import KeyedVectors
 
 def eval(analogy_file, similarity_file):
-    # model = joblib.load("word2vec.model")
-    model = KeyedVectors.load_word2vec_format('word2vec-1024.txt', binary=False)
+    model = joblib.load("word2vec.model")
+    # model = KeyedVectors.load_word2vec_format('word2vec-1024.txt', binary=False)
     vocab = list(model.wv.vocab.keys())
     analog = model.wv.most_similar(positive=vocab[0:2], negative=vocab[-1:1], topn=1)
     print('a+b-c',vocab[0:2],vocab[-1],analog)

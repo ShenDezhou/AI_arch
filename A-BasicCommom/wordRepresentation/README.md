@@ -46,6 +46,12 @@ python test.py -u "data/en/analogy-19568.txt" -v "data/en/wordsim-353.txt:data/e
 在wordsim353测试集上，准确率达到了62.48%。
 在Google Analogy测试集上，准确率达到了61.72%。
 
+# 5.1 增大词表
+词表大小设为65776。维数为512。
+wordsim达到63.29%
+Google Analogy上61.63%
+总得分4.4661
+
 #6. 文件说明
 
 evaluate.py 验证工具包
@@ -83,3 +89,4 @@ Word2Vec模型测评
 Compositionality." NeurIPS 2013.
 [2] Mikolov, Tomas, et al. "Efficient Estimation of Word Representations in Vector Space." ICLR
 2013.
+[3]TX-corpus 8824331 16G.
