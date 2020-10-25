@@ -20,7 +20,7 @@
 \usepackage[pagebackref=true,breaklinks=true,colorlinks,bookmarks=false]{hyperref}
 
 
-\def\cvprPaperID{6666} % \times \times \times  Enter the CVPR Paper ID here
+\def\cvprPaperID{297} % \times \times \times  Enter the CVPR Paper ID here
 \def\confYear{CVPR 2021}
 %\setcounter{page}{4321} % For final version only
 
@@ -47,8 +47,8 @@ Beijing, CN 100084\\
 
 %%%%%%%%% ABSTRACT
 \begin{abstract}
-  For the shortest path calculation task of all nodes in networks, Alon \etal~\cite{alon1997exponent} proposed an algorithm with matrix multiplication.
-  In this paper, with the distance product association law and block matrix multiplication, all-pairs shortest path algorithm has a lowered time-bound of \(O(\log{n}2n^3)\).
+  For the shortest path calculation of the all-pairs nodes in networks, Alon \etal~\cite{alon1997exponent} proposed an algorithm with matrix multiplication.
+  In this paper, with the distance product association law and block matrix multiplication, all-pairs shortest path algorithm has a lowered time-bound of \(O(2\log{n}n^3)\).
   The proposed all-pairs shortest path algorithm, which has an improved lower time-bound \(O(14n^3)\), leverages matrix sparseness judgment, convergence judgment, distance product with matrix multiplication, association law for distance product,
   scale-free characteristics of the social networks degrees and precision limit of floating point operations on the modern hardware.
   Tested on the movie actors' social network dataset, the algorithm has an improvement of 39\% to 36.2 times in performance on the CPU/GPU platforms comparing to Alon \etal's all-pairs shortest path algorithm.
@@ -96,7 +96,7 @@ Experiments are made on a server with two Intel Xeon E5-2620 v4 CPUs and one NVI
 \section{Comparison On Block Matrix Multiplication Implementtation}
 
 On the actors' social network, this paper implements Strassen block matrix multiplication, Copper-Winograd block matrix multiplication, and OpenBLAS matrix multiplication.
-On the computer hardware, compared the $8508\times 8508$ matrix multiplication time-cost.
+On the computer hardware, compared the $8508\times 8508$ matrix multiplication time cost.
 The block matrix multiplication based on Strassen and Coppersmith-Winograd takes 6 seconds for one iteration of matrix multiplication, and with the OpenBLAS library, it takes only 4 seconds.
 The performance of optimized cache block matrix multiplication, such as the OpenBLAS matrix computation library, is higher than Strassen and Copper-Winograd block matrix multiplication algorithm.
 Therefore, the distance product algorithm proposed by Zwick with OpenBLAS block matrix multiplication is better than the distance product algorithm with Strassen and Coppersmith-Winograd.
@@ -121,7 +121,7 @@ In other words, with the floating point operation precision limit on computer ha
 
 \section{Shortest Path Algorithm With Block Matrix Multiplication}
 
-Definition 1 (Outer Product Matrix Multiplication) Given matrices \(\Bbb A \in \Bbb R^{m\times r}\), \(\Bbb B \in \Bbb R^{r\times n}\) and \(\Bbb C \in \Bbb R^{m\times n}\), the outer product is:
+Definition 1 ($\textbf{Outer Product Matrix Multiplication}$) Given matrices \(\Bbb A \in \Bbb R^{m\times r}\), \(\Bbb B \in \Bbb R^{r\times n}\) and \(\Bbb C \in \Bbb R^{m\times n}\), the outer product is:
 \begin{equation}
 \Bbb C = \Bbb C  + \Bbb A(:,k)\bullet \Bbb B(k,:) , k \in (1,r)
 \end{equation}
@@ -131,7 +131,7 @@ Given two vectors \(\textsc x\), \(\textsc y\), and matrix \(\Bbb A\), having \(
 a_{ij} = a_{ij} + x_i \times  y_j, i \in (1,m), j \in (1,n)
 \end{equation}
 
-Definition 2 (Distance Product Matrix Multiplication) Given matrices \(\Bbb A \in \Bbb R^{m\times r}\), \(\Bbb B \in \Bbb R^{r\times n}\) and \(\Bbb C \in \Bbb R^{m\times n}\), the distance product is:
+Definition 2 ($\textbf{Distance Product Matrix Multiplication}$) Given matrices \(\Bbb A \in \Bbb R^{m\times r}\), \(\Bbb B \in \Bbb R^{r\times n}\) and \(\Bbb C \in \Bbb R^{m\times n}\), the distance product is:
 \begin{equation}
   \Bbb C = \min(\Bbb C, \Bbb A(:,k)\odot \Bbb B(k,:)) , k \in (1,r)
 \end{equation}
@@ -145,20 +145,24 @@ a_{ij} = \min(a_{ij} , x_i + y_j), i \in (1,m), j \in (1,n)
 \begin{center}
   \fbox{\rule{0pt}{2in} \includegraphics[width=0.9\linewidth]{figure1.pdf}}
 \end{center}
-   \caption{Adjacent matrix, each iterations and the result matrix visualization of actors' social network. (a) initial state after each round of calculation, (b) the result matrix after the first round of calculation, (c) the result matrix of the second round of calculation, (d) the third and in the same time last round of calculation, the all-pairs nodes shortest path result matrix.}
+   \caption{Visualization for each epoch: start state of adjacent matrix, iteration states, and the result states of the actors' social network.
+   (a) initial state before calculation,
+   (b) the result matrix of the first epoch calculation,
+   (c) the result matrix of the second epoch calculation,
+   (d) the third epoch of calculation, which is also the final state, that is the all-pairs nodes shortest path result matrix.}
 \label{fig:short}
 \end{figure*}
 
 
-\subsection{Maximum Calculation}
+\subsection{Maximum Element Value Calculation}
 
-Calculate the largest value of the square matrix element $\widetilde X$, such as the Formula (4).
+Calculate the largest value of the square matrix element $\widetilde X$, this maximum value is latter used in the exponential computations.
 
 \subsection{Exponential Calculation}
 
-The calculation precision of different computer hardware complies with the IEEE floating point operation standard~\cite{ieee1985ieee},
+The precision of different computer hardware complies with the IEEE floating point operation standard~\cite{ieee1985ieee},
 first of all, transform the input matrix by exponential transformation, to be specific, taking the number of nodes as the base,
-taking the difference between the largest value of the element $\widetilde X$ and the matrix elements as exponential, as shown in the Formula (5).
+taking the difference between the largest value of the element $\widetilde X$ and the matrix elements as exponential.
 For the actors' social network with 8508 nodes, the diameter of the network does not allow to exceed 9.8 and 78.4 when calculating precision of 32-bit floating point and 64-bit floating point,
 otherwise, the exponential operation on the computer platform will overflow.
 
@@ -170,7 +174,7 @@ Use different matrix libraries to speed up the matrix multiplication on the comp
 Take non-zero elements of the matrix multiplication result to the element logarithm process, that is, the number of network nodes as the base, the element in the matrix multiplication result as the true number, then round down the logarithm result,
 after that take difference between twice the largest input matrix element value $\widetilde X$ and the logarithm result as result, such as Formula (6).
 
-\subsection{Distance Product Exchange Law}
+\subsection{Distance Product Association Law}
 
 From the iteration of the shortest path calculation, suppose \(\Bbb A,\ \Bbb B,\ \Bbb C\) is the square matrix, according to the association law of distance product, there is a Formula (7).
 Matrix multiplication has an association law, and the distance product is isomorphism to matrix multiplication, so simplify the shortest path iteration process as Formula (8).
@@ -179,7 +183,7 @@ Under the premise of the shortest path matrix $L^{(n-1)}$ given the adjacent mat
 Calculating the shortest path matrix $L^{(n)}$ can be completed as Formula (9).
 As can be seen from the nature of the shortest path in the graph, the shortest path from any of two nodes does not exceed $n-1$, so there is Formula (10).
 
-Definition 3 (Result Reuse in Distance Product) According to the nature of the Equation (8), the process of calculating the shortest path iteration using the last result of distance product follows in turn, as shown in Formula (11).
+Definition 3 ($\textbf{Result Reuse in Distance Product}$) According to the nature of the Equation (8), the process of calculating the shortest path iteration using the last result of distance product follows in turn, as shown in Formula (11).
 The shortest path needs to be calculated $\lceil{log_2(n-1)}\rceil$ times matrix multiplication, from the Formula (10), it can be seen that $(n-1)\leq2^{\lceil{log_2(n-1)}\rceil}$ is the same as the simple shortest path matrix calculation result $L^{(n-1)}$, so there is a Formula (12).
 Obviously, the result reuse method saves $n-2-\lceil{log_2(n-1)}\rceil$ times of matrix multiplication.
 Observe the shortest path calculation process of the actors' social network, the adjacent matrix is shown in Figure 1-a, and the change of result in each iteration is shown in Figure 1-(b-d), the shortest path result matrix converges gradually, each element stabilizes as iterations go.
@@ -231,7 +235,7 @@ and when the proportion of non-zero-value elements entered is less than the 10\%
 For the networks with unknown diameters, the calculation results can be made using the convergence method, and for the calculation process of reaching convergence,
 i.e. $L^{(n-1)}=L^{(n)}$, should be regarded as the program termination of iteration, and the calculation of the matrix product method is completed by the Equation (4).
 
-\subsection{The Shortest Path Algorithm Fusing Sparseness Judgment And Convergence Judgment}
+\subsection{The Shortest Path Algorithm with Joint Sparseness Judgment and Convergence Judgment}
 
 Based on Alon \etal distance product algorithm, utilizing the sparseness judgment of the input matrix and the calculation result convergence judgment,
 with the network conforming to the power-law distribution and the precision of floating point operation, and the name implies two characteristics of the limitation
@@ -267,12 +271,16 @@ $Power-LawBound(f)$	&	15.98s \\
 \section{Conclusion}
 
 This paper discussed a novel algorithm in the all-pairs shortest path computation tasks, using distance product association law.
-The time-bound of Alon \etal distance product algorithm with block matrix multiplication is \(O({\log{n}2n^3\over \Bbb B})\).
-To strengthen the conditions, on the scale-free social networks, for the precision limit of floating point operation on hardware, additional condition on the social network diameter is added to avoid floating point operation overflow during the calculation process.
-the algorithm has lower time-bound \(O({14n^3\over \Bbb B})\).
-With strengthened conditions, I proposed a novel algorithm, leveraging matrix sparseness judgment, and calculation convergence judgment.
-\textbf{Power-Law} refers to the network node degrees conforming to the characteristics that social networks power-law distribution, and \textbf{Bound} refers to the limit on floating point arithmetic operations precision on hardware.
-The experimental results show that \textbf{Power-LawBound} algorithm improves time performance by 39\% to 36.2 times on CPU/GPU hardware compared to Alon \etal's algorithm.
+The time-bound of Alon \etal distance product algorithm with block matrix multiplication is \(O({2\log{n}n^3\over \Bbb B})\).
+To strengthen the conditions, on the scale-free social networks, for the precision limit of floating point operation on hardware,
+additional condition on the social network diameter is added to avoid overflow in the floating point operations,
+the analysis showed that the algorithm has a lower time-bound \(O({14n^3\over \Bbb B})\).
+With a hypothesis that all the social networks have limit diameters, I proposed a novel algorithm,
+which leverages matrix sparseness judgment, and calculation convergence judgment.
+\textbf{Power-Law} refers to the network node degrees conforming to the characteristics that social networks power-law distribution,
+and \textbf{Bound} refers to the precision limit for diameters of floating point arithmetic operations on hardware.
+The experimental results show that \textbf{Power-LawBound} algorithm improves time performance by 39\% to 36.2 times
+on CPU/GPU hardware compared to Alon \etal's algorithm.
 
 {\small
 \bibliographystyle{ieee_fullname}

@@ -19,7 +19,7 @@
 \usepackage[pagebackref=true,breaklinks=true,colorlinks,bookmarks=false]{hyperref}
 
 
-\def\cvprPaperID{8888} % *** Enter the CVPR Paper ID here
+\def\cvprPaperID{308} % *** Enter the CVPR Paper ID here
 \def\confYear{CVPR 2021}
 %\setcounter{page}{4321} % For final version only
 
@@ -47,12 +47,12 @@ Beijing, CN 100084\\
 %%%%%%%%% ABSTRACT
 \begin{abstract}
 
-  In the film industry, visualizing actor stars' social media for analyzing audience intention towards movies is essential to movie producers.
-  However, non-Euclidean social media is hard to analyze, I propose an FC-GRU-CNN architecture, named as \underline{N}on-\underline{E}uclidean \underline{N}et, for social media visualization.
+  In the film industry, visualizing actor stars' social media for analyzing audience intention towards movies is essential for movie producers.
+  However, non-Euclidean social media is hard to analyze, I propose an FC-GRU-CNN architecture, named as \underline{N}on\underline{E}uclidean\underline{N}et, for social media visualization.
   On the analysis of social media, social relationship representations, network characteristics and media sentiments are key factors.
-  FC-GRU-CNN architecture exploits the long-term memory ability of the GRU layer in long sequences of film cast,
+  The FC-GRU-CNN architecture exploits the long-term memory ability of the GRU layer in the long sequences of film cast,
   the mapping ability of the CNN layer in retrieving all-pairs shortest path of the actors' social relationship,
-  and non-linear capability of deep fully connected layer for movie text sentiments and other characteristics.
+  and non-linear capability in deep fully connected layer for movie text sentiments and other characteristics.
   The proposed model accuracy is 14\% higher than Reed \etal~\cite{reed2016learning}'s model.
 
 \end{abstract}
@@ -60,12 +60,13 @@ Beijing, CN 100084\\
 %%%%%%%%% BODY TEXT
 \section{Introduction}
 
-  With the development of social networks, actors' influence of social media is increasing, and the influence of actors' consumption spReeds through social networks,
-  and using long-term social network data to study the relationships between all actors, directors, and films remains a challenge.
-  It is easy to see that the relationship between box-office and the director, actors, scriptwriters, and producers are often non-linear, that is,
+  With the development of social networks, the actors' influence of social media is increasing,
+  and the influence of actors' consumption spreads through social networks,
+  and using the long-term social network data to study the relationships between all actors, directors, and films remains a challenge.
+  It is easy to see that the relationship between the box-office and the director, actors, scriptwriters, and producers are often non-linear, that is,
   it is difficult to use linear functions to build box-office prediction models.
-  By analyzing the social network characteristics of movie actors, sentiments of movies in Sina Weibo posts, all-pairs shortest path,
-  it is easy to get the priority of each characteristic by analysis of feature importance,
+  By analyzing the social network characteristics of the movie actors, sentiments of movies in Sina Weibo posts, all-pairs shortest path,
+  it is easy to summarize the priority of each characteristic by analysis of feature importance,
   the existing prediction algorithm only makes use of the film metadata, lacks the study on the social network characteristics of the actors,
   though the traditional explanation of the film box-office prediction algorithm is sufficing, however, the prediction accuracy is not satisfactory.
   This paper presents a model, named FC-GRU-CNN, for movie box-office prediction, combining characteristics of film metadata, actors' social network measurement,
@@ -159,7 +160,7 @@ determination of the coefficient in the training set is 98.58\%, and the determi
 followed by the movie-relating Sina Weibo sentiments and the film metadata is the secondary determinant,
 while the social network characteristics, movie-related Sina Weibo sentiment, and other film metadata are the least significant factors.
 
-\section{Representation Learning for Social Relationship, Network Characteristics and artisticContribution}
+\section{Representation Learning for Social Relationship, Network Characteristics and Artistic Contribution}
 
 \par \noindent Definition 1 (\textbf{Network Embedding})  A network $\Bbb G=(\Bbb V,\Bbb E)$, $\Bbb V$ represents a set of nodes consisting of $n$ nodes, and $\Bbb E$ represents an edge set of $m$ edges.
 For each edge $e\in \Bbb E$, the ordered pair is $e=(u,v)$, $u,v \in \Bbb V$ and the weight is $A_{ij}$.
@@ -183,7 +184,7 @@ Using the features extracted, the characteristics of participating in the calcul
 the year of release, the number of positive sentiment, the number of negative sentiment, the total number of Sina Weibo posts,
 the positive and negative ratio of sentiment, and the training of machine learning classifiers.
 
-Machine learning methods such as Linear Regression, SVN, MLP, Logistic Regression, and Na{\'i}ve Bayes cannot converge on the data set,
+Machine learning methods such as Linear Regression, SVM, MLP, Logistic Regression, and Na{\'i}ve Bayes cannot converge on the data set,
 possibly because the sentiments on actors' social networks do not represent the commercial benefits of the film.
 Actors, as creators of films, have a role to play in the box-office, but lack of other important features that also have a significant impact on the box-office,
 so the machine learning fitting process can't converge in a given time.
@@ -197,7 +198,7 @@ the social network text sentiments characteristics, the film metadata are import
 Compared to Qiu and Tang~\cite{qiu2018microblog}'s logistic regression model on sentiments and the determination of the coefficient of twitter index algorithm is 95.71\% ,
 The model in this paper has a determination of the coefficient of 98.58\% which has a 2.87\% improvement.
 
-\section{FC-GRU-CNN Box-Office Prediction Model}
+\section{the FC-GRU-CNN Box-Office Prediction Model}
 
 
 \begin{figure*}
@@ -209,7 +210,7 @@ The model in this paper has a determination of the coefficient of 98.58\% which 
 \end{figure*}
 
 Look at the box-office distribution of $1296$ films released between 2011 and 2015,
-Consider box-office forecasts as a binary classification task.
+box-office forecasts can be seen as a binary classification task.
 To make the data evenly distributed, the film data were pre-processed by using the median box-office of $2.635$ million as the dividing line.
 So for the movies with  less than $2.635$ million box-office are classified as A-class, movies with more than $2.635$ million box-office are classified as B-class.
 In the dataset division, the data were randomly selected using the $80\%:20\%$ segmentation ratio, and the training set of $1036$ films and the test set of $260$ movies were collected.
@@ -225,7 +226,7 @@ the longest 225 actors, for less than 225 actors using the front-end padding, th
 \item The last part is the 5 CNN layers, input from the actors' social network shortest path feature, similarly, the film cast is a long list,
 input less than 225 dimensions is fulfilled by padding, CNN has a good ability to capture multi-dimensional features, and use of Max-pooling layer to solve the problem of multi-dimension feature extraction.
 \end{itemize}
-Finally, the three parts are merged into one layer and then connect to a Softmax layer, and the $L_2$ regularization method is adopted to avoid overfitting.
+Finally, these three parts are merged into one layer and then connect to a Softmax layer, and the $L_2$ regularization method is adopted to avoid overfitting.
 
 
 In summary, randomly choose 10 movies as the test set, as shown in Table 1.
