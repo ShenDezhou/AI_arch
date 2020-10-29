@@ -1,5 +1,6 @@
 import json
 import os
+from itertools import islice
 from types import SimpleNamespace
 
 import numpy
@@ -50,7 +51,7 @@ if __name__ == '__main__':
         config = json.load(fin, object_hook=lambda d: SimpleNamespace(**d))
     get_path(os.path.join(config.model_path, config.experiment_name))
     get_path(config.log_path)
-    # build_vocab(config.train_file_path, os.path.join(config.model_path,'vocab.txt'))
+    # build_vocab(config.train_file_path, os.path.join(config.model_path,'vocab.txt'), int(config.vocab_size) - 2)
 
     data = Data(vocab_file=os.path.join(config.model_path, 'vocab.txt'),
                 model_type=config.model_type, config=config)
@@ -72,12 +73,16 @@ if __name__ == '__main__':
     #     context = [word_dict[word_sequence[i - 1]], word_dict[word_sequence[i + 1]]]
     #     for w in context:
     #         skip_grams.append([target, w])
+    pos = range(config.vocab_size)
+    i = torch.LongTensor([pos, pos])
+    elements = [1.0] * config.vocab_size
+    v = torch.LongTensor(elements)
     if torch.cuda.is_available():
         device = torch.device('cuda')
-        onehot = torch.FloatTensor(numpy.eye(config.vocab_size)).cuda()
+        onehot = torch.sparse.FloatTensor(i,v,torch.Size([config.vocab_size, config.vocab_size])).cuda()
     else:
         device = torch.device('cpu')
-        onehot = torch.FloatTensor(numpy.eye(config.vocab_size))
+        onehot = torch.sparse.FloatTensor(i, v, torch.Size([config.vocab_size, config.vocab_size]))
 
     model = MODEL_MAP[config.model_type](config)
     model.to(device)
@@ -95,13 +100,25 @@ if __name__ == '__main__':
             # input_batch = torch.LongTensor(input_batch)
             # target_batch = torch.LongTensor(target_batch)
             input_batch, target_batch = input_batch.to(device), target_batch.to(device)
-            input_batch = onehot[input_batch]
 
-            optimizer.zero_grad()
-            output = model(input_batch)
+            ind_iter = range(input_batch.shape[0])
+            index = 0
+            while index < input_batch.shape[0]:
+                batch_input = None
+                for i_part in islice(ind_iter, index, index + int(config.max_stem_size)):
+                    i_part_input = onehot[input_batch[i_part]].to_dense().unsqueeze(dim=0).float()
+                    if batch_input is not None:
+                        batch_input = torch.cat([batch_input, i_part_input], dim=0)
+                    else:
+                        batch_input = i_part_input
 
-            # output : [batch_size, voc_size], target_batch : [batch_size] (LongTensor, not one-hot)
-            loss = criterion(output, target_batch)
+                batch_target_batch = target_batch[index: index + int(config.max_stem_size)]
+                index += int(config.max_stem_size)
+
+                optimizer.zero_grad()
+                output = model(batch_input)
+                # output : [batch_size, voc_size], target_batch : [batch_size] (LongTensor, not one-hot)
+                loss = criterion(output, batch_target_batch)
 
             if a_score:
                 tqdm_obj.set_description('anlogy:{:.6f},sim:{:.6f},loss: {:.6f}'.format(a_score, s_score, loss.item()))

@@ -23,7 +23,7 @@ from typing import List, Dict
 
 import lawa
 import nltk
-nltk.download('punkt')
+# nltk.download('punkt')
 import pandas as pd
 
 
@@ -71,7 +71,7 @@ class Vocab:
         return self.word_dict
 
     def write2file(self,
-                   filename: str = 'vocab.txt', fre: bool = False) -> None:
+                   filename: str = 'vocab.txt', fre: bool = False, max_vocab_size = None) -> None:
         """Write word_dict to file without file head.
         Each row contains one word with/without its frequency.
 
@@ -80,18 +80,23 @@ class Vocab:
             fre: if True, write frequency for each word
         """
         with open(filename, 'w', encoding='utf-8') as file_out:
-            for word in self.word_dict:
-                file_out.write(word)
+            pop_k = [k for k, v in sorted(self.word_dict.items(), key=lambda item: item[1], reverse=True)]
+            count = 0
+            for pk in pop_k:
+                file_out.write(pk)
                 if fre:
-                    file_out.write(' ' + str(self.word_dict[word]))
+                    file_out.write(' ' + str(self.word_dict[pk]))
                 file_out.write('\n')
+                count += 1
+                if max_vocab_size and count >= max_vocab_size:
+                    break
 
 
-def build_vocab(file_in, file_out):
+def build_vocab(file_in, file_out, max_vocab_size= 50000):
     """Build vocab.txt for SMP-CAIL2020-Argmine."""
     vocab = Vocab('en')
     vocab.load_file_to_dict(file_in, None)
-    vocab.write2file(file_out, False)
+    vocab.write2file(file_out, False, max_vocab_size)
 
 
 if __name__ == '__main__':

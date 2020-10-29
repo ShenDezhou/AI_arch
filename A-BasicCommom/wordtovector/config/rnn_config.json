@@ -1,10 +1,11 @@
 {
   "model_type": "skipgram",
-  "embedding_size": 512,
+  "max_stem_size": 512,
+  "embedding_size": 64,
   "model_path": "model/skipgram/",
   "log_path": "log/",
 
-  "train_file_path": "data/English-corpus.txt",
+  "train_file_path": "data/train.txt",
 
   "analogy_valid_file_path": "data/en/analogy-19568.txt",
   "similarity_valid_file_path": "data/en/wordsim-353.txt",
