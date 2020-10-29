@@ -10,6 +10,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import matplotlib.pyplot as plt
+from torch.optim import lr_scheduler
 from torch.utils.data import DataLoader, RandomSampler
 from tqdm import tqdm
 from vocab import build_vocab
@@ -89,6 +90,7 @@ if __name__ == '__main__':
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=config.lr)
+    scheduler = lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.997)
 
     a_score=0
     # Training
@@ -134,6 +136,7 @@ if __name__ == '__main__':
                 loss.backward()
                 optimizer.step()
 
+
             if (step + 1) % 100000 == 0:
                 print('Epoch:', '%04d' % (epoch + 1), 'cost =', '{:.6f}'.format(loss))
                 W, WT = model.parameters()
@@ -153,6 +156,8 @@ if __name__ == '__main__':
                 a_score, s_score = eval(config.analogy_valid_file_path, config.similarity_valid_file_path)
                 tqdm_obj.set_description('anlogy:{:.6f},sim:{:.6f},loss: {:.6f}'.format(a_score, s_score, loss.item()))
 
+            #drop the learning rate gradually
+            scheduler.step()
 
         if (epoch + 1) % 1 == 0 or epoch == int(config.num_epoch) -1:
             print('Epoch:', '%04d' % (epoch + 1), 'cost =', '{:.6f}'.format(loss))
