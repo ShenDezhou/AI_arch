@@ -73,16 +73,16 @@ if __name__ == '__main__':
     #     context = [word_dict[word_sequence[i - 1]], word_dict[word_sequence[i + 1]]]
     #     for w in context:
     #         skip_grams.append([target, w])
-    pos = range(config.vocab_size)
-    i = torch.LongTensor([pos, pos])
-    elements = [1.0] * config.vocab_size
-    v = torch.LongTensor(elements)
+    # pos = range(config.vocab_size)
+    # i = torch.LongTensor([pos, pos])
+    # elements = [1.0] * config.vocab_size
+    # v = torch.LongTensor(elements)
     if torch.cuda.is_available():
         device = torch.device('cuda')
-        onehot = torch.sparse.FloatTensor(i,v,torch.Size([config.vocab_size, config.vocab_size])).cuda()
+        # onehot = torch.sparse.FloatTensor(i,v,torch.Size([config.vocab_size, config.vocab_size])).cuda()
     else:
         device = torch.device('cpu')
-        onehot = torch.sparse.FloatTensor(i, v, torch.Size([config.vocab_size, config.vocab_size]))
+        # onehot = torch.sparse.FloatTensor(i, v, torch.Size([config.vocab_size, config.vocab_size]))
 
     model = MODEL_MAP[config.model_type](config)
     model.to(device)
@@ -104,13 +104,19 @@ if __name__ == '__main__':
             ind_iter = range(input_batch.shape[0])
             index = 0
             while index < input_batch.shape[0]:
-                batch_input = None
-                for i_part in islice(ind_iter, index, index + int(config.max_stem_size)):
-                    i_part_input = onehot[input_batch[i_part]].to_dense().unsqueeze(dim=0).float()
-                    if batch_input is not None:
-                        batch_input = torch.cat([batch_input, i_part_input], dim=0)
-                    else:
-                        batch_input = i_part_input
+                # use sparse matrix
+                # batch_input = None
+                # for i_part in islice(ind_iter, index, index + int(config.max_stem_size)):
+                #     i_part_input = onehot[input_batch[i_part]].to_dense().unsqueeze(dim=0).float()
+                #     if batch_input is not None:
+                #         batch_input = torch.cat([batch_input, i_part_input], dim=0)
+                #     else:
+                #         batch_input = i_part_input
+                # 2:
+                batch_range = list(islice(ind_iter, index, index + int(config.max_stem_size)))
+                batch_input = torch.zeros((len(batch_range), config.vocab_size), dtype=float).float().cuda()
+                for i in range(len(batch_range)):
+                    batch_input[i, input_batch[batch_range[i]]] = 1.0
 
                 batch_target_batch = target_batch[index: index + int(config.max_stem_size)]
                 index += int(config.max_stem_size)
@@ -128,7 +134,7 @@ if __name__ == '__main__':
                 loss.backward()
                 optimizer.step()
 
-            if (step + 1) % 1000 == 0:
+            if (step + 1) % 100000 == 0:
                 print('Epoch:', '%04d' % (epoch + 1), 'cost =', '{:.6f}'.format(loss))
                 W, WT = model.parameters()
                 weights = W.T.detach().cpu().numpy()
@@ -144,12 +150,11 @@ if __name__ == '__main__':
                         str(len(vocab)) + " " + str(weights.shape[1]) + "\n")  # convert int to str since write() deals
                     file.write(readcontent)
                 # torch.save(model, os.path.join(config.model_path, config.experiment_name, 'model.bin'))
-
                 a_score, s_score = eval(config.analogy_valid_file_path, config.similarity_valid_file_path)
                 tqdm_obj.set_description('anlogy:{:.6f},sim:{:.6f},loss: {:.6f}'.format(a_score, s_score, loss.item()))
 
 
-        if (epoch + 1) % 10 == 0:
+        if (epoch + 1) % 1 == 0 or epoch == int(config.num_epoch) -1:
             print('Epoch:', '%04d' % (epoch + 1), 'cost =', '{:.6f}'.format(loss))
             W, WT = model.parameters()
             weights = W.T.detach().cpu().numpy()

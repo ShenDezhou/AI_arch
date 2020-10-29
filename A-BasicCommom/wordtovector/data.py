@@ -33,6 +33,7 @@ Usage:
     test_set = data.load_file('SMP-CAIL2020-test.csv', train=False)
 """
 import os
+from itertools import islice
 from typing import List, Dict, Tuple
 import jieba
 import lawa
@@ -119,8 +120,13 @@ class LineByLineTextDataset(Dataset):
         logger.info("Creating features from dataset file at %s", file_path)
 
         with open(file_path, encoding="utf-8") as f:
-            lines = [line for line in f.read().splitlines() if (len(line) > 0 and not line.isspace())]
-            alines = [list(tokenizer.tokenize(line)) for line in lines]
+            rawlines = []
+            for line in islice(f,block_size):
+                line = line.strip()
+                if (len(line) > 0 and not line.isspace()):
+                    rawlines.append(line)
+            # lines = [line for line in f.read().splitlines() if (len(line) > 0 and not line.isspace())]
+            alines = [list(tokenizer.tokenize(line)) for line in rawlines]
             batch_encoding = [tokenizer.convert_tokens_to_ids(line) for line in alines]
             self.examples = batch_encoding
 
@@ -141,6 +147,7 @@ class DataCollatorForLanguageModeling:
     tokenizer: Tokenizer
     mlm: bool = True
     mlm_probability: float = 0.15
+    window_size = 5
 
     def __call__(self, examples: List[torch.Tensor]) -> Dict[str, torch.Tensor]:
         batch = self._tensorize_batch(examples)
@@ -175,10 +182,14 @@ class DataCollatorForLanguageModeling:
         #         "This tokenizer does not have a mask token which is necessary for masked language modeling. Remove the --mlm flag if you want to use this tokenizer."
         #     )
 
-        labels = inputs.clone()
+        context_l = []
+        for w in range(self.window_size):
+            labels = inputs.clone()
 
-        prev_labels = torch.cat([labels[:,1:], labels[:,0:1]], dim=1)
-        next_labels = torch.cat([labels[:,-1:], labels[:,0:-1]], dim=1)
+            prev_labels = torch.cat([labels[:,w:], labels[:,0:w]], dim=1)
+            next_labels = torch.cat([labels[:,-w:], labels[:,0:-w]], dim=1)
+            context_l.extend([prev_labels, next_labels])
+
 
         # randoms = inputs.clone()
         # indices_random = torch.bernoulli(torch.full(labels.shape)).bool()
@@ -210,8 +221,8 @@ class DataCollatorForLanguageModeling:
 
         # The rest of the time (10% of the time) we keep the masked input tokens unchanged
 
-        inputs = torch.cat([inputs, inputs], dim=0)
-        labels = torch.cat([prev_labels, next_labels], dim=0)
+        inputs = torch.cat([inputs] * 2 * self.window_size, dim=0)
+        labels = torch.cat(context_l, dim=0)
         inputs = inputs.flatten()
         labels = labels.flatten()
         return inputs, labels
@@ -248,6 +259,8 @@ class Data:
         else:  # rnn
             self.tokenizer = Tokenizer(vocab_file=vocab_file)
         self.max_seq_len = max_seq_len
+        self.window_size = config.context_window
+        self.max_corpus_line = config.max_corpus_line
 
     def load_file(self,
                   file_path='SMP-CAIL2020-train.csv',
@@ -301,7 +314,7 @@ class Data:
         train_set = LineByLineTextDataset(
             tokenizer=self.tokenizer,
             file_path=train_file,
-            block_size=512,
+            block_size=self.max_corpus_line,
         )
         collate_fn = DataCollatorForLanguageModeling(
             tokenizer=self.tokenizer, mlm=True, mlm_probability=0.15

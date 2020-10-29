@@ -1,24 +1,25 @@
 {
   "model_type": "skipgram",
-  "max_stem_size": 1024,
-  "embedding_size": 512,
+  "max_corpus_line": 1000,
+  "max_stem_size": 8196,
+  "embedding_size": 256,
   "model_path": "model/skipgram/",
   "log_path": "log/",
 
-  "train_file_path": "data/train.txt",
+  "train_file_path": "data/corpus/corpus.txt",
 
   "analogy_valid_file_path": "data/en/analogy-19568.txt",
   "similarity_valid_file_path": "data/en/wordsim-353.txt",
 
   "batch_size": 1,
-
+  "context_window": 3,
   "vocab_size": 65536,
   "hidden_size": 32,
   "num_classes": 2,
   "dropout": 0.05,
 
   "lr": 1e-4,
-  "num_epoch": 5000,
+  "num_epoch": 1,
   "num_warmup_steps": 100,
   "gradient_accumulation_steps": 1,
   "max_grad_norm": 1.0,
