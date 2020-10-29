@@ -1,7 +1,7 @@
 {
   "model_type": "skipgram",
-  "max_stem_size": 512,
-  "embedding_size": 64,
+  "max_stem_size": 1024,
+  "embedding_size": 512,
   "model_path": "model/skipgram/",
   "log_path": "log/",
 
@@ -12,7 +12,7 @@
 
   "batch_size": 1,
 
-  "vocab_size": 8296,
+  "vocab_size": 65536,
   "hidden_size": 32,
   "num_classes": 2,
   "dropout": 0.05,

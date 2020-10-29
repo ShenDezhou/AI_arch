@@ -120,13 +120,13 @@ if __name__ == '__main__':
                 # output : [batch_size, voc_size], target_batch : [batch_size] (LongTensor, not one-hot)
                 loss = criterion(output, batch_target_batch)
 
-            if a_score:
-                tqdm_obj.set_description('anlogy:{:.6f},sim:{:.6f},loss: {:.6f}'.format(a_score, s_score, loss.item()))
-            else:
-                tqdm_obj.set_description('loss: {:.6f}'.format(loss.item()))
+                if a_score:
+                    tqdm_obj.set_description('anlogy:{:.6f},sim:{:.6f},loss: {:.6f}'.format(a_score, s_score, loss.item()))
+                else:
+                    tqdm_obj.set_description('loss: {:.6f}'.format(loss.item()))
 
-            loss.backward()
-            optimizer.step()
+                loss.backward()
+                optimizer.step()
 
             if (step + 1) % 1000 == 0:
                 print('Epoch:', '%04d' % (epoch + 1), 'cost =', '{:.6f}'.format(loss))
@@ -146,7 +146,7 @@ if __name__ == '__main__':
                 # torch.save(model, os.path.join(config.model_path, config.experiment_name, 'model.bin'))
 
                 a_score, s_score = eval(config.analogy_valid_file_path, config.similarity_valid_file_path)
-                tqdm_obj.set_description('a{:.6f},s{:.6f},loss: {:.6f}'.format(a_score, s_score, loss.item()))
+                tqdm_obj.set_description('anlogy:{:.6f},sim:{:.6f},loss: {:.6f}'.format(a_score, s_score, loss.item()))
 
 
         if (epoch + 1) % 10 == 0:
@@ -168,10 +168,10 @@ if __name__ == '__main__':
 
             a_score, s_score = eval(config.analogy_valid_file_path, config.similarity_valid_file_path)
             tqdm_obj.set_description('a{:.6f},s{:.6f},loss: {:.6f}'.format(a_score, s_score, loss.item()))
-
-    for i, label in enumerate(word_list):
-        W, WT = model.parameters()
-        x, y = W[0][i].item(), W[1][i].item()
-        plt.scatter(x, y)
-        plt.annotate(label, xy=(x, y), xytext=(5, 2), textcoords='offset points', ha='right', va='bottom')
-    plt.show()
+    #
+    # for i, label in enumerate(word_list):
+    #     W, WT = model.parameters()
+    #     x, y = W[0][i].item(), W[1][i].item()
+    #     plt.scatter(x, y)
+    #     plt.annotate(label, xy=(x, y), xytext=(5, 2), textcoords='offset points', ha='right', va='bottom')
+    # plt.show()
