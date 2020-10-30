@@ -1,18 +1,18 @@
 {
-  "model_type": "skipgram",
-  "max_corpus_line": 620000,
-  "max_stem_size": 16000,
+  "model_type": "hskipgram",
+  "max_corpus_line": 100,
+  "max_stem_size": 1024,
   "embedding_size": 256,
-  "model_path": "model/skipgram/",
+  "model_path": "model/hskipgram/",
   "trained_weight":"",
   "log_path": "log/",
 
-  "train_file_path": "data/corpus/corpus.txt",
+  "train_file_path": "data/English-corpus.txt",
 
   "analogy_valid_file_path": "data/en/analogy-19568.txt",
   "similarity_valid_file_path": "data/en/wordsim-353.txt",
 
-  "hierarchical_softmax": 0,
+  "hierarchical_softmax": 1,
 
   "batch_size": 1,
   "context_window": 5,
@@ -26,11 +26,6 @@
   "num_warmup_steps": 100,
   "gradient_accumulation_steps": 1,
   "max_grad_norm": 1.0,
-
-  "log_steps": 100,
-  "serial_load": true,
-  "metrics_debug": false,
-  "num_cores": 8,
 
   "experiment_name": "FC"
 }

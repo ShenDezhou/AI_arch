@@ -16,7 +16,7 @@ from torch.utils.data import DataLoader, RandomSampler
 from tqdm import tqdm
 from vocab import build_vocab
 from utils import get_path
-from model import Word2Vec
+from model import Word2Vec,Word2VecHierarchical, Word2VecHierarchicalV2
 from data import Data, LineByLineTextDataset, DataCollatorForLanguageModeling
 from evaluate import eval
 
@@ -32,10 +32,11 @@ from evaluate import eval
 #     return random_inputs, random_labels
 
 MODEL_MAP = {
-    'skipgram': Word2Vec
+    'skipgram': Word2Vec,
+    'hskipgram': Word2VecHierarchicalV2
 }
 
-def main(config_file = 'config/rnn_config.json'):
+def main(config_file = 'config/hrnn_config.json'):
     # batch_size = 2 # mini-batch size
     # embedding_size = 2 # embedding size
     #
@@ -129,7 +130,10 @@ def main(config_file = 'config/rnn_config.json'):
                 optimizer.zero_grad()
                 output = model(batch_input)
                 # output : [batch_size, voc_size], target_batch : [batch_size] (LongTensor, not one-hot)
-                loss = criterion(output, batch_target_batch)
+                if config.hierarchical_softmax:
+                    loss = torch.mean(model.hsoftmax(output, batch_target_batch))
+                else:
+                    loss = criterion(output, batch_target_batch)
 
                 if a_score:
                     tqdm_obj.set_description(
@@ -192,7 +196,7 @@ def main(config_file = 'config/rnn_config.json'):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '-c', '--config_file', default='config/rnn_config.json',
+        '-c', '--config_file', default='config/hrnn_config.json',
         help='model config file')
 
     parser.add_argument(
