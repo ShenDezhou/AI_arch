@@ -1,9 +1,10 @@
 {
   "model_type": "skipgram",
-  "max_corpus_line": 1000,
-  "max_stem_size": 8196,
+  "max_corpus_line": 600000,
+  "max_stem_size": 32768,
   "embedding_size": 256,
   "model_path": "model/skipgram/",
+  "trained_weight":"",
   "log_path": "log/",
 
   "train_file_path": "data/corpus/corpus.txt",
@@ -12,8 +13,8 @@
   "similarity_valid_file_path": "data/en/wordsim-353.txt",
 
   "batch_size": 1,
-  "context_window": 3,
-  "vocab_size": 65536,
+  "context_window": 5,
+  "vocab_size": 15957,
   "hidden_size": 32,
   "num_classes": 2,
   "dropout": 0.05,

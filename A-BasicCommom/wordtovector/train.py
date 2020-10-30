@@ -1,3 +1,4 @@
+import argparse
 import json
 import os
 from itertools import islice
@@ -34,7 +35,7 @@ MODEL_MAP = {
     'skipgram': Word2Vec
 }
 
-if __name__ == '__main__':
+def main(config_file = 'config/rnn_config.json'):
     # batch_size = 2 # mini-batch size
     # embedding_size = 2 # embedding size
     #
@@ -46,13 +47,12 @@ if __name__ == '__main__':
     # word_list = list(set(word_list))
     # word_dict = {w: i for i, w in enumerate(word_list)}
     # voc_size = len(word_list)
-    config_file = 'config/rnn_config.json'
 
     with open(config_file) as fin:
         config = json.load(fin, object_hook=lambda d: SimpleNamespace(**d))
     get_path(os.path.join(config.model_path, config.experiment_name))
     get_path(config.log_path)
-    # build_vocab(config.train_file_path, os.path.join(config.model_path,'vocab.txt'), int(config.vocab_size) - 2)
+    # build_vocab(config.train_file_path, os.path.join(config.model_path, 'vocab.txt'), int(config.vocab_size) - 2)
 
     data = Data(vocab_file=os.path.join(config.model_path, 'vocab.txt'),
                 model_type=config.model_type, config=config)
@@ -86,13 +86,16 @@ if __name__ == '__main__':
         # onehot = torch.sparse.FloatTensor(i, v, torch.Size([config.vocab_size, config.vocab_size]))
 
     model = MODEL_MAP[config.model_type](config)
+    # load model states.
+    if config.trained_weight:
+        model = torch.load(config.trained_weight)
     model.to(device)
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=config.lr)
     scheduler = lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.997)
 
-    a_score=0
+    a_score = 0
     # Training
     for epoch in range(config.num_epoch):
         tqdm_obj = tqdm(data_loader, ncols=80)
@@ -129,13 +132,13 @@ if __name__ == '__main__':
                 loss = criterion(output, batch_target_batch)
 
                 if a_score:
-                    tqdm_obj.set_description('anlogy:{:.6f},sim:{:.6f},loss: {:.6f}'.format(a_score, s_score, loss.item()))
+                    tqdm_obj.set_description(
+                        'anlogy:{:.6f},sim:{:.6f},loss: {:.6f}'.format(a_score, s_score, loss.item()))
                 else:
                     tqdm_obj.set_description('loss: {:.6f}'.format(loss.item()))
 
                 loss.backward()
                 optimizer.step()
-
 
             if (step + 1) % 100000 == 0:
                 print('Epoch:', '%04d' % (epoch + 1), 'cost =', '{:.6f}'.format(loss))
@@ -156,10 +159,10 @@ if __name__ == '__main__':
                 a_score, s_score = eval(config.analogy_valid_file_path, config.similarity_valid_file_path)
                 tqdm_obj.set_description('anlogy:{:.6f},sim:{:.6f},loss: {:.6f}'.format(a_score, s_score, loss.item()))
 
-            #drop the learning rate gradually
+            # drop the learning rate gradually
             scheduler.step()
 
-        if (epoch + 1) % 1 == 0 or epoch == int(config.num_epoch) -1:
+        if (epoch + 1) % 1 == 0 or epoch == int(config.num_epoch) - 1:
             print('Epoch:', '%04d' % (epoch + 1), 'cost =', '{:.6f}'.format(loss))
             W, WT = model.parameters()
             weights = W.T.detach().cpu().numpy()
@@ -185,3 +188,16 @@ if __name__ == '__main__':
     #     plt.scatter(x, y)
     #     plt.annotate(label, xy=(x, y), xytext=(5, 2), textcoords='offset points', ha='right', va='bottom')
     # plt.show()
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '-c', '--config_file', default='config/rnn_config.json',
+        help='model config file')
+
+    parser.add_argument(
+        '--local_rank', default=0,
+        help='used for distributed parallel')
+    args = parser.parse_args()
+    main(args.config_file)
+

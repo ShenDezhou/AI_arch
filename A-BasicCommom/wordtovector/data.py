@@ -32,16 +32,18 @@ Usage:
     data = Data('model/bert/vocab.txt', model_type='bert')
     test_set = data.load_file('SMP-CAIL2020-test.csv', train=False)
 """
+import itertools
 import os
-from itertools import islice
+# from itertools import islice
 from typing import List, Dict, Tuple
-import jieba
+# import jieba
 import lawa
-import nltk
+# import nltk
 import torch
 from dataclasses import dataclass
 
 import pandas as pd
+from gensim.models.word2vec import LineSentence
 from torch.nn.utils.rnn import pad_sequence
 
 from torch.utils.data import TensorDataset, Dataset
@@ -119,16 +121,18 @@ class LineByLineTextDataset(Dataset):
         # `tokenizers` repo everywhere =)
         logger.info("Creating features from dataset file at %s", file_path)
 
-        with open(file_path, encoding="utf-8") as f:
-            rawlines = []
-            for line in islice(f,block_size):
-                line = line.strip()
-                if (len(line) > 0 and not line.isspace()):
-                    rawlines.append(line)
-            # lines = [line for line in f.read().splitlines() if (len(line) > 0 and not line.isspace())]
-            alines = [list(tokenizer.tokenize(line)) for line in rawlines]
-            batch_encoding = [tokenizer.convert_tokens_to_ids(line) for line in alines]
-            self.examples = batch_encoding
+        alines = LineSentence(file_path, limit=block_size)
+        self.examples = [tokenizer.convert_tokens_to_ids(line) for line in alines]
+        # with open(file_path, encoding="utf-8") as f:
+        #     rawlines = []
+        #     for line in islice(f, block_size):
+        #         line = line.strip()
+        #         if (len(line) > 0 and not line.isspace()):
+        #             rawlines.append(line)
+        #     # lines = [line for line in f.read().splitlines() if (len(line) > 0 and not line.isspace())]
+        #     alines = [list(tokenizer.tokenize(line)) for line in rawlines]
+        #     batch_encoding = [tokenizer.convert_tokens_to_ids(line) for line in alines]
+        #     self.examples = batch_encoding
 
     def __len__(self):
         return len(self.examples)
