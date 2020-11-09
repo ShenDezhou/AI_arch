@@ -20,7 +20,7 @@
 \usepackage[pagebackref=true,breaklinks=true,colorlinks,bookmarks=false]{hyperref}
 
 
-\def\cvprPaperID{310} % *** Enter the CVPR Paper ID here
+\def\cvprPaperID{7435} % *** Enter the CVPR Paper ID here
 \def\confYear{CVPR 2021}
 %\setcounter{page}{4321} % For final version only
 
@@ -48,9 +48,12 @@ Beijing, CN 100084\\
 %%%%%%%%% ABSTRACT
 \begin{abstract}
 
-  An accurate and efficient image classification algorithm used in the COVID-19 detection for lung tomography can be of great help for doctors working in places without advance equipments.
-  The machine with high accuracy COVID-19 classification model can relief the burden by making testing and checking thousands of people's tomography images easy for a specific region which suffers from the COVID-19 outbreak incidents.
-  By encoding image pixels and metadata using the pre-trained language models of \underline{B}idirectional \underline{E}ncoder \underline{R}epresentations from \underline{T}ransformers,
+  An accurate and efficient image classification algorithm used in the COVID-19 detection from the lung computed tomography
+  can be of great help for the doctors working in places without advance equipments of diagnostics.
+  The machine with high accuracy COVID-19 classification model can relief the burden by making testing and checking
+  thousands of people's tomography images easier in a specific region, which is suffering from the COVID-19 outbreak incidents.
+  By encoding image pixels and metadata using the pre-trained language models of
+  \underline{B}idirectional \underline{E}ncoder \underline{R}epresentations from \underline{T}ransformers,
   then connect to a fully connected layer,
   the classification model outperforms the ResNet model and the DenseNet image classification model,
   and achieved accuracy of $99.51\%\sim100.00\%$ on the COVID-19 tomography image test set.
@@ -60,17 +63,21 @@ Beijing, CN 100084\\
 %%%%%%%%% BODY TEXT
 \section{Introduction}
 
-  Natural language processing and Computer Vision are two domains of the Computer Science.
-  However, the encoded representation for the languages and images showed that there are potential connections between what we see and what we write.
-  Unsupervised pre-training is important to modern research of deep learning.
+  Natural language processing and Computer Vision are two important domains in the Computer Science.
+  However, the encoded representation for the languages and images showed that there are potential connections
+  between what we see and what we write.
+  Most researches have laid lack of attention on the relevance between the Natural language processing and the Computer Vision.
+  In this paper, I discussed a novel method by unifying the representation of languages and visions from the representation layer.
+  Unsupervised pre-training is important to the modern research in deep learning.
   Lee \etal~\cite{lee2009convolutional} used the pre-training approaches
   in Computer Vision tasks in 2009, and later from 2010 to 2016,
   Nair and Hinton~\cite{nair2010rectified} proved that the pre-training process is supplementary in the Computer Vision tasks,
   thus, can be omitted in some cases.
   However, it started to flourish the natural language processing domain since Mikolov \etal~\cite{mikolov2013distributed} had proposed Word2Vec.
-  Not long before Devin \etal~\cite{devlin2019bert}'s BERT language model dominates in most frequently used tasks in natural language processing,
-  which is close resemble of Vicent \etal~\cite{vincent2008extracting}'s Denoising Autoencoder model, which was initially designed for images.
-  The pre-training process becomes one of the most important procedures in deep learning.
+  Not long before Devin \etal~\cite{devlin2019bert}'s Bidirectional Encoder Representations from Transformers language model dominates
+  in most frequently used tasks in the natural language processing domain,
+  which is close resemble of Vicent \etal~\cite{vincent2008extracting}'s denoising autoencoder model, which was initially designed for images.
+  Therefore, the pre-training process becomes one of the most important procedures in deep learning.
 
 %-------------------------------------------------------------------------
 
@@ -110,7 +117,7 @@ In total, 349 computed tomography images were collected from the COVID-19 report
 \subsection{Approach}
 
 My approach consists of a pre-training stage followed by a fine-tuning stage.
-In pre-training, I use the BERT objectives and the sequence Transformer architecture to predict language tokens.
+In pre-training, I use the BERT objectives and the sequence Transformer architecture to predict the language tokens.
 
 \par Given an unlabeled dataset $\Bbb X$, the BERT objective samples a sub-sequence $\Bbb S \in \{C\}$,
 $C$ represents all possible tokens, and such that for each index $i \in \Bbb S$,
@@ -125,8 +132,8 @@ conditioned on the "unmasked" ones $x_{\left[1,n\right]\backslash M}$.
 
 \par The transformer decoder takes the image pixels and meta characters sequence $x_1,\cdots,x_n$ and produces a $d$-dimensional
 embedding for each position.
-Then I use a fully connected layer as a non-linear function from embeddings to image class.
-The dropout layer and the Softmax layer are used for better transfer performance between the training and the test dataset.
+Then I use a fully connected layer as a non-linear function from the embeddings to the image classes.
+A dropout layer and a Softmax layer are used for better transfer performance between the training dataset and the test dataset.
 
 \subsection{Per-pixel Encoder}
 
@@ -144,7 +151,7 @@ BERT and RoBERTa-wwm-ext-large models both achieved an f1-score of 97.8\% in the
 the test accuracy exceeds the other popular machine learning algorithms.
 Therefore, the pixel channels of an image can be properly represented by these pre-trained language models.
 
-\subsection{Image Classification Model}
+\subsection{Model Architecture}
 
 \begin{figure*}
 \begin{center}
@@ -172,7 +179,7 @@ The model architecture has seven functional layers:
 
 The COVID-19 lung tomography dataset contains 251 covid images and 291 covid negative images in the training set,
 and contains 98 covid image and 100 covid negative images in the test set.
-All images are resized to a resolution of 32x32 pixels, RGB channels are kept and the alpha channel is discarded.
+All images are resized to a resolution of 32x32 pixels, the RGB channels are kept and the alpha channel is discarded.
 Encode the image by the sequence of RGB channel values, in the order of Red-channel, Green-channel, and Blue-channel,
 then encode other metadata which is the file name of each image, as a sequence of ASCII characters.
 In the Concatenation layer, the pixel-channel value and metadata are concatenated, put a special token of $\textbf{[CLS]}$ at the start,
@@ -182,7 +189,8 @@ Keep the first 256 characters and last 256 characters of the concatenated sequen
 some blue-channel value, and all the meta value in common cases.
 In the Encoder layer and the Embedding layer, trimmed sequence of values are encoded by BERT-like models,
 and get the encoded representation of the token $\textbf{[CLS]}$ as the images' language model embeddings.
-In the Feature-Extraction layer, a combination of one dropout layer, one fully connected layer, and one softmax layer, as equation (2), is used.
+In the Feature-Extraction layer, the combination of a dropout layer, a fully connected layer, and a softmax layer, as equation (2), can provide
+transfer ability for the model from the training dataset to the test dataset.
 In the Output layer, the classification label of the image is feed in the model.
 
 \begin{equation}
@@ -198,12 +206,16 @@ and it is beneficial for the classification model to understand the supervised d
 
 \par However, in the test phase, if feeding the metadata to the model, people might argue that the model learns only the mapping function from
 the metadata, which is the filename in this case, to the image class
-which makes it is unfair to compare the performance with other image classification models.
+which makes it unfair to compare the performance with other image classification models.
 Thus, to be more objective and fair, I add a preprocess for the metadata in the test phase, using the $\textbf{[MASK]}$ token to replace each
 ASCII character of the filename then feeds into the model to do the inference.
 
 \par Recall that the $\textbf{[MASK]}$ token in the BERT language model is a special token which can be used to trim the vocabulary size,
 and gives the token-recovery capability to the downstream task model.
+
+\par The $\textbf{[MASK]}$ token provide a fair comparison during the test by masking the language features, therefore,
+it can be seen that the language and the vision fusions during the training and enhance the performance and accuracy for the classification model
+of the CIFAR dataset and the COVID-19 tonography dataset.
 
 %-------------------------------------------------------------------------
 
@@ -217,7 +229,7 @@ and gives the token-recovery capability to the downstream task model.
 \begin{center}
   \fbox{\rule{0pt}{2in} \includegraphics[width=0.9\linewidth]{image-classification.pdf}}
 \end{center}
-   \caption{Accuracy of the image classification models with the pre-trained language encoder on the CIFAR-10 and CIFAR-100 dataset in the training epochs.}
+   \caption{Accuracy of the image classification models with the pre-trained language encoder on the CIFAR-10, CIFAR-100, and COVID-19 test dataset.}
 \label{fig:short}
 \end{figure*}
 
@@ -236,7 +248,9 @@ which can provide 420 tera-flops of computation capability.
 \subsection{Results}
 
 Use the proposed model, and I tried different pre-trained language models to see the impact on classification accuracy.
-From the table-2, for the same size of a dataset with larger classes, it needs more epochs and training time for the classification model.
+From the table (1), it can be seen that the models are trained on the training dataset and validated on the test dataset.
+For the same size of a dataset with larger classes, it needs more epochs and training time for the classification model,
+and the training epochs ranges from 3 to 8.
 For the same RoBERTa language model with different numbers of transformer layers, 24 layers of transformers had better accuracy than 3 layers,
 however, its training cost grows for the larger language model.
 For the same fine-tuned language model, classes number has some impact on the accuracy,
