@@ -66,24 +66,22 @@ Beijing, CN 100084\\
   Natural language processing and Computer Vision are two important domains in the Computer Science.
   However, the encoded representation for the languages and images showed that there are potential connections
   between what we see and what we write.
-  Most researches have laid lack of attention on the relevance between the Natural language processing and the Computer Vision.
+  Most research have laid lack of attention on the relevance between the natural language processing and the Computer Vision.
   In this paper, I discussed a novel method by unifying the representation of languages and visions from the representation layer.
   Unsupervised pre-training is important to the modern research in deep learning.
-  Lee \etal~\cite{lee2009convolutional} used the pre-training approaches
-  in Computer Vision tasks in 2009, and later from 2010 to 2016,
+  Lee \etal~\cite{lee2009convolutional} used the pre-training approaches in Computer Vision tasks in 2009, and later from 2010 to 2016,
   Nair and Hinton~\cite{nair2010rectified} proved that the pre-training process is supplementary in the Computer Vision tasks,
   thus, can be omitted in some cases.
-  However, it started to flourish the natural language processing domain since Mikolov \etal~\cite{mikolov2013distributed} had proposed Word2Vec.
-  Not long before Devin \etal~\cite{devlin2019bert}'s Bidirectional Encoder Representations from Transformers language model dominates
-  in most frequently used tasks in the natural language processing domain,
-  which is close resemble of Vicent \etal~\cite{vincent2008extracting}'s denoising autoencoder model, which was initially designed for images.
+  However, it started to flourish in the natural language processing domain since Mikolov \etal~\cite{mikolov2013distributed} had proposed Word2Vec.
+  Not long after, Devin \etal~\cite{devlin2019bert}'s Bidirectional Encoder Representations from Transformers language model dominates
+  in most frequently used tasks in the natural language processing domain, which is close resemble of Vicent \etal~\cite{vincent2008extracting}'s denoising autoencoder model, which was initially designed for images.
   Therefore, the pre-training process becomes one of the most important procedures in deep learning.
 
 %-------------------------------------------------------------------------
 
 \section{Recent Work}
 
-  Chen \etal~\cite{chen2020generative} trained image representation by sequence Transformers and tested on CIFAR-10 to show it is outperforming to Wide-ResNet
+  Chen \etal~\cite{chen2020generative} trained image representation by sequence Transformers and tested on the CIFAR-10 dataset to show it is outperforming to Wide-ResNet,
 which was inspired by unsupervised natural language representation learning.
   Wang \etal~\cite{wang2019development} reviewed that convolutional neural networks had been proposed in the 1960s, and had its implementation in the 1980s,
 and until LeCun \etal~\cite{lecun1990handwritten}'s first experiment on handwritten digit recognition, CNN's great potential had been revealed.
@@ -91,9 +89,9 @@ and until LeCun \etal~\cite{lecun1990handwritten}'s first experiment on handwrit
 Several years later, a lot of variants of AlexNet had been proposed by researchers and the accuracy of ImageNet had been greatly improved, \eg ZFNet~\cite{zeiler2014visualizing}, VGG~\cite{simonyan2014very}, GoogLeNet~\cite{szegedy2015going}, ResNet~\cite{he2016deep},
  ResNeXt~\cite{xie2017aggregated}, inception-ResNet-v2~\cite{szegedy2016inception}, DenseNet~\cite{huang2016deep}.
   Lu and Weng~\cite{lu2007survey} concluded that for the multi-source image classification tasks, additional information such as signatures, texture, context, and ancillary data can be combined to achieve better performance.
-And it is difficult in handling the dichotomy between pixels and natural language texts in a single model.
+And it is difficult to handle the dichotomy between pixels and natural language texts in a single model.
   Cui \etal~\cite{cui2020revisiting} proposed several whole-word-masking pre-trained Chinese language models,
-which are improved versions of BERT~\cite{devlin2019bert} pre-trained language models, namely RBT3, RBTL3, and RoBERTa-wwm-ext-large.
+which are improved versions of BERT~\cite{devlin2019bert}, one of the popular pre-trained language models, namely RBT3, RBTL3, and RoBERTa-wwm-ext-large.
 These models achieved better performance in Chinese machine reading comprehension, Chinese document classification, and other downstream natural language tasks.
   He and Peng~\cite{he2017fine} combined the vision stream and language stream as two parallel channels for extracting multi-source information in the image classification task,
 and tested on the CUB-200-2011 image dataset and achieved $85.55\%$ by combining GoogLeNet~\cite{szegedy2015going} and CNN-RNN~\cite{reed2016learning}, the result outperformed many competitors.
@@ -103,7 +101,7 @@ and tested on the CUB-200-2011 image dataset and achieved $85.55\%$ by combining
 
 \section{Image Classification via Pre-trained Transformers Language Models}
 
-Three of the most popular approaches for image classification tasks are per-pixel, subpixel, and heterogeneous.
+  Three of the most popular approaches for image classification tasks are per-pixel, subpixel, and heterogeneous.
 Lu and Weng found that, for per-pixel approach, non-parametric classifiers, \eg neural networks, support vector machines, and decision trees,
 are the most well-known algorithms for their performance and generalization advantages in the late 1990s and 2000s.
 Fern{\'a}ndez \etal~\cite{fernandez2014we} compared different classifiers in small datasets, and they found that the random forest algorithm ranks first among the 179 classifiers.
@@ -111,13 +109,14 @@ Fern{\'a}ndez \etal~\cite{fernandez2014we} compared different classifiers in sma
 %-------------------------------------------------------------------------
 \subsection{Dataset}
 
-In total, 349 computed tomography images were collected from the COVID-19 reports in the MedPix, LUNA, Radiopaedia, PubMed Central databases, which sizes range from $1637\times1225$ to $148\times61$.
+In total, 349 computed tomography images were collected from the COVID-19 reports in the MedPix, LUNA, Radiopaedia,
+PubMed Central databases, which sizes range from $1637\times1225$ to $148\times61$.
 
 
 \subsection{Approach}
 
-My approach consists of a pre-training stage followed by a fine-tuning stage.
-In pre-training, I use the BERT objectives and the sequence Transformer architecture to predict the language tokens.
+My approach consists of one pre-training stage followed by one fine-tuning stage.
+In pre-training stage, I use the BERT objectives and the sequence Transformer architecture to predict the language tokens.
 
 \par Given an unlabeled dataset $\Bbb X$, the BERT objective samples a sub-sequence $\Bbb S \in \{C\}$,
 $C$ represents all possible tokens, and such that for each index $i \in \Bbb S$,
@@ -132,22 +131,23 @@ conditioned on the "unmasked" ones $x_{\left[1,n\right]\backslash M}$.
 
 \par The transformer decoder takes the image pixels and meta characters sequence $x_1,\cdots,x_n$ and produces a $d$-dimensional
 embedding for each position.
-Then I use a fully connected layer as a non-linear function from the embeddings to the image classes.
+Then I use a fully connected layer as a non-linear function mapping from the embeddings to the image classes.
 A dropout layer and a Softmax layer are used for better transfer performance between the training dataset and the test dataset.
 
 \subsection{Per-pixel Encoder}
 
-For the per-pixel image classification approach, for every RGB channel of pixels in an image,
-each pixel had its pixel-channel code, ranges from 0x00 to 0xff for different colors.
-Thus, taking these pixels in an image is identical to ASCII characters in a document.
-Generality speaking, the performance of the pre-trained language models achieved in the document classification tasks, can be transferred to image classification naturally.
+In the per-pixel image classification approach, for every RGB channel of pixels in an image,
+each pixel has its pixel-channel code, ranging from $0x00$ to $0xff$ for different colors.
+Thus, these pixels of an image are resemble to ASCII characters in a document.
+Generality speaking, the performance of the pre-trained language models achieved in the document classification tasks,
+can be transferred to image classification naturally.
 
 \par Recall that Kim~\cite{kim2014convolutional} had proved that unsupervised pre-trained language model $word2vec$ and CNN outperformed many other machine learning algorithms,
-\eg support vector machines and conditional random field, in many datasets such as movie reviews, Stanford sentiment treebank, and TREC question.
+\eg support vector machines and conditional random field, in many datasets such as movie reviews, Stanford sentiment treebank, and the \underline{T}ext \underline{RE}trieval \underline{C}onference question.
 Cui \etal's pre-trained language model, namely RBT3, RBTL3, and RoBERTa-wwm-ext-large, had improved performances over many other machine learning algorithms.
 BERT and RoBERTa-wwm-ext-large models both achieved an f1-score of 97.8\% in the THUCNews dataset, which contains 65 thousands of news in 10 domains.
 
-\par From table (1), by combining the pre-trained language model with fully connected layer as the document classification model,
+\par From Table (1), by combining the pre-trained language model with the fully connected layer as the document classification model,
 the test accuracy exceeds the other popular machine learning algorithms.
 Therefore, the pixel channels of an image can be properly represented by these pre-trained language models.
 
@@ -179,43 +179,43 @@ The model architecture has seven functional layers:
 
 The COVID-19 lung tomography dataset contains 251 covid images and 291 covid negative images in the training set,
 and contains 98 covid image and 100 covid negative images in the test set.
-All images are resized to a resolution of 32x32 pixels, the RGB channels are kept and the alpha channel is discarded.
+All images are resized to a resolution of $32\times32$ pixels, the RGB channels are kept and the alpha channel values are discarded.
 Encode the image by the sequence of RGB channel values, in the order of Red-channel, Green-channel, and Blue-channel,
 then encode other metadata which is the file name of each image, as a sequence of ASCII characters.
 In the Concatenation layer, the pixel-channel value and metadata are concatenated, put a special token of $\textbf{[CLS]}$ at the start,
 and put a $\textbf{[SEP]}$ token between channel values and metadata, put a special token of $\textbf{[SEP]}$ at the end.
 In the Trim layer, due to the limit on the max sequence of the BERT language model, a sequence larger than $512$ needs to be trimmed before sending it to the BERT model.
 Keep the first 256 characters and last 256 characters of the concatenated sequence, trimmed result contains the first 255 red-channel value,
-some blue-channel value, and all the meta value in common cases.
+some blue-channel value, and all the meta value for common cases.
 In the Encoder layer and the Embedding layer, trimmed sequence of values are encoded by BERT-like models,
 and get the encoded representation of the token $\textbf{[CLS]}$ as the images' language model embeddings.
-In the Feature-Extraction layer, the combination of a dropout layer, a fully connected layer, and a softmax layer, as equation (2), can provide
+In the Feature Extraction layer, the combination of a dropout layer, a fully connected layer, and a softmax layer, as equation (2), can provide
 transfer ability for the model from the training dataset to the test dataset.
-In the Output layer, the classification label of the image is feed in the model.
+In the Output layer, the classification label of the image is feed into the model.
 
 \begin{equation}
   \sigma(\textbf{z})_j = {e^{\textbf{z}_j} \over {\sum_{k=1}^{\textit{K}} e^{\textbf{z}_k}}}, j=1,\cdots,\textit{K}.
 \end{equation}
 
-\subsection{The Mask Token for Test}
+\subsection{Fair Comparison for Test: The Mask Token}
 
 \par It is intuitive for the model to use both the channel values and the metadata during the training phase.
 For the COVID-19 lung tomography dataset, the metadata is the filename of the images, which can be treated as the supervised description of the image.
 Peek some the filenames, \eg \textit{covid\_201\_1.png}, \textit{covid\_201\_2.png}, and \textit{noncovid\_001\_1.png},
 and it is beneficial for the classification model to understand the supervised descriptive information for the image.
 
-\par However, in the test phase, if feeding the metadata to the model, people might argue that the model learns only the mapping function from
+\par Recall that the $\textbf{[MASK]}$ token in the BERT language model is a special token which can be used to trim the vocabulary size,
+and gives the token-recovery capability to the downstream task model.
+
+\par However, in the test phase, if feeding the metadata to the model, other people might argue that the model learns only the mapping function from
 the metadata, which is the filename in this case, to the image class
 which makes it unfair to compare the performance with other image classification models.
 Thus, to be more objective and fair, I add a preprocess for the metadata in the test phase, using the $\textbf{[MASK]}$ token to replace each
 ASCII character of the filename then feeds into the model to do the inference.
 
-\par Recall that the $\textbf{[MASK]}$ token in the BERT language model is a special token which can be used to trim the vocabulary size,
-and gives the token-recovery capability to the downstream task model.
-
 \par The $\textbf{[MASK]}$ token provide a fair comparison during the test by masking the language features, therefore,
 it can be seen that the language and the vision fusions during the training and enhance the performance and accuracy for the classification model
-of the CIFAR dataset and the COVID-19 tonography dataset.
+of the CIFAR dataset and the COVID-19 tomography dataset.
 
 %-------------------------------------------------------------------------
 
@@ -240,7 +240,7 @@ I use a batch size of 512 and train for $6\sim16$ epochs using AdamW with $\beta
 I set the learning rate to $10^{-4}$ and no warmed up or decay are used.
 The dropout rate is $0.05$.
 
-\par When fine-tuning, as Figure (1), I check the accuracy of the trained model on the test set and stopped training when it converges on $10^{-3}\sim10^{-4}$.
+\par For the fine-tuning stage, as Figure (1), I check the accuracy of the trained model on the test set and stopped training when it converges on $10^{-3}\sim10^{-4}$.
 
 \par The experiment was performed on a Google Cloud TPU v3, with 32GB of RAM, and 8 chips with 16GB of the high speed of memory each,
 which can provide 420 tera-flops of computation capability.
@@ -248,7 +248,7 @@ which can provide 420 tera-flops of computation capability.
 \subsection{Results}
 
 Use the proposed model, and I tried different pre-trained language models to see the impact on classification accuracy.
-From the table (1), it can be seen that the models are trained on the training dataset and validated on the test dataset.
+From the Table (1), it can be seen that the models are trained on the training dataset and validated on the test dataset.
 For the same size of a dataset with larger classes, it needs more epochs and training time for the classification model,
 and the training epochs ranges from 3 to 8.
 For the same RoBERTa language model with different numbers of transformer layers, 24 layers of transformers had better accuracy than 3 layers,
