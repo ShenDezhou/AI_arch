@@ -47,11 +47,12 @@ Beijing, CN 100084\\
 %%%%%%%%% ABSTRACT
 \begin{abstract}
 
-  In the film industry, visualizing actor stars' social media for analyzing audience intention towards movies is essential for movie producers.
-  However, non-Euclidean social media is hard to analyze, I propose an FC-GRU-CNN architecture, named as \underline{N}on\underline{E}uclidean\underline{N}et, for social media visualization.
-  On the analysis of social media, social relationship representations, network characteristics and media sentiments are key factors.
+  In the film industry, visualizing actor stars' social media to analyze audience intention towards movies is essential for the movie producers.
+  However, non-Euclidean social media are hard to analyze,
+  I propose an FC-GRU-CNN architecture, named as \underline{N}on\underline{E}uclidean\underline{N}et, for the social media visualization.
+  On the analysis of social media, social relationship representations, network characteristics and media sentiments are the key factors.
   The FC-GRU-CNN architecture exploits the long-term memory ability of the GRU layer in the long sequences of film cast,
-  the mapping ability of the CNN layer in retrieving all-pairs shortest path of the actors' social relationship,
+  the mapping ability of the convolutional neural network layer in retrieving all-pairs shortest path of the actors' social relationship,
   and non-linear capability in deep fully connected layer for movie text sentiments and other characteristics.
   The proposed model accuracy is 14\% higher than Reed \etal~\cite{reed2016learning}'s model.
 
@@ -60,7 +61,7 @@ Beijing, CN 100084\\
 %%%%%%%%% BODY TEXT
 \section{Introduction}
 
-  With the development of social networks, the actors' influence of social media is increasing,
+  With the development of social networks, the actors' influence in social media is increasing,
   and the influence of actors' consumption spreads through social networks,
   and using the long-term social network data to study the relationships between all actors, directors, and films remains a challenge.
   It is easy to see that the relationship between the box-office and the director, actors, scriptwriters, and producers are often non-linear, that is,
@@ -78,18 +79,18 @@ Beijing, CN 100084\\
 \section{Recent Work}
 
   The film industry is a multi-billion-dollar business, as China's box-office exceeding 6 billion dollars in 2018, reaching 6.09 billion dollars.
-  Predicting the acceptance and adoption of new films among the audience is a challenging topic.
+  Predicting the acceptance and adoption of new films among the audience is a challenging task.
   Fern{\'a}ndez \etal ~\cite{fernandez2014we} showed that the best classifiers are the random forest,
-  followed by SVM, neural networks, and boosting ensembles among 17 families.
+  followed by Support Vector Machines, neural networks, and boosting ensembles among 17 families.
 
 
 \subsection{Support Vector Machines}
 
   Jiang and Wang~\cite{jiang2018predicting} collected 34 high-grossing films from 2015 to 2017, using 10 features, such as film metadata, director awards, and actor awards, then I used voting feature selection algorithms to select important features,
-  training SVM models for film box-office and user-comment score prediction.
+  training Support Vector Machines models for film box-office and user-comment score prediction.
   Quader \etal~\cite{quader2017machine} collected 755 film reviews in four film review sites from 2012 to 2015, collected characteristics including film ratings, MPAA categories,
   director total box-office, actor total box-office, release time, budget, screen numbers, user reviews, and review text sentiments,
-  the trained SVM model has a prediction accuracy of 44.4\%.
+  the trained Support Vector Machines model has a prediction accuracy of 44.4\%.
 
 \subsection{Neural Network Model}
 
@@ -184,9 +185,9 @@ Using the features extracted, the characteristics of participating in the calcul
 the year of release, the number of positive sentiment, the number of negative sentiment, the total number of Sina Weibo posts,
 the positive and negative ratio of sentiment, and the training of machine learning classifiers.
 
-Machine learning methods such as Linear Regression, SVM, MLP, Logistic Regression, and Na{\'i}ve Bayes cannot converge on the data set,
+Machine learning methods such as Linear Regression, Support Vector Machines, Multiple Layer Perception, Logistic Regression, and Na{\'i}ve Bayes cannot converge on the data set,
 possibly because the sentiments on actors' social networks do not represent the commercial benefits of the film.
-Actors, as creators of films, have a role to play in the box-office, but lack of other important features that also have a significant impact on the box-office,
+Actors, as creators of films, play a role in the box-office, but lack of other important features that also have a significant impact on the box-office,
 so the machine learning fitting process can't converge in a given time.
 Using the cart decision tree regression algorithm to make box-office prediction for the test set film,
 the experimental results show that the prediction model has a determination coefficient of 96.05\% on the test set and 98.58\% on the training set, which is 2.87\% higher than the Qiu and Tang~\cite{qiu2018microblog} model,
@@ -210,9 +211,9 @@ The model in this paper has a determination of the coefficient of 98.58\% which 
 \end{figure*}
 
 Look at the box-office distribution of $1296$ films released between 2011 and 2015,
-box-office forecasts can be seen as a binary classification task.
+the box-office forecasts can be seen as a binary classification task.
 To make the data evenly distributed, the film data were pre-processed by using the median box-office of $2.635$ million as the dividing line.
-So for the movies with  less than $2.635$ million box-office are classified as A-class, movies with more than $2.635$ million box-office are classified as B-class.
+So for the movies with less than $2.635$ million box-office are classified as A-class, movies with more than $2.635$ million box-office are classified as B-class.
 In the dataset division, the data were randomly selected using the $80\%:20\%$ segmentation ratio, and the training set of $1036$ films and the test set of $260$ movies were collected.
 Using the actors' social network representation, the actor is quantified, that is,
 the fusion of social network features, the shortest path characteristics, and the actors' artistic characteristics.

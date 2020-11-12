@@ -48,7 +48,8 @@ Beijing, CN 100084\\
 %%%%%%%%% ABSTRACT
 \begin{abstract}
 
-  Image classification and categorization are essential to the capability of telling the difference between images for a machine.
+  Image classification and categorization are essential to the capability of telling the difference between images for a machine
+  which is initially designed for vision purposes.
   As \underline{B}idirectional \underline{E}ncoder \underline{R}epresentations from \underline{T}ransformers became popular in many tasks of natural language processing recent years,
   it is intuitive to use these pre-trained language models for enhancing the computer vision tasks, \eg image classification.
   In this paper, by encoding image pixels using pre-trained transformers, then connect to a fully connected layer,
@@ -130,13 +131,13 @@ Generality speaking, the performance of the pre-trained language models achieved
 \par Recall that Kim~\cite{kim2014convolutional} had proved that unsupervised pre-trained language model $word2vec$ and CNN outperformed many other machine learning algorithms,
 \eg support vector machines and conditional random field, in many datasets such as movie reviews, Stanford sentiment treebank, and TREC question.
 Cui \etal's pre-trained language model, namely RBT3, RBTL3, and RoBERTa-wwm-ext-large, had improved performances over many other machine learning algorithms.
-BERT and RoBERTa-wwm-ext-large models both achieved an f1-score of 97.8\% in the THUCNews dataset, which contains 65 thousands of news in 10 domains.
+BERT and RoBERTa-wwm-ext-large models both achieved an f1-score of 97.8\% in the THUCNews dataset, which contains 65 thousands news reports in 10 domains.
 
 \par I used RBTL3 and RoBERTa-wwm-ext-large pre-trained language model in two Chinese Judicial datasets, which has 2 and 4 classes.
-The \textit{Case-2} dataset annotated civil and criminal cases, and the \textit{Case-4} dataset annotated by civil, criminal, intellectual property, and administrative cases.
-The \textit{Case-2} dataset has $19508$ training documents and $2000$ test documents, and the \textit{Case-4} dataset has $34789$ training documents and $2013$ test documents.
+The \textit{Two-Case} dataset annotated civil and criminal cases, and the \textit{Four-Case} dataset annotated by civil, criminal, intellectual property, and administrative cases.
+The \textit{Two-Case} dataset has $19508$ training documents and $2000$ test documents, and the \textit{Four-Case} dataset has $34789$ training documents and $2013$ test documents.
 
-\par From table (1), by combining the pre-trained language model with fully connected layer as the document classification model,
+\par From Table (1), by combining the pre-trained language model with fully connected layer as the document classification model,
 the test accuracy exceeds the other popular machine learning algorithms.
 Therefore, the pixel channels of an image can be properly represented by these pre-trained language models.
 
@@ -146,9 +147,9 @@ Therefore, the pixel channels of an image can be properly represented by these p
 \hline
 Language Model 	& Dataset & Accuracy \\
 \hline\hline
-RoBERTa-wwm-ext-large & Case-2	&	99.80\% \\
-RoBERTa-wwm-ext-large & Case-4	&	99.76\% \\
-RBTL3  & Case-4	&	96.35\% \\
+RoBERTa-wwm-ext-large & Two-Case	&	99.80\% \\
+RoBERTa-wwm-ext-large & Four-Case	&	99.76\% \\
+RBTL3  & Four-Case	&	96.35\% \\
 \hline
 \end{tabular}
 \end{center}
@@ -167,8 +168,8 @@ RBTL3  & Case-4	&	96.35\% \\
 \label{fig:short}
 \end{figure*}
 
-I design simple classification models without too many layers, as Figure (1) shows.
-And use the CIFAR-10 and CIFAR-100 dataset as an example to show the architecture of the model.
+I design simple classification models without too many layers, as Figure (1) shows,
+and use the CIFAR-10 and CIFAR-100 dataset as an example to show the architecture of the model.
 The model architecture has seven functional layers:
 
 \begin{itemize}
@@ -181,7 +182,7 @@ The model architecture has seven functional layers:
 \item {\bf Output layer}
 \end{itemize}
 
-\par The CIFAR-10 dataset contains 60000 color images with a resolution of 32x32 in 10 classes, and the CIFAR-100 dataset has 100 classes containing 600 images each.
+\par The CIFAR-10 dataset contains 60000 color images with a resolution of $32\times32$ in 10 classes, and the CIFAR-100 dataset has 100 classes containing 600 images each.
 Encode the image by the sequence of RGB channel values, in the order of Red-channel, Green-channel, and Blue-channel,
 then encode other meta-data if provided, as a sequence of ASCII characters.
 In the Concatenation layer, the pixel-channel value and metadata are concatenated, put a special token of $\textbf{[CLS]}$ at the start,
@@ -198,21 +199,20 @@ In the Output layer, the classification label of the image is feed in the model.
   \sigma(\textbf{z})_j = {e^{\textbf{z}_j} \over {\sum_{k=1}^{\textit{K}} e^{\textbf{z}_k}}}, j=1,\cdots,\textit{K}.
 \end{equation}
 
-\subsection{The Mask Token for Test}
+\subsection{More Fair Comparison by The Mask Token}
 
-\par It is intuitive for the model to use both the channel values and the metadata during the training phase.
+\par It is intuitive for the model to use both the channel values and the metadata in the training phase.
 For the CIFAR-10 and CIFAR-100 dataset, the metadata is the filename of the images, which can be treated as the supervised description of the image.
 Peek some the filenames, \eg \textit{wagon\_s\_001343.png}, \textit{banana\_boat\_s\_001615.png}, and \textit{delivery\_truck\_s\_001529.png},
 and it is beneficial for the classification model to understand the supervised descriptive information for the image.
 
-\par However, in the test phase, if feeding the metadata to the model, people might argue that the model learns only the mapping function from
-the metadata, which is the filename in this case, to the image class
-which makes it is unfair to compare the performance with other image classification models.
-Thus, to be more objective and fair, I add a preprocess for the metadata in the test phase, using the $\textbf{[MASK]}$ token to replace each
-ASCII character of the filename then feeds into the model to do the inference.
-
 \par Recall that the $\textbf{[MASK]}$ token in the BERT language model is a special token which can be used to trim the vocabulary size,
 and gives the token-recovery capability to the downstream task model.
+
+\par However, in the test phase, if feeding the metadata to the model, people might argue that the model learns only the mapping function from
+the metadata, which is the filename in this case, to the image class, which makes it is unfair to compare the performance with other image classification models.
+Thus, to be more objective and fair, I add a preprocess step for the metadata in the test phase, using the $\textbf{[MASK]}$ token to replace each
+ASCII character of the filename then feeds into the model to do the inference.
 
 %-------------------------------------------------------------------------
 
@@ -244,11 +244,11 @@ which can provide 420 tera-flops of computation capability.
 
 \subsection{Results}
 
-Use the proposed model, and I tried different pre-trained language models to see the impact on classification accuracy.
-From the table-2, for the same size of a dataset with larger classes, it needs more epochs and training time for the classification model.
+Using the proposed model, I tried different pre-trained language models to see the impact on classification accuracy.
+From the Table (2), for the same size of a dataset with larger classes, it needs more epochs and training time for the classification model.
 For the same RoBERTa language model with different numbers of transformer layers, 24 layers of transformers had better accuracy than 3 layers,
 however, its training cost grows for the larger language model.
-For the same fine-tuned language model, classes number has some impact on the accuracy,
+For the same fine-tuned language model, classes number has positive impact on the accuracy,
 the fewer classes the dataset has, the more accurate results the model can achieve.
 
 

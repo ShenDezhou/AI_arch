@@ -53,7 +53,7 @@ Beijing, CN 100084\\
   I encode high dimension features extracting from images by ResNet followed by the pre-trained language models of
   \underline{B}idirectional \underline{E}ncoder \underline{R}epresentations from \underline{T}ransformers,
   then connect to a recurrent neural network layer, and a fully connected layer in the Character Recognize architecture.
-  The proposed recognition model outperforms the ResNet recognition model, and achieved accuracy of $71.74\%$ on the Baidu2019 street scene test set.
+  The proposed recognition model outperforms the ResNet recognition model, and achieved accuracy of $77.24\%$ on the Baidu2019 street scene test set.
 
 \end{abstract}
 
@@ -262,9 +262,9 @@ and take less time to train for the less amount of the character types comparing
 \hline
 Model & Dim & Dataset& Epochs & Accuracy \\
 \hline\hline
-ResNet      & 18 &  ICDAR2015 &50 &	23.67\% \\
-ResNet      & 18 &  Baidu2019	  &50 &	56.25\% \\
-ResBertNet  & 18+3 & Baidu2019    & 50	&	71.74\% \\
+ResNet      & 18 &  ICDAR2015     & 50 &	23.67\% \\
+ResNet      & 18 &  Baidu2019	  & 30 &	56.25\% \\
+ResBertNet  & 18+3 & Baidu2019    & 64	&	77.24\% \\
 \hline
 \end{tabular}
 \end{center}
@@ -278,6 +278,8 @@ The ResBertNet uses 18 layers of Residual Network and 3 layers of Transformers.}
 From Table (1) we can see that, on the ICDAR2015~\cite{karatzas2015icdar} dataset, the ResNet text recognition model has accuracy of 23.67\%,
 though the ICDAR2015 test set only contains 92 different English characters, numbers and punctuations,
 the ResNet model cannot achieve a satisfactory result after 50 epochs.
+From the training logs, I can see that the model has converged on a optimal point that after the 30th epoch,
+and has no improvement in accuracy afterwards.
 It shows that Street Scene View text recognition task is a hard problem and there is no easy way out.
 Moreover, the Baidu Chinese street text view dataset contains 4095 different character types.
 Compare to the accuracy of 56.25\% on the Baidu2019 street view text dataset, our models have preferable better results.
@@ -291,7 +293,7 @@ The transformers in the pre-trained language models use multiple layers for repr
 This paper proposes a novel idea by using pre-trained language models for Chinese scene text detection and recognition.
 The finding improves the accuracy in OCR for Chinese street scene, and might improve the accuracy of other language scene detection and recognition.
 Tests showed that the proposed model outperforms the ResNet model without augmentation on the image dataset,
-the model achieved accuracy of $71.74\%$ on the Baidu 2019 street view text recognition set.
+the model achieved accuracy of $77.24\%$ on the Baidu 2019 street view text recognition set.
 
 
 
