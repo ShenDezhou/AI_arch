@@ -49,12 +49,13 @@ Beijing, CN 100084\\
 
   In the film industry, visualizing actor stars' social media to analyze audience intention towards movies is essential for the movie producers.
   However, non-Euclidean social media are hard to analyze,
-  I propose an FC-GRU-CNN architecture, named as \underline{N}on\underline{E}uclidean\underline{N}et, for the social media visualization.
-  On the analysis of social media, social relationship representations, network characteristics and media sentiments are the key factors.
-  The FC-GRU-CNN architecture exploits the long-term memory ability of the GRU layer in the long sequences of film cast,
-  the mapping ability of the convolutional neural network layer in retrieving all-pairs shortest path of the actors' social relationship,
-  and non-linear capability in deep fully connected layer for movie text sentiments and other characteristics.
-  The proposed model accuracy is 14\% higher than Reed \etal~\cite{reed2016learning}'s model.
+  In the analysis of social media task, social relationship representations, network characteristics and media sentiments are three key factors.
+  Thus, I propose an FC-GRU-CNN architecture from the key visualization factors,
+  also named as \underline{N}on \underline{E}uclidean \underline{N}et, for the social media visualization.
+  The proposed architecture exploits the long-term memory ability of the GRU layers in the long sequences of film cast,
+  the mapping ability of the convolutional neural network layers in retrieving the all-pairs shortest path of the actors' social relationship,
+  and non-linear capability in the deep fully connected layers for movie text sentiments and other social media characteristics.
+  The proposed model achieved accuracy of 75\% in the Chinese Movie Box-Office Forecast $2011\sim2015$ dataset, which is higher than Reed \etal's model.
 
 \end{abstract}
 
@@ -62,7 +63,7 @@ Beijing, CN 100084\\
 \section{Introduction}
 
   With the development of social networks, the actors' influence in social media is increasing,
-  and the influence of actors' consumption spreads through social networks,
+  and the influence of actors' consumption spreads through the social networks,
   and using the long-term social network data to study the relationships between all actors, directors, and films remains a challenge.
   It is easy to see that the relationship between the box-office and the director, actors, scriptwriters, and producers are often non-linear, that is,
   it is difficult to use linear functions to build box-office prediction models.
@@ -210,8 +211,8 @@ The model in this paper has a determination of the coefficient of 98.58\% which 
 \label{fig:short}
 \end{figure*}
 
-Look at the box-office distribution of $1296$ films released between 2011 and 2015,
-the box-office forecasts can be seen as a binary classification task.
+I collected $1296$ Chinese films released from 2011 to 2015, and their corresponding social media of the key actors, named as Chinese Movie Box-Office Forecast $2011\sim2015$ dataset.
+Look at the box-office distribution of the dataset, the box-office forecasts can be seen as a binary classification task.
 To make the data evenly distributed, the film data were pre-processed by using the median box-office of $2.635$ million as the dividing line.
 So for the movies with less than $2.635$ million box-office are classified as A-class, movies with more than $2.635$ million box-office are classified as B-class.
 In the dataset division, the data were randomly selected using the $80\%:20\%$ segmentation ratio, and the training set of $1036$ films and the test set of $260$ movies were collected.
@@ -221,8 +222,8 @@ For actors without social network data, use zero-value initialization in the act
 As shown in Figure 1, the model is divided into three parts:
 
 \begin{itemize}
-\item The first part is the fully connected layer, its input feature is the film metadata and movie-related Sina Weibo sentiments, in a total of 5 dimensions.
-\item The second part is the GRU layer, the input feature is the actor social network measurement characteristics and artistic characteristics, the film cast is a long list,
+\item The first part is the fully connected layers, its input feature is the film metadata and movie-related Sina Weibo sentiments, in total of 5 dimensions.
+\item The second part is the GRU layers, the input feature is the actor social network measurement characteristics and artistic characteristics, the film cast is a long list,
 the longest 225 actors, for less than 225 actors using the front-end padding, the GRU layer is to solve the long-term memory loss of the structure.
 \item The last part is the 5 CNN layers, input from the actors' social network shortest path feature, similarly, the film cast is a long list,
 input less than 225 dimensions is fulfilled by padding, CNN has a good ability to capture multi-dimensional features, and use of Max-pooling layer to solve the problem of multi-dimension feature extraction.
@@ -230,9 +231,9 @@ input less than 225 dimensions is fulfilled by padding, CNN has a good ability t
 Finally, these three parts are merged into one layer and then connect to a Softmax layer, and the $L_2$ regularization method is adopted to avoid overfitting.
 
 
-In summary, randomly choose 10 movies as the test set, as shown in Table 1.
+In summary, randomly choose 10 movies as the test set, as shown in Table (1).
 The accuracy of the binary classification model on the training set reached 99.61\%, the accuracy on the test set is 75\%.
-Compared to Reed \etal model, see Table 2, the proposed FC-GRU-CNN model converges on the training set and achieves better prediction results on the test set.
+Compared to Reed \etal model, see Table (2), the proposed model converges on the training set and achieves better prediction results on the test set.
 Therefore, it can provide decision-making advice in the task of selecting suitable actors for a to-be-cast film,
 and in the box-office prediction task, the model can provide more accurate predictions in the market.
 
@@ -240,7 +241,7 @@ and in the box-office prediction task, the model can provide more accurate predi
 \begin{center}
 \begin{tabular}{|l|c|c|}
 \hline
-Movie& Score &BoxOffice\\
+Movie& is\_Hit &BoxOffice\\
 \hline\hline
 72 hours of sword theft & 1 & 108 \\
 Ballera's Little Magic Fairy& 1 & 1916\\
@@ -255,7 +256,7 @@ Beijing Love Story& 1& 40555\\
 \hline
 \end{tabular}
 \end{center}
-\caption{box-office model predictions in movie test dataset with 10 samples.}
+\caption{The box-office model predictions in movie test dataset of 10 samples.}
 \end{table}
 
 
@@ -267,7 +268,7 @@ Beijing Love Story& 1& 40555\\
 Model & F1-score \\
 \hline\hline
 Reed \etal  & 61.54\% \\
-This paper & 75.0\% \\
+FGC & 75.0\% \\
 \hline
 \end{tabular}
 \end{center}
@@ -277,7 +278,7 @@ This paper & 75.0\% \\
 \section{Conclusion}
 
 According to the box-office prediction model, this paper discussed the relationship between the movie metadata, Sina Weibo text sentiments, social relationship representations, network characteristics, and actors' artistic contribution in detail.
-I proposed an FC-GRU-CNN box-office prediction model, tested on a dataset with $1296$ movies released in China mainland from 2011 to 2015, the model accuracy improves 14\% compared to Reed \etal's model.
+I proposed an FC-GRU-CNN prediction model, tested on the Chinese Movie Box-Office Forecast $2011\sim2015$ dataset, the model has accuracy of 75\%, which has improved 14\% compared to Reed \etal's model.
 
 {\small
 \bibliographystyle{ieee_fullname}

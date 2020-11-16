@@ -48,9 +48,8 @@ Beijing, CN 100084\\
 %%%%%%%%% ABSTRACT
 \begin{abstract}
 
-  Image classification and categorization are essential to the capability of telling the difference between images for a machine
-  which is initially designed for vision purposes.
-  As \underline{B}idirectional \underline{E}ncoder \underline{R}epresentations from \underline{T}ransformers became popular in many tasks of natural language processing recent years,
+  Image classification and categorization are essential to the capability of telling the difference between images for a machine vision task.
+  As the \underline{B}idirectional \underline{E}ncoder \underline{R}epresentations from \underline{T}ransformers became popular in many tasks of natural language processing recent years,
   it is intuitive to use these pre-trained language models for enhancing the computer vision tasks, \eg image classification.
   In this paper, by encoding image pixels using pre-trained transformers, then connect to a fully connected layer,
   the classification model outperforms the Wide ResNet model and the linear-probe iGPT-L model,
@@ -128,16 +127,16 @@ each pixel had its pixel-channel code, ranges from 0x00 to 0xff for different co
 Thus, taking these pixels in an image is identical to ASCII characters in a document.
 Generality speaking, the performance of the pre-trained language models achieved in the document classification tasks, can be transferred to image classification naturally.
 
-\par Recall that Kim~\cite{kim2014convolutional} had proved that unsupervised pre-trained language model $word2vec$ and CNN outperformed many other machine learning algorithms,
+Recall that Kim~\cite{kim2014convolutional} had proved that unsupervised pre-trained language model $word2vec$ and CNN outperformed many other machine learning algorithms,
 \eg support vector machines and conditional random field, in many datasets such as movie reviews, Stanford sentiment treebank, and TREC question.
 Cui \etal's pre-trained language model, namely RBT3, RBTL3, and RoBERTa-wwm-ext-large, had improved performances over many other machine learning algorithms.
 BERT and RoBERTa-wwm-ext-large models both achieved an f1-score of 97.8\% in the THUCNews dataset, which contains 65 thousands news reports in 10 domains.
 
-\par I used RBTL3 and RoBERTa-wwm-ext-large pre-trained language model in two Chinese Judicial datasets, which has 2 and 4 classes.
+I used RBTL3 and RoBERTa-wwm-ext-large pre-trained language model in two Chinese Judicial datasets, which has 2 and 4 classes.
 The \textit{Two-Case} dataset annotated civil and criminal cases, and the \textit{Four-Case} dataset annotated by civil, criminal, intellectual property, and administrative cases.
 The \textit{Two-Case} dataset has $19508$ training documents and $2000$ test documents, and the \textit{Four-Case} dataset has $34789$ training documents and $2013$ test documents.
 
-\par From Table (1), by combining the pre-trained language model with fully connected layer as the document classification model,
+From Table (1), by combining the pre-trained language model with fully connected layer as the document classification model,
 the test accuracy exceeds the other popular machine learning algorithms.
 Therefore, the pixel channels of an image can be properly represented by these pre-trained language models.
 
@@ -182,7 +181,7 @@ The model architecture has seven functional layers:
 \item {\bf Output layer}
 \end{itemize}
 
-\par The CIFAR-10 dataset contains 60000 color images with a resolution of $32\times32$ in 10 classes, and the CIFAR-100 dataset has 100 classes containing 600 images each.
+\par The CIFAR-10 dataset contains 60,000 color images with a resolution of $32\times32$ in 10 classes, and the CIFAR-100 dataset has 100 classes containing 600 images each.
 Encode the image by the sequence of RGB channel values, in the order of Red-channel, Green-channel, and Blue-channel,
 then encode other meta-data if provided, as a sequence of ASCII characters.
 In the Concatenation layer, the pixel-channel value and metadata are concatenated, put a special token of $\textbf{[CLS]}$ at the start,
@@ -192,7 +191,7 @@ Keep the first 256 characters and last 256 characters of the concatenated sequen
 some blue-channel value, and all the meta value in common cases.
 In the Encoder layer and the Embedding layer, trimmed sequence of values are encoded by BERT-like models,
 and get the encoded representation of the token $\textbf{[CLS]}$ as the images' language model embeddings.
-In the Feature-Extraction layer, a combination of one dropout layer, one fully connected layer, and one softmax layer, as equation (2), is used.
+In the Feature-Extraction layer, a combination of one dropout layer, one fully connected layer, and one softmax layer, as Equation (2), is used.
 In the Output layer, the classification label of the image is feed in the model.
 
 \begin{equation}
@@ -248,8 +247,8 @@ Using the proposed model, I tried different pre-trained language models to see t
 From the Table (2), for the same size of a dataset with larger classes, it needs more epochs and training time for the classification model.
 For the same RoBERTa language model with different numbers of transformer layers, 24 layers of transformers had better accuracy than 3 layers,
 however, its training cost grows for the larger language model.
-For the same fine-tuned language model, classes number has positive impact on the accuracy,
-the fewer classes the dataset has, the more accurate results the model can achieve.
+For the same fine-tuned language model, classes number has positive impact on the accuracy.
+And the fewer classes the dataset has, the more accurate results the model can achieve.
 
 
 \begin{table}
@@ -265,17 +264,22 @@ RoBERTa-large  & CIFAR-10 & 6	&	99.60\% \\
 RBT3   & CIFAR-100 & 12	&	99.66\% \\
 RBTL3  & CIFAR-100 & 6  & 	99.10\% \\
 RoBERTa-large & CIFAR-100 & 16 &	99.76\% \\
+\hline\hline
+iGPT-L & CIFAR-10 & $18_a$ & 99.0\%\\
+iGPT-L & CIFAR-100 & $18_a$ & 88.5\%\\
 \hline
 \end{tabular}
 \end{center}
-\caption{Comparision of accuracy of the pre-trained language models on the CIFAR-10 and CIFAR-100 datasets in the image classification task.
-RoBERTa-large is short for RoBERTa-wwm-ext-large.}
+\caption{Comparision of accuracy of the pre-trained language models and iGPT-L on the CIFAR-10 and CIFAR-100 datasets in the image classification task.
+RoBERTa-large is short for RoBERTa-wwm-ext-large. (a) iGPT-L model was trained far more than 18 epochs, it was trained by 1,000,000 iterations of pre-training and a few epochs for fine-tuning.}
 \end{table}
 
 
 \subsection{Discussion}
 
- Compare to iGPT-L's accuracy of 96.3\% on the CIFAR-10 dataset without augmentation and 82.8\% on the CIFAR-100 dataset, our models have preferable better results.
+The iGPT-L was trained on the ImageNet dataset, and it has 48 layers of transoformers and 1.4 billion parameters, and the embedding size takes 1536,
+so it has almost identical layers with GPT-2 language model, except for 1.5 billion parameters and 1600 embedding size.
+Compare to iGPT-L's accuracy of 96.3\% on the CIFAR-10 dataset without augmentation and 82.8\% on the CIFAR-100 dataset, our models have preferable better results.
 The reason that the model's outstanding performance lies in the large pre-trained data for BERT, on top of that fine-tuned by RoBERTa, and use of extra language corpus of
 $5.4$ billions of tokens of wiki data and other resources.
 The transformers in the pre-trained language models use multiple layers for representing images and may be used in other Computer Vision task, \eg object detection, gesture prediction.
@@ -283,8 +287,9 @@ The transformers in the pre-trained language models use multiple layers for repr
 
 \section{Conclusion}
 
- This paper proposed a novel idea by using pre-trained language models for image representation and take image classification as an example of its performance in Computer Vision tasks.
- The finding might benefit various subjects, namely Education, Medical, Chemistry, Physics, Cosmology, Geography, Climate and Materials Science for their specific research.
+ This paper proposed a novel idea by using the pre-trained language models for image representation and take image classification
+ as an example to prove its performance for Computer Vision tasks, such as image classification.
+ The finding might benefit various subjects, namely  for their specific research.
 Tests showed that the proposed model outperforms the iGPT-L model without augmentation on the image dataset,
 the model achieved accuracy of $99.60\%\sim99.74\%$ on the CIFAR-10 image set,
 and accuracy of $99.10\%\sim99.76\%$ on the CIFAR-100 image set.
