@@ -53,7 +53,7 @@ Beijing, CN 100084\\
   I encode high dimension features extracting from images by ResNet followed by the pre-trained language models of
   \underline{B}idirectional \underline{E}ncoder \underline{R}epresentations from \underline{T}ransformers,
   then connect to a recurrent neural network layer, and a fully connected layer in the Character Recognize architecture.
-  The proposed recognition model outperforms the ResNet recognition model, and achieved accuracy of $79.82\%$ on the Baidu2019 street scene test set.
+  The proposed recognition model outperforms the ResNet recognition model, and achieved accuracy of $83.74\%$ on the Baidu2019 street scene test set.
 
 \end{abstract}
 
@@ -264,7 +264,7 @@ Model & Dim & Dataset& Epochs & Accuracy \\
 \hline\hline
 ResNet      & 18 &  ICDAR2015     & 50 &	23.67\% \\
 ResNet      & 18 &  Baidu2019	  & 30 &	56.25\% \\
-ResBertNet  & 18+3 & Baidu2019    & 72	&	79.82\% \\
+ResBertNet  & 18+3 & Baidu2019    & 96	&	83.74\% \\
 \hline
 \end{tabular}
 \end{center}
@@ -292,8 +292,8 @@ The transformers in the pre-trained language models use multiple layers for repr
 
 This paper proposes a novel idea by using pre-trained language models for Chinese scene text detection and recognition.
 The finding improves the accuracy in OCR for Chinese street scene, and might improve the accuracy of other language scene detection and recognition.
-Tests showed that the proposed model outperforms the ResNet model without augmentation on the image dataset,
-the model achieved accuracy of $79.82\%$ on the Baidu 2019 street view text recognition set.
+Tests showed that the proposed model outperforms the ResNet model with augmentation on the image dataset,
+the model achieved accuracy of $83.74\%$ on the Baidu 2019 street view text recognition set.
 
 
 
