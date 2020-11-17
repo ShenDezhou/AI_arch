@@ -1,0 +1,8 @@
+services:
+  web:
+    build: .
+    image: powerlawapsp:1.0
+    environment:
+      - gpus=all
+    network_mode: "host"
+    command: python3 train.py -c config/apsp_gpu_config.json

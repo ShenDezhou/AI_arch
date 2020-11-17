@@ -1,0 +1,13 @@
+{
+  "model_type": "powerlaw",
+
+  "train_file_path": "data/train.npz",
+  "device": "gpu",
+  "diameter": 9,
+  "converge_check": true,
+  "sparse_check": true,
+  "threshold": 0.1,
+  "lr": 1e-4,
+  "num_epoch": 10,
+  "experiment_name": "BERT"
+}
