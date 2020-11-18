@@ -67,11 +67,11 @@ args = parser.parse_args()
 class LawaIterable(object):
     def __init__(self, filename):
         self.source = filename
-
+        self.limit = None
 
     def __iter__(self):
         with open(self.source, 'r', encoding='utf-8') as fin:
-            for x, line in enumerate(fin):
+            for line in itertools.islice(fin, self.limit):
                 yield list(lawa.cut(line))
 
 
