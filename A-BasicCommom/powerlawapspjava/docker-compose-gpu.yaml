@@ -1,0 +1,9 @@
+services:
+  web:
+    image: jpowerlawapsp-gpu:1.0
+    environment:
+      - gpus=all
+    network_mode: "host"
+    volumes:
+    - /mnt/data/jpowerlaw/matrix.npy:/workspace/matrix.npy
+    command: java -jar target/apsp-gpu.jar matrix.npy 9
