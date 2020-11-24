@@ -5,5 +5,5 @@ services:
       - gpus=all
     network_mode: "host"
     volumes:
-    - /mnt/data/jpowerlaw/matrix.npy:/workspace/matrix.npy
-    command: java -jar target/apsp-gpu.jar matrix.npy 9
+      - /mnt/data/jpowerlaw/matrix.npy:/workspace/matrix.npy
+    command: java -jar -Dorg.bytedeco.javacpp.logger.debug=true target/apsp-gpu.jar matrix.npy 9

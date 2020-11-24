@@ -1,4 +1,4 @@
-FROM machinelearning:1.0
+FROM machinelearning:1.2
 USER root
 
 RUN apt-get update
@@ -11,5 +11,6 @@ COPY settings.xml /usr/share/maven/conf/
 #RUN mvn package -f pom.xml
 RUN mvn package -f gpom.xml
 # Run when the container launches
+ENV LD_LIBRARY_PATH /usr/lib/x86_64-linux-gnu/:$LD_LIBRARY_PATH
 WORKDIR /workspace
 CMD ["python3"]

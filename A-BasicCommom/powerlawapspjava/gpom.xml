@@ -25,9 +25,15 @@
 <!--        CUDA support: need to uncomment for use GPU, however GPU is slower than CPU.-->
         <dependency>
             <groupId>org.nd4j</groupId>
-            <artifactId>nd4j-cuda-10.0-platform</artifactId>
+            <artifactId>nd4j-cuda-10.2-platform</artifactId>
             <version>${nd4j.version}</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.bytedeco.javacpp-presets/cuda -->
+          <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>cuda-platform</artifactId>
+            <version>10.2-7.6-1.5.2</version>
+          </dependency>
 
         <!--CPU support -->
 <!--        <dependency>-->
