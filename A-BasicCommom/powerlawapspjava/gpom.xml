@@ -34,7 +34,11 @@
             <artifactId>cuda-platform</artifactId>
             <version>10.2-7.6-1.5.2</version>
           </dependency>
-
+         <dependency>
+             <groupId>org.bytedeco</groupId>
+             <artifactId>cuda-platform-redist</artifactId>
+             <version>10.2-7.6-1.5.2</version>
+         </dependency>
         <!--CPU support -->
 <!--        <dependency>-->
 <!--            <groupId>org.nd4j</groupId>-->
