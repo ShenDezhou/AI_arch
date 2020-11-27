@@ -1,0 +1,7 @@
+services:
+  web:
+    image: civilsix:1.0
+    network_mode: "host"
+    volumes:
+    - /mnt/data/civil/model/:/workspace/model/
+    command: python3 torch_server.py -p 58094
