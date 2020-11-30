@@ -108,7 +108,7 @@ export function hotKeywordQuery(keywords,type) {
       "menu":type,
       "size":"10"
     }
-  
+
     return axios({
       url: `${urlPKCenter_form}`,
       method: "post",
@@ -893,3 +893,17 @@ export function getCases(data) {
         }
     })
 }
+
+// export function request(url) {
+//
+//   const ins1 = axios.create({
+//       baseURL: `/apis`,
+//       changeOrigin : true
+//   });
+//
+//   const ins2 =  axios.create({
+//       baseURL: `/img`,
+//       changeOrigin : false
+//   });
+//   return [ins1, ins2][url]
+// }

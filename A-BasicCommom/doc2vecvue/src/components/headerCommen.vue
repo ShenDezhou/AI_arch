@@ -12,26 +12,26 @@
 			mode="horizontal"
 			@select="handleSelect"
 			id="fb_el_menu">
-				<el-menu-item index="acdemic">
-					<a :href="acdemic">
-						<span slot="title">Acdemic</span>
-					</a>
-				</el-menu-item>
-        <el-menu-item index="competetion">
-          <a :href="competetion">
-            <span slot="title">Competetion</span>
-          </a>
-        </el-menu-item>
-        <el-menu-item index="books">
-          <a :href="books">
-            <span slot="title">Books</span>
-          </a>
-        </el-menu-item>
-        <el-menu-item index="works">
-          <a :href="works">
-            <span slot="title">Works</span>
-          </a>
-        </el-menu-item>
+<!--				<el-menu-item index="acdemic">-->
+<!--					<a :href="acdemic">-->
+<!--						<span slot="title">Acdemic</span>-->
+<!--					</a>-->
+<!--				</el-menu-item>-->
+<!--        <el-menu-item index="competetion">-->
+<!--          <a :href="competetion">-->
+<!--            <span slot="title">Competetion</span>-->
+<!--          </a>-->
+<!--        </el-menu-item>-->
+<!--        <el-menu-item index="books">-->
+<!--          <a :href="books">-->
+<!--            <span slot="title">Books</span>-->
+<!--          </a>-->
+<!--        </el-menu-item>-->
+<!--        <el-menu-item index="works">-->
+<!--          <a :href="works">-->
+<!--            <span slot="title">Works</span>-->
+<!--          </a>-->
+<!--        </el-menu-item>-->
 <!--				<el-menu-item index="lawsNew">-->
 <!--					<a :href="lawsNew">-->
 <!--						<span slot="title">法律法规</span>-->

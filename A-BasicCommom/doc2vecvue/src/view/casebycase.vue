@@ -14,7 +14,7 @@
                         <el-col :span="20" id="onestopSearch" class="onestopSearch" style="margin-left: 10px;">
                             <span class="onestoptxt">案例检索</span>
                             <el-input
-                                :placeholder="select == '1'? '默认在标题和发文字号中检索':'请输入检索内容'"
+                                :placeholder="select == '1'? '演示系统仅支持文档号检索：侵权责任、纠纷借款合同纠纷、劳动合同纠纷、租赁合同、纠纷继承纠纷、追偿权纠纷':'请输入检索民事案例文档'"
                                 clearable
                                 v-model="keyword"
                                 class="input-with-select search_input_wrap"
@@ -22,12 +22,12 @@
                                 @keyup.enter.native="getList"
                                 @clear="getList"
                             >
-                                <el-select v-model="select" slot="prepend" class="search_select_wrap" @change="(item)=>titleChange(item,'select')">
+                                <!-- <el-select v-model="select" slot="prepend" class="search_select_wrap" @change="(item)=>titleChange(item,'select')">
                                 <el-option label="默认" value="1"></el-option>
                                 <el-option label="标题" value="title"></el-option>
                                 <el-option label="正文" value="fulltext"></el-option>
-                                <!-- <el-option label="文号" value="documentno"></el-option> -->
-                                </el-select>
+                                <el-option label="文号" value="documentno"></el-option>
+                                </el-select> -->
                             </el-input>
                         </el-col>
                         <el-col :span='3' >
@@ -94,8 +94,29 @@
                                                         <p class="two">建议您修改相关查询条件重新查询</p>
                                                     </div>
                                                 </template>
-                                                <template v-if="total_law > 0">
+                                                <template v-if="total_law > 0 &&! lawsDetailSelf">
                                                     <div class="content_mian_wrap_one" v-for="(item,index) in lawsForm.pos" :key="index">
+                                                        <div class="circle"></div>
+                                                        <div class="contentTitle_onestop">
+                                                            <a :href="'#/detail/'+choseType_law+'/'+item" target="_blank">
+                                                            <span v-html=""></span>
+                                                            </a>
+                                                        </div>
+                                                        <div class="contentCon">
+                                                            <!-- {{item}} -->
+                                                            <template v-if="item">
+                                                                <span v-html="item"></span> /
+                                                            </template>
+
+                                                            <!-- <span v-if="item.DocumentNO && choseType_law != 'twd'">{{item.DocumentNO}} / </span>
+                                                            <span v-if="item.DocumentNO && choseType_law == 'twd'">{{item.DocumentNO}} </span>
+                                                            <span v-if="item.IssueDate">{{item.IssueDate}}发布 </span>
+                                                            <span v-if="item.ImplementDate"> / {{item.ImplementDate}}实施</span> -->
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                                <template v-if="lawsDetailSelf">
+                                                    <div class="content_mian_wrap_one" v-for="(item, index) in [lawsDetailSelf.data]" :key="index">
                                                         <div class="circle"></div>
                                                         <div class="contentTitle_onestop">
                                                             <a :href="'#/detail/'+choseType_law+'/'+item" target="_blank">
@@ -105,9 +126,9 @@
                                                         <div class="contentCon">
                                                             <!-- {{item}} -->
                                                             <template v-if="item">
-                                                                <span v-html="item"></span> /
+                                                                <span v-html="item.SourceFullText"></span>
                                                             </template>
-
+                                                            <span></span>
                                                             <!-- <span v-if="item.DocumentNO && choseType_law != 'twd'">{{item.DocumentNO}} / </span>
                                                             <span v-if="item.DocumentNO && choseType_law == 'twd'">{{item.DocumentNO}} </span>
                                                             <span v-if="item.IssueDate">{{item.IssueDate}}发布 </span>
@@ -145,22 +166,44 @@
                                                         <p class="two">建议您修改相关查询条件重新查询</p>
                                                     </div>
                                                 </template>
-                                                <template v-if="total_law > 0">
-                                                    <div class="content_mian_wrap_one" v-for="(item,index) in lawsList.data" :key="index">
+                                                <template v-if="total_law > 0 && lawsDetailList.length==0">
+                                                    <div class="content_mian_wrap_one" v-for="(item,index) in lawsList" :key="index">
                                                         <div class="circle"></div>
                                                         <div class="contentTitle_onestop">
-                                                            <a :href="'#/detail/'+choseType_law+'/'+item[0]" target="_blank">
-                                                            <span v-html="item[0]"></span>
+                                                            <a :href="'#/detail/'+choseType_law+'/'+item[0][0]" target="_blank">
+                                                            <span v-html="item[0][0]"></span>
                                                             </a>
                                                         </div>
                                                         <div class="contentCon">
                                                             <!-- {{item}} -->
-                                                            <template v-if="item[0]">
-                                                                <span v-html="item[0]"></span> /
+                                                            <template v-if="item[0][0]">
+                                                                ID/<span v-html="item[0][0]"></span>
                                                             </template>
-                                                            <template v-if="item[1]">
-                                                                <span v-html="item[1]"></span> /
+                                                            <template v-if="item[0][1] <= 1">
+                                                              评分/
+                                                                <span v-html="item[0][1]"></span>
                                                             </template>
+
+
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                                <template v-if="lawsDetailList.length > 0">
+                                                    <div class="content_mian_wrap_one" v-for="(item,index) in lawsDetailList" :key="index">
+                                                        <div class="circle"></div>
+                                                        <div class="contentTitle_onestop">
+                                                            <a :href="'#/detail/'+choseType_law+'/'+item" target="_blank">
+                                                            <span v-html="item.data.Title"></span>
+                                                            </a>
+                                                        </div>
+                                                        <div class="contentCon">
+                                                            <!-- {{item}} -->
+                                                            <template v-if="item">
+                                                                <span v-html="item.data.SourceFullText"></span> /
+                                                            </template>
+<!--                                                            <template v-if="item[1]">-->
+<!--                                                                <span v-html="item[1]"></span> /-->
+<!--                                                            </template>-->
 
 
                                                         </div>
@@ -228,6 +271,8 @@
                     logo_url: "../../static/img/logoo.png"
                 },
                 lawsList:[],
+                lawsDetailList:[],
+                lawsDetailSelf:"",
                 exampleList:[],
                 journalList:[],
                 journalNavbar:{},
@@ -367,14 +412,16 @@
                 // this.searchMethod_jou(this.qikanForm);
             },
             //搜索
-            getList(){
+            async getList(){
                 // this.searchMethod();
                 // var url = this.$route.path;
                 // addSearch(this.keyword, url);
                 this.lawsForm.pos = [this.keyword];
                 // this.exampleForm.keyword=this.keyword;
                 // this.qikanForm.keyword=this.keyword;
-                this.searchMethod_law(this.lawsForm);
+                await this.searchMethod_law(this.lawsForm);
+                this.searchLaw_detail1(this.lawsList);
+                this.searchLaw_detail2([this.keyword]);
                 // this.searchMethod_exp(this.exampleForm);
                 // this.searchMethod_jou(this.qikanForm);
             },
@@ -382,25 +429,76 @@
             handleSelect(queryData) {
             // console.log(queryData, "----------------------------------------	-----");
             },
+
             searchMethod_law(data){
-                debugger
                 console.log(JSON.stringify(data))
                 this.lawsShowLoad=true;
-                this.axios.post(`/apis/z`, data, {
-                    headers: { _api_name: "fb_criminal", _api_version: "1.0.0" }
+                 this.axios({
+                      method:'POST',
+                      url:'/api1/z',
+                      data:data
                 }).then(res => {
                     console.log('-----------------01返回数据-------------------',res);
                     this.lawsShowLoad=false;
-                    if(res.data.data.length > 0){
+                    if (res.data.data.length > 0){
                         this.lawsList=res.data;
                         this.total_law=res.data.data.length;
+
                     }else{
                         this.total_law=0;
                     }
                     // this.navbarVal = res.data.navbar;
                     // this.lawsNavbar = res.data.navbar;
                 });
+                return this.lawsList;
             },
+           searchLaw_detail1(data){
+              debugger
+              console.log(JSON.stringify(data))
+              if(data==null || data==undefined || ! data.hasOwnProperty('data'))
+               return;
+
+              this.lawsDetailList = []
+              for (const [key, value] of Object.entries(data.data)) {
+                let params = {
+                  tableName:'nvwa_pfnl_prod',
+                  rowKey: value[0]
+                }
+                this.axios({
+                      method:'GET',
+                      url:'/api2/data',
+                      params:params
+                }).then(resp=> {
+                    this.lawsDetailList.push(resp.data)
+                }).catch(function (error) {
+                  console.log(error);
+                })
+              }
+              console.log('-----------------02返回数据-------------------', JSON.stringify(this.lawsDetailList));
+          },
+          searchLaw_detail2(data){
+              debugger
+              console.log(JSON.stringify(data))
+              // this.lawsDetailList = []
+             if(data==null || data==undefined)
+               return;
+              for (const value of data) {
+                let params = {
+                  tableName:'nvwa_pfnl_prod',
+                  rowKey: value
+                }
+                this.axios({
+                      method:'GET',
+                      url:'/api2/data',
+                      params:params
+                }).then(resp=> {
+                    this.lawsDetailSelf = resp.data
+                }).catch(function (error) {
+                  console.log(error);
+                })
+              }
+              console.log('-----------------03返回数据-------------------', JSON.stringify(this.lawsDetailSelf));
+          },
             selectIndex(index){
                 this.choseType_law=index;
                 this.lawsForm.index=index;

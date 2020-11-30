@@ -15,7 +15,7 @@ export default new Router({
       meta:{title:'ShenDezhou@THU'},
       component: ()=>import('@/view/index'),
       beforeEnter: (to, from, next) => {
-        next({ path: '/acdemic' })
+        next({ path: '/casebycase' })
       }
     },
     {
