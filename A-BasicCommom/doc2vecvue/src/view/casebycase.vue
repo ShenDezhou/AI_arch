@@ -105,7 +105,7 @@
                                                         <div class="contentCon">
                                                             <!-- {{item}} -->
                                                             <template v-if="item">
-                                                                <span v-html="item"></span> /
+                                                                <span v-html="item"></span>
                                                             </template>
 
                                                             <!-- <span v-if="item.DocumentNO && choseType_law != 'twd'">{{item.DocumentNO}} / </span>
@@ -166,22 +166,22 @@
                                                         <p class="two">建议您修改相关查询条件重新查询</p>
                                                     </div>
                                                 </template>
-                                                <template v-if="total_law > 0 && lawsDetailList.length==0">
-                                                    <div class="content_mian_wrap_one" v-for="(item,index) in lawsList" :key="index">
+                                                <template v-if="lawsList.length>0 && lawsDetailList.length==0">
+                                                    <div class="content_mian_wrap_one" v-for="(item,index) in lawsList[0]" :key="index">
                                                         <div class="circle"></div>
                                                         <div class="contentTitle_onestop">
-                                                            <a :href="'#/detail/'+choseType_law+'/'+item[0][0]" target="_blank">
-                                                            <span v-html="item[0][0]"></span>
+                                                            <a :href="'#/detail/'+choseType_law+'/'+item[0]" target="_blank">
+                                                            <span v-html="item[0]"></span>
                                                             </a>
                                                         </div>
                                                         <div class="contentCon">
                                                             <!-- {{item}} -->
-                                                            <template v-if="item[0][0]">
-                                                                ID/<span v-html="item[0][0]"></span>
+                                                            <template v-if="item[0]">
+                                                                ID/<span v-html="item[0]"></span>
                                                             </template>
-                                                            <template v-if="item[0][1] <= 1">
+                                                            <template v-if="item[1] <= 1">
                                                               评分/
-                                                                <span v-html="item[0][1]"></span>
+                                                                <span v-html="item[1]"></span>
                                                             </template>
 
 
@@ -199,7 +199,7 @@
                                                         <div class="contentCon">
                                                             <!-- {{item}} -->
                                                             <template v-if="item">
-                                                                <span v-html="item.data.SourceFullText"></span> /
+                                                                <span v-html="item.data.SourceFullText"></span>
                                                             </template>
 <!--                                                            <template v-if="item[1]">-->
 <!--                                                                <span v-html="item[1]"></span> /-->
@@ -209,25 +209,25 @@
                                                         </div>
                                                     </div>
                                                 </template>
-                                                <template  v-if="total_law > 0 && !lawsShow">
-                                                    <div class="clickMore">
-                                                        <el-button type="primary" plain @click="clickMoreMethod" >点击查看更多</el-button>
-                                                    </div>
-                                                </template>
-                                                <template v-if="total_law > 0 && lawsShow">
-                                                    <div class="pagination_onestop">
-                                                        <el-pagination
-                                                            @size-change="handleSizeChange"
-                                                            @current-change="handleCurrentChange"
-                                                            :current-page="lawsForm.page"
-                                                            :page-sizes="[10, 50, 100, 200,400]"
-                                                            :page-size="lawsForm.size"
-                                                            layout="prev, pager, next,sizes,jumper,->,total,slot"
-                                                            background
-                                                            :total="lawsList.total"
-                                                        ></el-pagination>
-                                                    </div>
-                                                </template>
+<!--                                                <template  v-if="total_law > 0 && !lawsShow">-->
+<!--                                                    <div class="clickMore">-->
+<!--                                                        <el-button type="primary" plain @click="clickMoreMethod" >点击查看更多</el-button>-->
+<!--                                                    </div>-->
+<!--                                                </template>-->
+<!--                                                <template v-if="total_law > 0 && lawsShow">-->
+<!--                                                    <div class="pagination_onestop">-->
+<!--                                                        <el-pagination-->
+<!--                                                            @size-change="handleSizeChange"-->
+<!--                                                            @current-change="handleCurrentChange"-->
+<!--                                                            :current-page="lawsForm.page"-->
+<!--                                                            :page-sizes="[10, 50, 100, 200,400]"-->
+<!--                                                            :page-size="lawsForm.size"-->
+<!--                                                            layout="prev, pager, next,sizes,jumper,->,total,slot"-->
+<!--                                                            background-->
+<!--                                                            :total="lawsList.length"-->
+<!--                                                        ></el-pagination>-->
+<!--                                                    </div>-->
+<!--                                                </template>-->
                                             </div>
                                         </div>
                                     </div>
@@ -419,9 +419,10 @@
                 this.lawsForm.pos = [this.keyword];
                 // this.exampleForm.keyword=this.keyword;
                 // this.qikanForm.keyword=this.keyword;
+                this.searchLaw_detail2([this.keyword]);
                 await this.searchMethod_law(this.lawsForm);
                 this.searchLaw_detail1(this.lawsList);
-                this.searchLaw_detail2([this.keyword]);
+
                 // this.searchMethod_exp(this.exampleForm);
                 // this.searchMethod_jou(this.qikanForm);
             },
@@ -430,15 +431,15 @@
             // console.log(queryData, "----------------------------------------	-----");
             },
 
-            searchMethod_law(data){
+            async searchMethod_law(data){
                 console.log(JSON.stringify(data))
                 this.lawsShowLoad=true;
-                 this.axios({
+                await this.axios({
                       method:'POST',
                       url:'/api1/z',
                       data:data
                 }).then(res => {
-                    console.log('-----------------01返回数据-------------------',res);
+                    console.log('-----------------01返回数据-------------------',JSON.stringify(res.data));
                     this.lawsShowLoad=false;
                     if (res.data.data.length > 0){
                         this.lawsList=res.data;
@@ -447,17 +448,17 @@
                     }else{
                         this.total_law=0;
                     }
+                    return this.lawsList;
                     // this.navbarVal = res.data.navbar;
                     // this.lawsNavbar = res.data.navbar;
                 });
-                return this.lawsList;
+                // return this.lawsList;
             },
            searchLaw_detail1(data){
               debugger
               console.log(JSON.stringify(data))
               if(data==null || data==undefined || ! data.hasOwnProperty('data'))
                return;
-
               this.lawsDetailList = []
               for (const [key, value] of Object.entries(data.data)) {
                 let params = {

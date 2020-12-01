@@ -1,0 +1,7 @@
+services:
+  web:
+    image: civilsixui:1.0
+    network_mode: "host"
+    environment:
+      PORT: 58095
+    command: npm run dev
