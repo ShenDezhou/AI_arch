@@ -1,0 +1,246 @@
+%
+% File acl2021.tex
+%
+%% Based on the style files for EMNLP 2020, which were
+%% Based on the style files for ACL 2020, which were
+%% Based on the style files for ACL 2018, NAACL 2018/19, which were
+%% Based on the style files for ACL-2015, with some improvements
+%%  taken from the NAACL-2016 style
+%% Based on the style files for ACL-2014, which were, in turn,
+%% based on ACL-2013, ACL-2012, ACL-2011, ACL-2010, ACL-IJCNLP-2009,
+%% EACL-2009, IJCNLP-2008...
+%% Based on the style files for EACL 2006 by 
+%%e.agirre@ehu.es or Sergi.Balari@uab.es
+%% and that of ACL 08 by Joakim Nivre and Noah Smith
+
+\documentclass[11pt,a4paper]{article}
+\usepackage[hyperref]{acl2021}
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\renewcommand{\UrlFont}{\ttfamily\small}
+
+% This is not strictly necessary, and may be commented out,
+% but it will improve the layout of the manuscript,
+% and will typically save some space.
+\usepackage{microtype}
+
+%\aclfinalcopy % Uncomment this line for the final submission
+%\def\aclpaperid{***} %  Enter the acl Paper ID here
+
+%\setlength\titlebox{5cm}
+% You can expand the titlebox if you need extra space
+% to show all the authors. Please do not make the titlebox
+% smaller than 5cm (the original size); we will check this
+% in the camera-ready version and ask you to change it back.
+
+\newcommand\BibTeX{B\textsc{ib}\TeX}
+
+\title{A Transformer-based Pretrained Language Model for Automatic Document Summarization}
+
+\author{Dezhou Shen \\
+  Department of Computer Science\\
+  Tsinghua University\\
+  Beijing, CN 100084\\
+  \texttt{sdz15@mails.tsinghua.edu.cn} \\}
+
+\date{}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+ Document summarization is an essential task in the information retrieval.
+ User intention for specific documents is hard to satisfy for the information overload,
+ thus there are rarely golden standards for matching a certain document.
+ I propose a multi-grained summarization model for documents that uses attention on paragraphs,
+ supervised learning on the sentence importance, and sequence-to-sequence learning on characters and words.
+ Tested on the 2020 Chinese Law Summarization Dataset, the proposed model achieved
+ better performance than other modern summarization models.
+\end{abstract}
+
+\section{Introduction}
+
+Document matching is an essential task in daily work and study.
+Because the matching algorithm is not capable of choosing important words from the massive documents,
+to use the content of a document as the matching criteria often fails in returning unintended documents.
+Document summarization condenses long documents into short paragraphs by retaining core information.
+Thus, a much wiser way for the document matching is using the summarization instead of the content.
+
+\section{Related Work}
+
+\citet{bhargava2020deep} use Convolutional neural network and Long-Short Term Memory network in the paraphrase detection of
+documents and summaries, then using multi-grained Convolutional neural networks as the sentence extraction model,
+as a result, the F1 scores on the English and Malayalam summarization corpus are 31.57\% and 53.57\%.
+
+\citet{erera2019summarization} consider the summarization problem as a query problem, use query
+saliency, entities coverage, diversity, text coverage and sentence length as the objectives.
+
+\citet{altmami2020automatic} concluded the special pattern for the summarization of scientific articles,
+and found that abstract generation-based and citation-based are two notice-worth solutions.
+
+\citet{polsley2016casesummarizer} used a combined word frequency and domain knowledge summary method for the legal text abstraction,
+and achieved an average of 10.9\% ROUGE score between automatically-generated summaries, and the expert-generated summaries.
+
+\citet{iqbal2020survey} showed that the deep learning approaches have achieved many satisfactory results in several domains,
+Word embeddings, such as Word2Vec, Glove, and FastText are widely used in the Natural Language Processing.
+Variational Auto-Encoders and Generative Adversarial Networks have been used for the text generations.
+
+\citet{litvak2019easy} studied the evaluation system for text summarization,
+and showed that ROUGE, MeMoG for quality evaluation, Latent Dirichlet allocation for topic evaluation,
+and grammar analysis for the readability evaluation.
+
+\citet{deng2020two} used a Sequence-to-Sequence generation model and an adversarial model in the text summarization for Chinese texts.
+
+\citet{zhang2019pretraining} used the Transformer network in encoder-decoder framework for the text summarization task, and
+achieved a Rouge score of 33.48\% in the CNN/DailyMail dataset for news summarization.
+
+\citet{xiao2019extractive} used the extractive LSTM-Minus model in the text summarization task, and by combining
+global document level, sentence level and topic segment representation in the network, achieved a Rouge score of 31.99\%
+in the Pubmed summarization dataset.
+
+\citet{liakata2013discourse} used the CRF and SVM models for the sentence extractive summarization for the scientific articles.
+\citet{cohan2015scientific} use the important sections in scientific papers as criteria for selecting important sentence.
+
+\citet{sutskever2013importance} started to use sequence-to-sequence neural networks in abstractive summarization.
+\citet{vinyals2015pointer} introduced copy mechanism from source to summary in sequence-to-sequence models.
+
+\begin{figure*}
+\begin{center}
+  \fbox{\rule{0pt}{2in} \includegraphics[width=0.9\linewidth]{SummaryRule.pdf}}
+\end{center}
+   \caption{Rule based segment and importance based summarization.}
+\label{fig:short}
+\end{figure*}
+
+\section{Hierachical Multi-grained Summarization}
+\label{sec:hireachy}
+
+Documents have their own organizations by different purposes, take the civil legal documents as an example,
+There are 123 different kinds of arguing reasons in the Chinese Court Sentence Documents.
+Largely list as follows:
+\begin{itemize}
+\item Disputes over personality rights,
+\item Marriage, family, inheritance disputes,
+\item Property rights disputes,
+\item Contract, management without cause, disputes over unjust enrichment,
+\item Labor disputes, personnel disputes,
+\item Maritime disputes,
+\item Civil disputes related to companies, securities, insurance, bills, etc.
+\item Inciting disputes
+\end{itemize}
+However, each of these documents follow the same organization of segments, for example,
+the purpose, the facts, the court opinions and the trail results.
+Thus, for a meaningful text summarization includes all there segments of importance and ignore other segments.
+
+\subsection{Segment Extraction}
+The document of the court sentence usually states the arguing point of the two entities.
+In this paper, a dictionary based arguing reason extractor was designed.
+A total of 123 arguing reasons were classified by the legal experts out of 70 million
+civil documents collected from the Chinese Court Sentence website.
+
+Then I use several rule-based filters to extract meaningful segments. As Figure-1 shows, the document has been split into several
+paragraphs, the paragraph with important words are kept and other paragraphs are discarded.
+
+\subsection{Extractive Sentence Summarization}
+
+For the sentence importance scoring model, the experts wrote the summarization for each legal document.
+Base on the written summarization, each sentence importance can be easily computed by checking the overlap words.
+I use the pre-trained Chinese language model, which has multiple layers of transformers,
+for encoding sentences.
+As Figure-2 shows, the model layers are organized as follows:
+Take the last two layers of the RoBERTa encoding, then do the concatenation and take the Maximum element from the character
+sequence as representation for each sentence, then concatenating to a dropout layer, a softmax layer,
+and the output layer.
+
+The learning rate is $10^{-4}$, the max sequence length is 50, the dropout rate is 5\%, and the batch size is 1.
+The epoch number is 3. The experiment was carried on a Google Cloud TPU v3, with 32GB of RAM, and 8 chips with 16GB of the high speed of memory each,
+which can provide 420 tera-flops of computation capability.
+
+The classification dataset is unbalanced, thus I copy the positive samples multiple times to balance the dataset.
+In total, there are 782,895 samples for training and 42 samples for test in the Legal Sentence Importance dataset.
+The test accuracy is 92.06\%.
+
+\subsection{Sequence To Sequence Summarization}
+
+For the token generation in the summarization step, I use a sequence-to-sequence model.
+By tagging each token existence in the corresponding summary, a sentence has its unique sequence of code for the token importance.
+For the 14,908 samples of important sentences for training and 108 samples for test in the Legal Token Summarization Dataset, I design a token summarization model as follows:
+First, encode the sentence by RoBERTa language model, and concatenate the first and last layers as the sentence representation.
+Then concatenate to a CapsuleNet layer, then concatenates the output layer.
+
+The learning rate is $10^{-3}$, and the bach size is 2, and the accumulation step is 8.
+The training epoch is 10, and the accuracy of the best model in the test set is 42.05\%.
+From Table(1) we can see that different number of transformer layers has no significant performance improvement for accuracy in the test set.
+The RBT3, BRT3L and RoBERTa vary in number of neurons and number of layers,
+which was popular pre-trained language models trained on 4.5 billion of Chinese tokens by \citet{cui2020revisiting}.
+
+\begin{table}
+\centering
+\begin{tabular}{cccc}
+\hline
+\textbf{Model} & \textbf{Neurons}& \textbf{Layers} & \textbf{Accuracy} \\
+\hline
+RoBERTa & 768 & 12 & 42.05\% \\
+RBT3 & 768 & 3 & 40.18\% \\
+RBT3L & 1024 & 3 & 41.22\% \\
+\hline
+\end{tabular}
+\caption{Different Pre-trained Language models accuracy in the sequence to sequece training steps.}
+\end{table}
+
+
+For balancing the readability and quality of the summary, I did not use the sequence predicted by the token summarization model directly.
+Instead, a bigger threshold for the output of the model can improve the readability and the quality.
+As a practical result, I choose 87.5\% as the threshold for keeping the important token.
+That is to say, keeping the most important 87.5\% tokens for each inference shall get the best summarization result.
+
+\begin{figure*}
+\begin{center}
+  \fbox{\rule{0pt}{2in} \includegraphics[width=0.9\linewidth]{SummaryModel.pdf}}
+\end{center}
+   \caption{Different architectures for multi-grained summarization.
+   (a) Extractive Sentence Summarization,
+   (b) Sequence To Sequence Summarization.}
+\label{fig:short}
+\end{figure*}
+
+\subsection{Summarization Evaluation}
+
+\citet{lin2004rouge} represents a set of similar metrics such as ROUGE-N, ROUGE-L, ROUGE-W, ROUGE-S, and ROUGE-SU.
+In this paper, I use ROUGE-1, ROUGE-2, ROUGE-L and ROUGE-W as the summarization evaluation metrics.
+The ROUGE-W score is computed using Formula (1).
+
+\begin{equation}
+  {R_W} = {R_1} * 0.2 + {R_2} * 0.4 + {R_L} * 0.4
+\end{equation}
+
+\begin{table}
+\centering
+\begin{tabular}{cccc}
+\hline
+\textbf{R-1} & \textbf{R-2} & \textbf{R-L} & \textbf{R-W} \\
+\hline
+32.62\% & 15.63\% & 31.79\% & 25.49\% \\
+\hline
+\end{tabular}
+\caption{F-score for text summarization in the dataset.}
+\end{table}
+
+\section{Conclusion}
+
+In this paper, I introduced a novel summarization method, which leveraging hierarchical features of the document.
+By extracting multi-grained level from the document, the summary contains the paragraph-level, sentence-level and token-level key information.
+The evaluation results showed that the multiple layers of transformers have improved the Rouge evaluation performance
+and achieved a Rouge-W score of 25.49\% on the Chinese Legal Case Abstraction dataset.
+
+
+\bibliographystyle{acl_natbib}
+\bibliography{anthology,acl2021,acl_summary}
+
+%\appendix
+
+
+
+\end{document}
