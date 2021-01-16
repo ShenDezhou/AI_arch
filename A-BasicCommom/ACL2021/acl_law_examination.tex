@@ -94,35 +94,25 @@ are three key factors.
 
 
 
-\subsection{Segment Extraction}
-The document of the court sentence usually states the arguing point of the two entities.
-In this paper, a dictionary based arguing reason extractor was designed.
-A total of 123 arguing reasons were classified by the legal experts out of 70 million
-civil documents collected from the Chinese Court Sentence website.
+\subsection{Legal Question Answering Dataset}
 
-Then I use several rule-based filters to extract meaningful segments.
-As Figure-1 shows, the document has been split into several paragraphs,
-the paragraph with important words are kept and other paragraphs are discarded.
+I use a dataset collected by Zhong \etal, which contains 7775 knowledge-based QA pairs and 13297 case-analysis QA pairs.
+Some questions have multiple options correct in the answer, while some have single option correct.
 
-\subsection{Extractive Sentence Summarization}
 
-For the sentence importance scoring model, the experts wrote the summarization for each legal document.
-Base on the written summarization, each sentence importance can be easily computed by checking the overlap words.
-I use the pre-trained Chinese language model, which has multiple layers of transformers,
-for encoding sentences.
-As Figure-2 shows, the model layers are organized as follows:
-Take the last two layers of the RoBERTa encoding, then do the concatenation and take the Maximum element from the character
-sequence as representation for each sentence, then concatenating to a dropout layer, a softmax layer,
-and the output layer.
+\subsection{Context Representation}
 
-The learning rate is $10^{-4}$, the max sequence length is 50, the dropout rate is 5\%, and the batch size is 1.
-The epoch number is 3.
-The experiment was carried on a Google Cloud TPU v3, with 32GB of RAM, and 8 chips with 16GB of the high speed of memory each,
-which can provide 420 tera-flops of computation capability.
+There are three descriptive information, namely question, options, and paragraphs for each item in the dataset.
+The paragraph is optional for the knowledge based QA-pair and mandatory for the case analysis QA-pair.
+The paragraph and the question always come together in a single paragraph.
+There are always four options, and the correct options are not variant according to the question.
 
-The classification dataset is unbalanced, thus I copy the positive samples multiple times to balance the dataset.
-In total, there are 782,895 samples for training and 42 samples for test in the Legal Sentence Importance dataset.
-The test accuracy is 92.06\%.
+I use the BERT model as the representation for the question and option encoding.
+In total, seven different BERT pre-trained language model were compared.
+Google BERT for Chinese, Roberta BERT for Chinese, Roberta BERT 3 layers for Chinese,
+Roberta BERT 3 layers for Chinese(1024 dim), Roberta BERT 24 layers for Chinese (1024 dim),
+Extra Roberta BERT 24 layers for Chinese (1024 dim), Extra More Steps Roberta BERT 24 layers for Chinese (1024 dim).
+
 
 \subsection{Sequence To Sequence Summarization}
 

@@ -140,8 +140,9 @@ In this paper, a dictionary based arguing reason extractor was designed.
 A total of 123 arguing reasons were classified by the legal experts out of 70 million
 civil documents collected from the Chinese Court Sentence website.
 
-Then I use several rule-based filters to extract meaningful segments. As Figure-1 shows, the document has been split into several
-paragraphs, the paragraph with important words are kept and other paragraphs are discarded.
+Then I use several rule-based filters to extract meaningful segments.
+As Figure-1 shows, the document has been split into several paragraphs,
+the paragraph with important words are kept and other paragraphs are discarded.
 
 \subsection{Extractive Sentence Summarization}
 
@@ -155,7 +156,8 @@ sequence as representation for each sentence, then concatenating to a dropout la
 and the output layer.
 
 The learning rate is $10^{-4}$, the max sequence length is 50, the dropout rate is 5\%, and the batch size is 1.
-The epoch number is 3. The experiment was carried on a Google Cloud TPU v3, with 32GB of RAM, and 8 chips with 16GB of the high speed of memory each,
+The epoch number is 3.
+The experiment was carried on a Google Cloud TPU v3, with 32GB of RAM, and 8 chips with 16GB of the high speed of memory each,
 which can provide 420 tera-flops of computation capability.
 
 The classification dataset is unbalanced, thus I copy the positive samples multiple times to balance the dataset.
@@ -166,7 +168,8 @@ The test accuracy is 92.06\%.
 
 For the token generation in the summarization step, I use a sequence-to-sequence model.
 By tagging each token existence in the corresponding summary, a sentence has its unique sequence of code for the token importance.
-For the 14,908 samples of important sentences for training and 108 samples for test in the Legal Token Summarization Dataset, I design a token summarization model as follows:
+For the 14,908 samples of important sentences for training and 108 samples for test in the Legal Token Summarization Dataset,
+I design a token summarization model as follows:
 First, encode the sentence by RoBERTa language model, and concatenate the first and last layers as the sentence representation.
 Then concatenate to a CapsuleNet layer, then concatenates the output layer.
 
@@ -187,7 +190,7 @@ RBT3 & 768 & 3 & 40.18\% \\
 RBT3L & 1024 & 3 & 41.22\% \\
 \hline
 \end{tabular}
-\caption{Different Pre-trained Language models accuracy in the sequence to sequece training steps.}
+\caption{Pre-trained language models accuracy in the sequence-to-sequece training steps.}
 \end{table}
 
 

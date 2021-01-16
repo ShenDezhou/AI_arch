@@ -103,10 +103,12 @@ For the longer than one character entity, the first character is labeled to [1],
 \subsection{Sequence Encoder}
 
 After the encoding steps, the tokens are encoded to token integers which represents their vocabulary indices.
-To encode by XLNet, the mask tokens and the segment tokens are prepared.
+To encode by XLNet and BERT model, the mask tokens and the segment tokens are prepared.
 The non-padding tokens' mask tokens are set to [1], and the segment tokens are set to [0].
 The padding tokens' make tokens are set to [0], and the segment tokens are set to [1] for telling the model the boundary of the sentences.
 For encoding the sequence, all the layers are preserved for later usage.
+The vocabulary encoding used by LSTM word embedding doesn't need the mask tokens and segment tokens, the vocabulary was formed by characters extracted from the MSR2005 training dataset, its conversion from character set to half character encoding set,
+and one padding token [PAD], and one unknown token [UNK]. There are 5245 tokens in the vocabulary, and the embedding size is 256.
 
 \subsection{Sequence Hidden Representation}
 
@@ -131,13 +133,15 @@ After the two dropout layer, an extra fully connected layer was concatenated to 
 Then use a multi-label one-versus-all loss based on max-entropy to get the sequence type loss.
 The type sequence target was smoothed by 0 and 1 values, the type [0] for the token status of [0], and the type [1] for the other token status.
 
+\subsection{Summary}
+
+As Figure (1) shows, the Chinese word segment architecture are formed by input layer, encoder layer, concatenating layer, representation layer, CRF layer, and output layer.
+In this paper, I mainly focus on discussing the improvement on the encoder layer
 \begin{figure*}
 \begin{center}
-  \fbox{\rule{0pt}{2in} \includegraphics[width=0.9\linewidth]{SummaryModel.pdf}}
+  \fbox{\rule{0pt}{2in} \includegraphics[width=0.9\linewidth]{cws-architecture.pdf}}
 \end{center}
-   \caption{Different architectures for multi-grained summarization.
-   (a) Extractive Sentence Summarization,
-   (b) Sequence To Sequence Summarization.}
+   \caption{The Network Architecture for the Chinese word segment task.}
 \label{fig:short}
 \end{figure*}
 
