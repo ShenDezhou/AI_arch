@@ -52,8 +52,10 @@
 \maketitle
 \begin{abstract}
  Chinese word segment is widely studied in document analysis.
+ The accuracy of the current popular word segment model, LSTM+CRF, is still not satisfactory.
+ Models trained by the popular dataset often fails in the out-domain situation.
  In this paper, combining the Transformer-XL layer, the Fully-Connect layer, and the Conditional Random Field layer,
- the proposed model improved 3.23\% in macro-F1 score, comparing to the BERT+CRF model, on the MSR2005 Chinese word segment test dataset.
+ the proposed model improved 3.23\% in the macro-F1 score, comparing to the BERT+CRF model, on the MSR2005 Chinese word segment test dataset.
 \end{abstract}
 
 \section{Introduction}
@@ -71,7 +73,9 @@ fine-tuning BERT on the downstream Named Entity Recognition task.
   \citet{yang2019xlnet} proposed an autoregressive language model which overcomes the limitations of BERT in sequence length,
 results showed that XLNet achieved promising results on question answering, natural language inference, sentiment analysis, and document ranking tasks.
 
-  \citet{tian2020improving} showed that extra trained BERT language model as encoder concatenate to the Conditional Random Fields(CRF) can achieve 98.28\% to 98.40\% on the MSR2005 Chinese word segment test dataset.
+  \citet{cui2020revisiting} fine-tuned BERT and XLNet with extra 4.5 billion Chinese tokens, and improved the performance of many downstream tasks.
+
+  \citet{tian2020improving} showed that the extra pre-trained BERT language model as encoder concatenating to the Conditional Random Fields(CRF) can achieve 98.28\% to 98.40\% on the MSR2005 Chinese word segment test dataset.
 
   \citet{cui2019hierarchically} proposed a hierarchically-refined label attention network in Named Entity Recognition task, the result showed that LSTM+CRF is less competitive than their LSTM+LAN model on the WSJ,
 Universal Dependencies v2.2, OntoNotes 5.0, and CCGBank dataset.
@@ -87,15 +91,17 @@ Universal Dependencies v2.2, OntoNotes 5.0, and CCGBank dataset.
 For the Chinese 8-bit Unicode Transformation Format encodings, there are two different encoding for the same printable ASCII tokens, one is named as the half character encoding,
 and the other is named as the full character encoding.
 Their difference relies on that one token take one byte or three bytes.
-The MSR Chinese word segment dataset\citet{emerson2005second} used the full character encoding, but in most cases,
+The MSR Chinese word segment dataset reported in \citet{emerson2005second} used the full character encoding, but in most cases,
 people tend to use the half character encoding to comply with ASCII code for compatibility reason.
 In this paper, I use a conversion function to convert the MSR2005 training dataset tokens to half character encoding for the tokens which have the corresponding tokens in the ASCII table.
-Thanks to the data augment method, training dataset sentences size is increased from 86,924 to 166,740.
+Thanks to the data augment method, training dataset sentences size is increased from 86,924 to 166,740,
+and moreover, models trained shall perform well in both the half character and full character corpus.
+Data augment solves the problem that when the dataset are full character encoding characters, however, most use cases are mixed character encodings by half and full.
 
 \subsection{Tokenization, Encoding And Labeling}
 
 For a document with multiple sentences and paragraphs, the first step is splitting the document into lines by carefully choosing the separator token.
-For Chinese sentences, the line-breaks, commas, periods are the most common separator tokens.
+For Chinese sentences, the line-breaks, commas, periods, question marks, and exclamation marks are the most common separator tokens.
 Before encoding the tokens, sentences are padded with padding token [0] to the max sequence length, I choose 128 as the max sequence length for the MSR2005 dataset.
 After tokenization, I use the XLNet encoder to represent each token as the token integers.
 Each token has been labeled according to its type, for the one character entity, its status is labeled to [0].
@@ -104,7 +110,7 @@ For the longer than one character entity, the first character is labeled to [1],
 \subsection{Sequence Encoder}
 
 After the encoding steps, the tokens are encoded to token integers which represents their vocabulary indices.
-Transformer-XL\citet{dai2019transformer} also named as XLNet, a novel neural architecture that enables learning dependency beyond a fixed length without disrupting temporal coherence.
+Transformer-XL proposed by \citet{dai2019transformer} also named as XLNet, a novel neural architecture that enables learning dependency beyond a fixed length without disrupting temporal coherence.
 To encode by XLNet and BERT model, the mask tokens and the segment tokens are prepared.
 The non-padding tokens' mask tokens are set to [1], and the segment tokens are set to [0].
 The padding tokens' make tokens are set to [0], and the segment tokens are set to [1] for telling the model the boundary of the sentences.
@@ -119,7 +125,7 @@ There are 5245 tokens in the vocabulary, and the embedding size is 256.
 For a naive solution, it is perfect to add a softmax layer, or a CRF layer.
 However, I designed a multiple layers to take advantage of the different layers for the transfer learning.
 Firstly, take the first layer, and the last layer of the XLNet sequence encoding.
-Then use two dropout layers with each dropout rate pf 5\%, which means the probability of an element to be zeroed.
+Then use two dropout layers with each dropout rate of 5\%, which means the probability of an element to be zeroed.
 Thirdly, I use a fully connected layer to map the hidden size of XLNet to the status types, which is 4 in the Chinese word segment task.
 Lastly, take the logarithm, and a softmax conversion before concatenating to the CRF layer.
 
@@ -133,9 +139,17 @@ and the token [False] shows that the token is a padding token.
 \subsection{Additional Loss function}
 
 Besides, the Conditional Random Field loss for training, I added a type loss for training speed.
-After the two dropout layer, an extra fully connected layer was concatenated to the last dropout layer to get the type loss.
+After the two dropout layers, an extra fully connected layer was concatenated to the last dropout layer to get the type loss.
 Then use a multi-label one-versus-all loss based on max-entropy to get the sequence type loss.
 The type sequence target was smoothed by 0 and 1 values, the type [0] for the token status of [0], and the type [1] for the other token status.
+
+\subsection{Decoder}
+
+For the decoding steps, if the status is [0], then the entity is the corresponding token.
+If the status is [1], it shows that the token belongs to a new entity, and if the status is [2], it tells that the token belongs to current working entity,
+and if the status is [3], it tells that the token belongs to current working entity and the entity reached an end token.
+When decoding, I use a CRF decoder, which benefits from the state transfer matrix and avoids error state sequence during the decoding steps.
+The decoder used the Viterbi algorithm propose by \citet{forney1973viterbi} which make the decoding steps faster.
 
 \subsection{Summary}
 
@@ -166,8 +180,9 @@ which can provide 112 tera-flops of computation capability.
 The learning rate is $4^{-5}$, and the batch size is 64, for the BERT and XLNet.
 The learning rate is $2^{-3}$, and the batch size is 512 for the bidirectional LSTM.
 The max sequence length is 128, and the training epoch is 10.
-I use the popular pre-trained RoBERTa language models trained on 4.5 billion of Chinese tokens by \citet{cui2020revisiting}.
-And I use the pre-trained XLNet language models trained on 4.5 billion of Chinese tokens by \citet{cui2020revisiting}.
+For the LSTM model, I use the word embedding layer with embedding size of 256, and the bidirectional LSTM layers with 384 neurons in each layer.
+I use the popular pre-trained RoBERTa language models trained on 4.5 billion of Chinese tokens by \citet{cui2020revisiting},
+and use the pre-trained XLNet language models trained on 4.5 billion of Chinese tokens by \citet{cui2020revisiting}.
 
 \begin{table}
 \centering
@@ -186,6 +201,10 @@ XLNet & 768 & 12 & 97.88\% \\
 
 All the Table (1) models share almost the same network architecture except for the embedding of the tokens.
 
+\subsection{Reproducibility}
+
+The data augment, the LSTM, RoBERTa, XLNet, CRF codes and pre-trained Chinese word segment models are available at https://drive.google.com/drive/folders/1--GwAkEPtQsIm0PqD6a26TOvVrxJg3mR.
+And the supplementary codes are available at https://github.com/ShenDezhou/EXLNet.
 
 \section{Conclusion}
 
