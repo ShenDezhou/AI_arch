@@ -1,0 +1,64 @@
+\documentclass[10pt,twocolumn,letterpaper]{article}
+
+\usepackage{cvpr}
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% Include other packages here, before hyperref.
+
+% If you comment hyperref and then uncomment it, you should delete
+% egpaper.aux before re-running latex.  (Or just hit 'q' on the first latex
+% run, let it finish, and you should be clear).
+\usepackage[pagebackref=true,breaklinks=true,letterpaper=true,colorlinks,bookmarks=false]{hyperref}
+
+%%%%%%%%% PAPER ID  - PLEASE UPDATE
+\def\cvprPaperID{310} % *** Enter the CVPR Paper ID here
+\def\httilde{\mbox{\tt\raisebox{-.5ex}{\symbol{126}}}}
+
+\begin{document}
+
+%%%%%%%%% TITLE - PLEASE UPDATE
+\title{Enhance Image Classification Performance Via Unsupervised Pre-trained Transformers Language Models}  % **** Enter the paper title here
+
+\maketitle
+\thispagestyle{empty}
+
+
+%%%%%%%%% BODY TEXT - ENTER YOUR RESPONSE BELOW
+\section{Introduction}
+
+
+Greetings to Reviewers,
+
+I wrote this paper for seven reasons:
+
+1) For many years, CVPR has been the pioneer conference that leading the AI forward, such as CNN, ImageNet and many other precise work made by the pioneers, until last two years the Transformer network has been brought to our sight;
+
+2) Interestingly, it is the ACL conference that first proposed the BERT model which improved the NLP tasks quite a lot;
+
+3) With my finding in this paper that the BERT model also can improve the performance of CV tasks, such as image classification, and benefit us.
+
+4) I tested three datasets: two open datasets (CIFAR10 and CIFAR100), and one private COVID-19 dataset which has even impressing performance see paperID \#7435;
+
+5) As Reviewer \#2 says: 99.76\% seems to good for the current state-of-the-art is around 94\%, I have to say, WELL, that is the contribution in my paper I want to share with you all;
+
+6) If we check the code carefully, we can see from the code file:data.py, in line 217 to line 219, in the training phase, I use the metadata for the model, however, for the test phase, the metadata are totally replaced by [MASK] token, there is no way to do the trick;
+
+7) And for the experiment log file:imagecls.ipynb, if we check the line 537 and line 962, we can conclude that by encoding the pixels with the BERT model, the accuracy jumps from 95.14\% after the epoch-1 to 99.76\% after the epoch-5.
+
+Accepting this paper shall benefit the CV community, by absorbing the advanced BERT encoder, the computer vision scientist can achieve even greater work than ever, or else we shall let behind by the NLP community which is the last thing I want to see.
+
+
+Cheers,
+
+The Author.
+
+{\small
+\bibliographystyle{ieee}
+%\bibliography{egbib}
+}
+
+\end{document}

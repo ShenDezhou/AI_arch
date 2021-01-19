@@ -1,0 +1,69 @@
+\documentclass[10pt,twocolumn,letterpaper]{article}
+
+\usepackage{cvpr}
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% Include other packages here, before hyperref.
+
+% If you comment hyperref and then uncomment it, you should delete
+% egpaper.aux before re-running latex.  (Or just hit 'q' on the first latex
+% run, let it finish, and you should be clear).
+\usepackage[pagebackref=true,breaklinks=true,letterpaper=true,colorlinks,bookmarks=false]{hyperref}
+
+%%%%%%%%% PAPER ID  - PLEASE UPDATE
+\def\cvprPaperID{7435} % *** Enter the CVPR Paper ID here
+\def\httilde{\mbox{\tt\raisebox{-.5ex}{\symbol{126}}}}
+
+\begin{document}
+
+%%%%%%%%% TITLE - PLEASE UPDATE
+\title{Unify Language and Vision: An Efficient COVID-19 Tomography Image Classification Approach}  % **** Enter the paper title here
+
+\maketitle
+\thispagestyle{empty}
+
+
+%%%%%%%%% BODY TEXT - ENTER YOUR RESPONSE BELOW
+\section{Introduction}
+
+
+Greetings to Reviewers,
+
+I wrote this paper for eight reasons:
+
+1) During the past year, unfortunately sever disease come to human beings, it would be great if the CV community could help fight against the COVID19.
+
+2) However, most of the current state-of-the-art model like CNN lack of accuracy for real world needs.
+
+3) For many years, CVPR has been the pioneer conference that leading the AI forward, such as CNN, ImageNet and many other precise work made by the pioneers, until last two years the Transformer network has been brought to our sight;
+
+4) With my finding in this paper that the BERT model also can improve the performance of CV tasks, such as image classification, and benefit us.
+
+5) I tested three datasets: two open datasets (CIFAR10 and CIFAR100), and one private COVID-19 dataset which has even impressing performance 99\%;
+
+5) As Reviewer \#1 says: 99.76\% must be impossible in CIFAR-100, however, I have to say, WELL, that is the contribution in my paper I want to share with you all;
+
+6) If we check the code carefully, we can see from the code file:data.py, in line 217 to line 219, in the training phase, I use the metadata for the model, however, for the test phase, the metadata are totally replaced by [MASK] token, there is no way to do the trick;
+
+7) For the experiment log file:covfl.ipynb, if we check the line 5839, line 5238, and line 4639, we can conclude that by encoding the pixels with the 3-layer BERT, 3-layer BERT-Large, 24-layer BERT model, the accuracy account to 99\% after several epochs for the CIFAR-100 test dataset;
+
+8) For the COVID-19 images dataset, we can check line 656, line 805, and line 508(file:covfl.ipynb), these three experiments are similar to those on the CIFAR-10 and CIFAR-100 datasets.
+
+Accepting this paper shall benefit the human being for an accurate and fast way of checking COVID-19 lung Tomography images, the COVID-19 shall be defeated with the help from the CV community,
+by absorbing the advanced BERT encoder, the computer vision scientists can achieve even greater work than ever.
+
+
+Cheers,
+
+The Author.
+
+{\small
+\bibliographystyle{ieee}
+%\bibliography{egbib}
+}
+
+\end{document}
