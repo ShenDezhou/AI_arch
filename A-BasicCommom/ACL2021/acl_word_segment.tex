@@ -27,8 +27,8 @@
 % and will typically save some space.
 \usepackage{microtype}
 
-\aclfinalcopy % Uncomment this line for the final submission
-%\def\aclpaperid{***} %  Enter the acl Paper ID here
+%\aclfinalcopy % Uncomment this line for the final submission
+\def\aclpaperid{509} %  Enter the acl Paper ID here
 
 %\setlength\titlebox{5cm}
 % You can expand the titlebox if you need extra space
@@ -123,7 +123,7 @@ There are 5245 tokens in the vocabulary, and the embedding size is 256.
 \subsection{Sequence Hidden Representation}
 
 For a naive solution, it is perfect to add a softmax layer, or a CRF layer.
-However, I designed a multiple layers to take advantage of the different layers for the transfer learning.
+However, I designed multiple layers to take advantage of the different layers for the transfer learning.
 Firstly, take the first layer, and the last layer of the XLNet sequence encoding.
 Then use two dropout layers with each dropout rate of 5\%, which means the probability of an element to be zeroed.
 Thirdly, I use a fully connected layer to map the hidden size of XLNet to the status types, which is 4 in the Chinese word segment task.
@@ -201,10 +201,10 @@ XLNet & 768 & 12 & 97.88\% \\
 
 All the Table (1) models share almost the same network architecture except for the embedding of the tokens.
 
-\subsection{Reproducibility}
-
-The data augment, the LSTM, RoBERTa, XLNet, CRF codes and pre-trained Chinese word segment models are available at https://drive.google.com/drive/folders/1--GwAkEPtQsIm0PqD6a26TOvVrxJg3mR.
-And the supplementary codes are available at https://github.com/ShenDezhou/EXLNet.
+%\subsection{Reproducibility}
+%
+%The data augment, the LSTM, RoBERTa, XLNet, CRF codes and pre-trained Chinese word segment models are available at https://drive.google.com/drive/folders/1--GwAkEPtQsIm0PqD6a26TOvVrxJg3mR.
+%And the supplementary codes are available at https://github.com/ShenDezhou/EXLNet.
 
 \section{Conclusion}
 
