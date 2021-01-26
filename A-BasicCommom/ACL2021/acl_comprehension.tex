@@ -55,7 +55,7 @@
  In this paper, I proposed an XLNet based model, and use the Capsule Net as hidden representation layers,
  and use multi-task learning for the question type, start-end indices, and supporting sentence indices,
  thanks to the deep neural architecture, the proposed model learns to read real documents and answer complex questions.
- Test on the CJRC2019 validation dataset, proposed model achieved 1.57\% improvement on the span F1-score and 1.35\% on the supporting sentence F1-score comparing to the BERT model.
+ Test on the CJRC2019 validation dataset, proposed model achieved 2.51\% improvement on the span F1-score and 2.63\% on the supporting sentence F1-score comparing to the BERT model.
 
 \end{abstract}
 
@@ -196,8 +196,8 @@ The XLNet model achieved the best performance with 45.94\% of th F1 score on the
 \textbf{Model} & \textbf{Layers}& \textbf{span-F1} & \textbf{sup-F1} \\
 \hline
 RBT3 & 3 & 39.65\% & 36.86\% \\
-RoBERTa & 12 & 44.37\% & 48.00\% \\
-XLNet & 12 & 45.94\% & 49.35\% \\
+RoBERTa & 12 & 44.58\% & 50.04\% \\
+XLNet & 12 & 47.09\% & 52.67\% \\
 \hline
 \end{tabular}
 \caption{Comparison of the pre-trained language models on the CJRC2019 Machine Reading Comprehension validation task.}
@@ -214,7 +214,7 @@ XLNet & 12 & 45.94\% & 49.35\% \\
 
 In this paper, I introduced a novel Chinese Reading Comprehension model for Court Cases, which leveraging hierarchical layers of the document encoding layers.
 By making use of the Capsule Net layers, the multi task model predicts the starting and ending span index, and the supporting sentence indices in the context.
-Proposed model achieved 1.57\% improvement on the span F1-score and 1.35\% on the supporting sentence F1-score comparing to the BERT model in the CJRC2019 validation dataset.
+Proposed model achieved 2.51\% improvement on the span F1-score and 2.63\% on the supporting sentence F1-score comparing to the BERT model in the CJRC2019 validation dataset.
 
 
 \bibliographystyle{acl_natbib}
