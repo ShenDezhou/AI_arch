@@ -1,0 +1,549 @@
+\documentclass[10pt,twocolumn,letterpaper]{article}
+
+\usepackage{iccv}
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% Include other packages here, before hyperref.
+
+% If you comment hyperref and then uncomment it, you should delete
+% egpaper.aux before re-running latex.  (Or just hit 'q' on the first latex
+% run, let it finish, and you should be clear).
+\usepackage[pagebackref=true,breaklinks=true,letterpaper=true,colorlinks,bookmarks=false]{hyperref}
+
+% \iccvfinalcopy % *** Uncomment this line for the final submission
+
+\def\iccvPaperID{11059} % *** Enter the ICCV Paper ID here
+\def\httilde{\mbox{\tt\raisebox{-.5ex}{\symbol{126}}}}
+
+% Pages are numbered in submission mode, and unnumbered in camera-ready
+\ificcvfinal\pagestyle{empty}\fi
+
+\begin{document}
+
+%%%%%%%%% TITLE
+\title{Text Detection and Chinese Character Recognition in Natural Scene Images via Pre-trained Vision and Language Models}
+
+\author{Dezhou Shen\\
+Department of Computer Science\\
+Tsinghua University\\
+Beijing, CN 100084\\
+{\tt\small sdz15@mails.tsinghua.edu.cn}
+% For a paper whose authors are all at the same institution,
+% omit the following lines up until the closing ``}''.
+% Additional authors and addresses can be added with ``\and'',
+% just like the second author.
+% To save space, use either the email address or home page, not both
+}
+
+\maketitle
+% Remove page # from the first page of camera-ready.
+\ificcvfinal\thispagestyle{empty}\fi
+
+%%%%%%%%% ABSTRACT
+\begin{abstract}
+
+  Detecting and reading text from natural scene images is an essential computer vision tasks.
+  Giving the fact that Chinese characters have more tokens than English characters, OCR in Chinese is much harder than English.
+  I encode high dimension features extracting from images by ResNet followed by the pre-trained language models of
+  \underline{B}idirectional \underline{E}ncoder \underline{R}epresentations from \underline{T}ransformers,
+  then connect to a recurrent neural network layer, and a fully connected layer in the Character Recognize architecture.
+  The proposed recognition model outperforms the ResNet recognition model, and achieved accuracy of $83.74\%$ on the Baidu2019 street scene test set.
+
+\end{abstract}
+
+%%%%%%%%% BODY TEXT
+\section{Introduction}
+
+  Reading text from photographs is essential to Natural language processing and Computer Vision.
+  OCR of printed documents and recognition of hand-written digits are already known as solved problems,
+  however, recognizing characters in natural scenes is far more difficult.
+  Regarding to the fact that Chinese language has more characters than English, thus it is more difficult to get a satisfactory model.
+  Most researchers had laid lack of attention on the relevance between the natural language processing and the Computer Vision.
+  In this paper, I discussed a novel method by unifying the representation of languages and visions in the representation layer.
+
+  Unsupervised pre-training is important to the modern research in deep learning.
+  Lee \etal~\cite{lee2009convolutional} used the pre-training approaches in Computer Vision tasks in 2009, and later from 2010 to 2016,
+  Nair and Hinton~\cite{nair2010rectified} proved that the pre-training process is supplementary in the Computer Vision tasks,
+  thus, can be omitted in some cases.
+  However, it started to flourish in the natural language processing domain since Mikolov \etal~\cite{mikolov2013distributed} had proposed Word2Vec for the word representation.
+  Not long after, Devin \etal~\cite{devlin2019bert}'s Bidirectional Encoder Representations from Transformers language model dominates
+  in most frequent tasks in the natural language processing domain,
+  which is close resemble of Vicent \etal~\cite{vincent2008extracting}'s Denoising Autoencoder model, which was initially designed for images.
+  Therefore, the pre-training process becomes one of the most important procedures in deep learning.
+
+%-------------------------------------------------------------------------
+
+\section{Recent Work}
+
+\begin{figure*}
+\begin{center}
+  \fbox{\rule{0pt}{2in} \includegraphics[width=0.9\linewidth]{detectionnet.pdf}}
+\end{center}
+   \caption{Combination of the ResNet, Feature Pyramid Net and Differentiable Binarization Net for scene text detection task.}
+\label{fig:short}
+\end{figure*}
+
+\subsection{Detection}
+
+  Wang \etal~\cite{wang2012end} used the convolutional neural networks as a detection model and achieved accuracy of 84\% by word-level on the ICDAR2003~\cite{lucas2003icdar} test dataset and Street View Text~\cite{wang2011end} dataset.
+  LeCun \etal~\cite{lecun1990handwritten} started their first experiment on handwritten digit recognition, convolutional neural networks' great potential had been revealed since.
+  Liao \etal~\cite{liao2020real} proposed a Differentiable Binarization module for the segmentation task in the text detection task, and achieved $82.8\%\sim84.9\%$ of F1-score on the TD500~\cite{yao2012detecting} dataset
+   and $81.0\%\sim83.4\%$ on the CTW1500~\cite{liu2019curved} dataset.
+
+\subsection{Recognition}
+
+  Chen \etal~\cite{chen2020generative} trained the image representation using sequence Transformers and tested on the CIFAR-10 to show its outperforming to Wide-ResNet,
+which was inspired by unsupervised natural language representation learning.
+  Wang \etal~\cite{wang2019development} reviewed that convolutional neural networks had been first proposed in the 1960s, and had its implementation in the 1980s.
+  In the 2010s, Krizhevsky \etal~\cite{krizhevsky2012imagenet} proposed the deep architecture, AlexNet, by concatenating multiple components of convolutional neural network layers.
+  Netzer \etal~\cite{netzer2011reading} used unsupervised feature learning K-means to classify the digits cropped from Street View images and achieved accuracy of 90.6\% in the test dataset.
+  A lot of variants of AlexNet had been proposed by researchers and the accuracy of ImageNet had been greatly improved, \eg ZFNet~\cite{zeiler2014visualizing}, VGG~\cite{simonyan2014very}, GoogLeNet~\cite{szegedy2015going}, ResNet~\cite{he2016deep},
+  ResNeXt~\cite{xie2017aggregated}, inception-ResNet-v2~\cite{szegedy2016inception}, DenseNet~\cite{huang2016deep}.
+  Lin \etal~\cite{lin2017feature} proposed multi-scale convolutional network in feature extraction, and the average precision on the COCO dataset is 56.9\%.
+
+\subsection{Representation of Images}
+
+  Lu and Weng~\cite{lu2007survey} concluded that for the multi-source image classification tasks, additional information such as signatures, texture, context, and ancillary data can be combined to achieve better performance.
+And it is difficult in handling the dichotomy between pixels and natural language texts in a single model.
+  Cui \etal~\cite{cui2020revisiting} proposed several whole-word-masking pre-trained Chinese language models,
+which are improved versions of BERT~\cite{devlin2019bert} pre-trained language models, namely RBT3, RBTL3, and RoBERTa-wwm-ext-large.
+These models achieved better performance in Chinese machine reading comprehension, Chinese document classification, and other downstream natural language tasks.
+  He and Peng~\cite{he2017fine} combined the vision stream and language stream as two parallel channels for extracting multi-source information in the image classification task,
+and tested on the CUB-200-2011 image dataset and achieved $85.55\%$ by combining GoogLeNet~\cite{szegedy2015going} and CNN-RNN~\cite{reed2016learning}, the result outperformed many competitors.
+
+%-------------------------------------------------------------------------
+
+\section{Text Detection Models}
+
+
+
+  Recent scene text detection methods can be classified into Regression-based methods and Segmentation-based methods.
+  By directly regressing the boxes of the text instances, Xie \etal~\cite{xie2019scene} proposed a dimension-decomposition region to handle scale problem in scene text detection.
+  By combining pixel-level prediction and post-precessing, Tian \etal~\cite{tian2019learning} proposed pixel embeddings to clusters for the segmentation results.
+
+\subsection{Image Pre-processing}
+
+  During the training phase, the region of interest in the images will be augmented by left-right flipping, image affine, size resize, random crop and border shrinks.
+  These augmentation makes the model more robust and transferable from training dataset to test dataset.
+
+\subsection{Model Architecture}
+
+  As Figure (1) shows, I combined the Residual Net, Feature Pyramid Network, and Differentiable Binarization network for text detection task.
+  The model has five important layers, such as: Input layer, Residual Convolutional layer, Feature Pyramid layer, Differentiable Binarization layer and Output layer.
+  The Residual Convolutional layer extract import high-level features from the image,
+  and the Feature Pyramid layer join the four parts of features with different size of filter kernels, such as $[64,128,256,512]$.
+  The Differentiable Binarization layer combines the features and use different mapping functions to find the power of the combination of features.
+%-------------------------------------------------------------------------
+
+\section{Text Character Recognition Models}
+
+  Image are segmented by the detection model, then each segmentation is preprocessed to a fix size of $120\times32$.
+The recognition model takes the adjusted image as input, and predict the sequence of Chinese Character dictionary index as output.
+
+
+\begin{figure*}
+\begin{center}
+  \fbox{\rule{0pt}{2in} \includegraphics[width=0.9\linewidth]{resbertnet.pdf}}
+\end{center}
+   \caption{Combination of the Residual Net, Bert, Long-Short Term Memory and Fully Connection Net for Chinese character recognition task.}
+\label{fig:short}
+\end{figure*}
+
+%-------------------------------------------------------------------------
+\subsection{Model Architecture}
+
+ As Figure (2) shows, I use a combination of Residual Net, Bert, Long-Short Term Memory and Fully Connection Net for character recognition task.
+
+The model architecture has five functional layers:
+
+\begin{itemize}
+\item {\bf Input layer}
+\item {\bf Residual Bert layer}
+\item {\bf Sequence Decode layer}
+\item {\bf Fully Connected layer}
+\item {\bf Output layer}
+\end{itemize}
+
+All images are resized to a resolution of $120\times32$ pixels.
+Encode the image by the sequence of RGB channel values, in the order of Red-channel, Green-channel, and Blue-channel.
+In the Residual Bert  layer, the pixel-channel value are extracted by the residual convolutional network,
+then fed into the Bert language model to encode each sub-pixels.
+In the Sequence Decode layer, two layers of Long-Short Term Memory networks to decode each Chinese character meanings.
+In the Fully Connected layer, extracted tokens are connected to the output layer.
+In the Output layer, the encoded Chinese character index sequence are feed into the model.
+
+
+\subsection{The Sub-pixel Encoder}
+
+My approach consists of the feature extraction stage, the sequence decode stage, and the final character mapping state.
+In the feature extraction stage, it is intuitive to use the Bert encoder from the pixel level of the image.
+However, due to the computational resource limit and the time limit,
+It is wise to encode at sub-pixel level.
+To be specific, it is practical to encode after the Residual Network extraction, then use the Bert model to encode the result.
+
+The BERT objectives and the sequence Transformer architecture to predict the language tokens.
+
+\par Given an unlabeled dataset $\Bbb X$, the BERT objective samples a sub-sequence $\Bbb S \in \{C\}$,
+$C$ represents all possible tokens, and such that for each index $i \in \Bbb S$,
+there is independent probability $15\%$ of appearing in $\Bbb S$,
+name the token $M$ as the BERT mask.
+As equation (1), train the language model by minimizing the BERT objective of the "masked" elements $x_M$
+conditioned on the "unmasked" ones $x_{\left[1,n\right]\backslash M}$.
+
+\begin{equation}
+  \lambda = \mathop{\Bbb E}\limits_{x\sim\Bbb X} \mathop{\Bbb E}\limits_{M} \sum_{i\in S}{\bigl[-\log{p(x_i\mid x_{\left[1,n \right]\backslash M})\bigr]}}
+\end{equation}
+
+\par The transformer decoder takes the image pixels and meta characters sequence $x_1,\cdots,x_n$ and produces a $d$-dimensional
+embedding for each position.
+
+For the per-pixel image classification approach, for every RGB channel of pixels in an image,
+each pixel had its pixel-channel code, ranges from 0x00 to 0xff for different colors.
+Thus, taking these pixels in an image is identical to ASCII characters in a document.
+Generality speaking, the performance of the pre-trained language models achieved in the document classification tasks, can be transferred to image classification naturally.
+
+\par Recall that Kim~\cite{kim2014convolutional} had proved that unsupervised pre-trained language model $word2vec$ and CNN outperformed many other machine learning algorithms,
+\eg support vector machines and conditional random field, in many datasets such as movie reviews, Stanford sentiment treebank, and the TREC question.
+Cui \etal's pre-trained language model, namely RBT3, RBTL3, and RoBERTa-wwm-ext-large, had improved performances over many other machine learning algorithms.
+BERT and RoBERTa-wwm-ext-large models both achieved an f1-score of 97.8\% in the THUCNews dataset, which contains 65 thousands of news in 10 domains.
+
+\par From Table (1), by combining the pre-trained language model with fully connected layer as the document classification model,
+the test accuracy exceeds the other popular machine learning algorithms.
+Therefore, the pixel channels of an image can be properly represented by these pre-trained language models.
+
+
+\begin{equation}
+  \sigma(\textbf{z})_j = {e^{\textbf{z}_j} \over {\sum_{k=1}^{\textit{K}} e^{\textbf{z}_k}}}, j=1,\cdots,\textit{K}.
+\end{equation}
+
+%-------------------------------------------------------------------------
+
+
+\section{Experiments and Results}
+
+
+\subsection{Training}
+
+The Baidu Street View character dataset contains 188560 annotated images and randomly choose 892 images as the test set from the total images .
+
+As Cui \etal~\cite{cui2020revisiting} reported that the training of the RBT3 language model was based on Devlin \etal's model,
+moreover, the pre-trained Chinese language models use extra 5 billion training tokens comparing to Devlin \etal's 0.4 billion tokens.
+I use a batch size of 32 and train for $10$ epochs using AdamW with $\beta_1=0.99$, $\beta_2=0.999$, and weight decay of $10^{-8}$.
+I set the learning rate to $10^{-4}$ and no warmed up or decay are used.
+
+\par The training time for each epoch batch size is 136ms, comparing to the 20ms for one epoch in the legacy model without the Bert encoding layer.
+Thus, the time cost for the training increased 5.8 times of before.
+
+\par The experiment was performed on a Google Cloud Nvidia v100, with 32GB of CPU RAM, and with 16GB of GPU memory,
+which can provide 125 tera-flops of computation capability.
+
+\subsection{Analysis}
+
+For the Bert language model layer, the Table (1) showed that the accuracy of the test set has improved compare to the model without Bert layer.
+For the Bert language model, there are different number of layers ranging from $3\sim24$, and for each layer,
+there are different hidden numbers of neurons for each layer ranging from $768\sim1024$.
+As for the purpose of this paper is to show that the Bert model enhances the accuracy in the Chinese character recognition task,
+I use the least layer and least number of neuron for the bert language model, named RBT3 provided by Cui \etal,
+which was fully pre-trained using the corpus with 4.5 billions of Chinese tokens.
+The model can be easily modified and trained on other languages, \eg English,
+and take less time to train for the less amount of the character types comparing to
+4095 different type in Chinese.
+
+
+\begin{table}
+\begin{center}
+\begin{tabular}{|l|c|c|c|r|}
+\hline
+Model & Dim & Dataset& Epochs & Accuracy \\
+\hline\hline
+ResNet      & 18 &  ICDAR2015     & 50 &	23.67\% \\
+ResNet      & 18 &  Baidu2019	  & 30 &	56.25\% \\
+ResBertNet  & 18+3 & Baidu2019    & 96	&	83.74\% \\
+\hline
+\end{tabular}
+\end{center}
+\caption{Comparision of accuracy of character detection models on the Baidu Street View 2019 dataset and the ICDAR2015 dataset.
+The ResBertNet uses 18 layers of Residual Network and 3 layers of Transformers.}
+\end{table}
+
+
+\subsection{Discussion}
+
+From Table (1) we can see that, on the ICDAR2015~\cite{karatzas2015icdar} dataset, the ResNet text recognition model has accuracy of 23.67\%,
+though the ICDAR2015 test set only contains 92 different English characters, numbers and punctuations,
+the ResNet model cannot achieve a satisfactory result after 50 epochs.
+From the training logs, I can see that the model has converged on a optimal point that after the 30th epoch,
+and has no improvement in accuracy afterwards.
+It shows that Street Scene View text recognition task is a hard problem and there is no easy way out.
+Moreover, the Baidu Chinese street text view dataset contains 4095 different character types.
+Compare to the accuracy of 56.25\% on the Baidu2019 street view text dataset, our models have preferable better results.
+The reason that the model's outstanding performance lies in the large pre-trained data for BERT, on top of that fine-tuned by RoBERTa, and use of extra language corpus of
+$5.4$ billions of tokens of wiki data and other resources.
+The transformers in the pre-trained language models use multiple layers for representing images and may be used in other Computer Vision task, \eg object detection, gesture prediction.
+
+
+\section{Conclusion}
+
+This paper proposes a novel idea by using pre-trained language models for Chinese scene text detection and recognition.
+The finding improves the accuracy in OCR for Chinese street scene, and might improve the accuracy of other language scene detection and recognition.
+Tests showed that the proposed model outperforms the ResNet model with augmentation on the image dataset,
+the model achieved accuracy of $83.74\%$ on the Baidu 2019 street view text recognition set.
+
+
+{\small
+\bibliographystyle{ieee_fullname}
+%\bibliography{cpvr_detrec}
+\begin{thebibliography}{10}
+
+  \bibitem{lee2009convolutional}
+Honglak Lee, Roger Grosse, Rajesh Ranganath, and Andrew~Y Ng.
+\newblock Convolutional deep belief networks for scalable unsupervised learning
+  of hierarchical representations.
+\newblock In {\em Proceedings of the 26th annual international conference on
+  machine learning}, pages 609--616, 2009.
+
+
+\bibitem{nair2010rectified}
+Vinod Nair and Geoffrey~E Hinton.
+\newblock Rectified linear units improve restricted boltzmann machines.
+\newblock In {\em ICML}, 2010.
+
+
+\bibitem{mikolov2013distributed}
+Tomas Mikolov, Ilya Sutskever, Kai Chen, Greg~S Corrado, and Jeff Dean.
+\newblock Distributed representations of words and phrases and their
+  compositionality.
+\newblock In {\em Advances in neural information processing systems}, pages
+  3111--3119, 2013.
+
+
+\bibitem{devlin2019bert}
+Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova.
+\newblock Bert: Pre-training of deep bidirectional transformers for language
+  understanding.
+\newblock In {\em NAACL-HLT (1)}, 2019.
+
+
+\bibitem{vincent2008extracting}
+Pascal Vincent, Hugo Larochelle, Yoshua Bengio, and Pierre-Antoine Manzagol.
+\newblock Extracting and composing robust features with denoising autoencoders.
+\newblock In {\em Proceedings of the 25th international conference on Machine
+  learning}, pages 1096--1103, 2008.
+
+
+\bibitem{wang2012end}
+Tao Wang, David~J Wu, Adam Coates, and Andrew~Y Ng.
+\newblock End-to-end text recognition with convolutional neural networks.
+\newblock In {\em Proceedings of the 21st international conference on pattern
+  recognition (ICPR2012)}, pages 3304--3308. IEEE, 2012.
+
+
+\bibitem{lucas2003icdar}
+Simon~M Lucas, Alex Panaretos, Luis Sosa, Anthony Tang, Shirley Wong, and
+  Robert Young.
+\newblock Icdar 2003 robust reading competitions.
+\newblock In {\em Seventh International Conference on Document Analysis and
+  Recognition, 2003. Proceedings.}, pages 682--687. Citeseer, 2003.
+
+
+\bibitem{wang2011end}
+Kai Wang, Boris Babenko, and Serge Belongie.
+\newblock End-to-end scene text recognition.
+\newblock In {\em 2011 International Conference on Computer Vision}, pages
+  1457--1464. IEEE, 2011.
+
+
+
+\bibitem{lecun1990handwritten}
+Yann LeCun, Bernhard~E Boser, John~S Denker, Donnie Henderson, Richard~E
+  Howard, Wayne~E Hubbard, and Lawrence~D Jackel.
+\newblock Handwritten digit recognition with a back-propagation network.
+\newblock In {\em Advances in neural information processing systems}, pages
+  396--404, 1990.
+
+
+\bibitem{liao2020real}
+Minghui Liao, Zhaoyi Wan, Cong Yao, Kai Chen, and Xiang Bai.
+\newblock Real-time scene text detection with differentiable binarization.
+\newblock In {\em AAAI}, pages 11474--11481, 2020.
+
+
+\bibitem{yao2012detecting}
+Cong Yao, Xiang Bai, Wenyu Liu, Yi~Ma, and Zhuowen Tu.
+\newblock Detecting texts of arbitrary orientations in natural images.
+\newblock In {\em 2012 IEEE conference on computer vision and pattern
+  recognition}, pages 1083--1090. IEEE, 2012.
+
+  \bibitem{liu2019curved}
+Yuliang Liu, Lianwen Jin, Shuaitao Zhang, Canjie Luo, and Sheng Zhang.
+\newblock Curved scene text detection via transverse and longitudinal sequence
+  connection.
+\newblock {\em Pattern Recognition}, 90:337--345, 2019.
+
+
+\bibitem{chen2020generative}
+Mark Chen, Alec Radford, Rewon Child, Jeff Wu, Heewoo Jun, Prafulla Dhariwal,
+  David Luan, and Ilya Sutskever.
+\newblock Generative pretraining from pixels.
+\newblock In {\em Proceedings of the 37th International Conference on Machine
+  Learning}, 2020.
+
+
+
+\bibitem{wang2019development}
+Wei Wang, Yujing Yang, Xin Wang, Weizheng Wang, and Ji~Li.
+\newblock Development of convolutional neural network and its application in
+  image classification: a survey.
+\newblock {\em Optical Engineering}, 58(4):040901, 2019.
+
+  \bibitem{krizhevsky2012imagenet}
+Alex Krizhevsky, Ilya Sutskever, and Geoffrey~E Hinton.
+\newblock Imagenet classification with deep convolutional neural networks.
+\newblock In {\em Advances in neural information processing systems}, pages
+  1097--1105, 2012.
+
+
+\bibitem{netzer2011reading}
+Yuval Netzer, Tao Wang, Adam Coates, Alessandro Bissacco, Bo~Wu, and Andrew~Y
+  Ng.
+\newblock Reading digits in natural images with unsupervised feature learning.
+\newblock 2011.
+
+
+\bibitem{zeiler2014visualizing}
+Matthew~D Zeiler and Rob Fergus.
+\newblock Visualizing and understanding convolutional networks.
+\newblock In {\em European conference on computer vision}, pages 818--833.
+  Springer, 2014.
+
+  \bibitem{simonyan2014very}
+Karen Simonyan and Andrew Zisserman.
+\newblock Very deep convolutional networks for large-scale image recognition.
+\newblock San Diego, CA, United states, 2015.
+\newblock Convnet;Convolution filters;Convolutional networks;Localisation;Prior
+  arts;State of the art;Visual representations;.
+
+\bibitem{szegedy2015going}
+Christian Szegedy, Wei Liu, Yangqing Jia, Pierre Sermanet, Scott Reed, Dragomir
+  Anguelov, Dumitru Erhan, Vincent Vanhoucke, and Andrew Rabinovich.
+\newblock Going deeper with convolutions.
+\newblock In {\em Proceedings of the IEEE conference on computer vision and
+  pattern recognition}, pages 1--9, 2015.
+
+
+\bibitem{he2016deep}
+Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun.
+\newblock Deep residual learning for image recognition.
+\newblock In {\em Proceedings of the IEEE conference on computer vision and
+  pattern recognition}, pages 770--778, 2016.
+
+
+
+\bibitem{xie2017aggregated}
+Saining Xie, Ross Girshick, Piotr Doll{\'a}r, Zhuowen Tu, and Kaiming He.
+\newblock Aggregated residual transformations for deep neural networks.
+\newblock In {\em Proceedings of the IEEE conference on computer vision and
+  pattern recognition}, pages 1492--1500, 2017.
+
+
+
+\bibitem{szegedy2016inception}
+Christian Szegedy, Sergey Ioffe, Vincent Vanhoucke, and Alexander~A. Alemi.
+\newblock Inception-v4, inception-resnet and the impact of residual connections
+  on learning.
+\newblock pages 4278 -- 4284, San Francisco, CA, United states, 2017.
+\newblock Classification tasks;Computational costs;Convolutional
+  networks;Single frames;State-of-the-art performance;Test sets;Traditional
+  architecture;.
+
+
+\bibitem{huang2016deep}
+Gao Huang, Yu~Sun, Zhuang Liu, Daniel Sedra, and Kilian~Q Weinberger.
+\newblock Deep networks with stochastic depth.
+\newblock In {\em European conference on computer vision}, pages 646--661.
+  Springer, 2016.
+
+
+
+\bibitem{lin2017feature}
+Tsung-Yi Lin, Piotr Doll{\'a}r, Ross Girshick, Kaiming He, Bharath Hariharan,
+  and Serge Belongie.
+\newblock Feature pyramid networks for object detection.
+\newblock In {\em Proceedings of the IEEE conference on computer vision and
+  pattern recognition}, pages 2117--2125, 2017.
+
+
+
+\bibitem{lu2007survey}
+Dengsheng Lu and Qihao Weng.
+\newblock A survey of image classification methods and techniques for improving
+  classification performance.
+\newblock {\em International journal of Remote sensing}, 28(5):823--870, 2007.
+
+
+\bibitem{cui2020revisiting}
+Yiming Cui, Wanxiang Che, Ting Liu, Bing Qin, Shijin Wang, and Guoping Hu.
+\newblock Revisiting pre-trained models for chinese natural language
+  processing.
+\newblock In {\em Findings of EMNLP}. Association for Computational
+  Linguistics, 2020.
+
+
+\bibitem{he2017fine}
+Xiangteng He and Yuxin Peng.
+\newblock Fine-grained image classification via combining vision and language.
+\newblock In {\em Proceedings of the IEEE Conference on Computer Vision and
+  Pattern Recognition}, pages 5994--6002, 2017.
+
+
+
+\bibitem{reed2016learning}
+Scott Reed, Zeynep Akata, Honglak Lee, and Bernt Schiele.
+\newblock Learning deep representations of fine-grained visual descriptions.
+\newblock In {\em Proceedings of the IEEE Conference on Computer Vision and
+  Pattern Recognition}, pages 49--58, 2016.
+
+
+\bibitem{xie2019scene}
+Enze Xie, Yuhang Zang, Shuai Shao, Gang Yu, Cong Yao, and Guangyao Li.
+\newblock Scene text detection with supervised pyramid context network.
+\newblock In {\em Proceedings of the AAAI Conference on Artificial
+  Intelligence}, volume~33, pages 9038--9045, 2019.
+
+
+
+
+\bibitem{tian2019learning}
+Zhuotao Tian, Michelle Shu, Pengyuan Lyu, Ruiyu Li, Chao Zhou, Xiaoyong Shen,
+  and Jiaya Jia.
+\newblock Learning shape-aware embedding for scene text detection.
+\newblock In {\em Proceedings of the IEEE Conference on Computer Vision and
+  Pattern Recognition}, pages 4234--4243, 2019.
+
+\bibitem{kim2014convolutional}
+Yoon Kim.
+\newblock Convolutional neural networks for sentence classification.
+\newblock pages 1746 -- 1751, Doha, Qatar, 2014.
+\newblock Classification tasks;Convolutional neural
+  network;Hyper-parameter;Learning tasks;Question classification;Sentence
+  classifications;Simple modifications;State of the art;.
+
+
+\bibitem{karatzas2015icdar}
+Dimosthenis Karatzas, Lluis Gomez-Bigorda, Anguelos Nicolaou, Suman Ghosh,
+  Andrew Bagdanov, Masakazu Iwamura, Jiri Matas, Lukas Neumann,
+  Vijay~Ramaseshan Chandrasekhar, Shijian Lu, et~al.
+\newblock Icdar 2015 competition on robust reading.
+\newblock In {\em 2015 13th International Conference on Document Analysis and
+  Recognition (ICDAR)}, pages 1156--1160. IEEE, 2015.
+
+
+\end{thebibliography}
+
+}
+
+\end{document}
