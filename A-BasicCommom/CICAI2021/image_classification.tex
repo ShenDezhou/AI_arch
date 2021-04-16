@@ -6,6 +6,7 @@
 %
 \usepackage{comment}
 \usepackage{graphicx}
+\usepackage[breaklinks=true]{hyperref}
 % Used for displaying a sample figure. If possible, figure files should
 % be included in EPS format.
 %
@@ -55,10 +56,10 @@ ABC Institute, Rupert-Karls-University Heidelberg, Heidelberg, Germany\\
 
   Image classification and categorization are essential to the capability of telling the difference between images for a machine vision task.
   As the \underline{B}idirectional \underline{E}ncoder \underline{R}epresentations from \underline{T}ransformers became popular in many tasks of natural language processing recent years,
-  it is intuitive to use these pre-trained language models for enhancing the computer vision tasks, e.g. image classification.
-  In this paper, by encoding image pixels using pre-trained transformers, then connect to a fully connected layer,
-  the classification model outperforms the Wide ResNet model, and the linear-probe iGPT-L model,
-  and achieved accuracy of $99.60\%\sim99.74\%$ on the CIFAR-10 image set and accuracy of $99.10\%\sim99.76\%$ on the CIFAR-100 image set.
+  it is intuitive to use these pre-trained language models for enhancing the computer vision tasks.
+  In this paper, by encoding image pixels using pre-trained transformers models, then connect to a fully connected layer,
+  the classification model outperforms the iGPT-L model, and achieved accuracy of $99.60\%\sim99.74\%$ on the CIFAR-10 image set,
+  accuracy of $99.10\%\sim99.76\%$ on the CIFAR-100 image set, and achieved accuracy of $99.51\%\sim100.00\%$ on the COVID-19 tomography image test set.
 
 \keywords{Image Classification  \and Transformers \and Attention.}
 \end{abstract}
@@ -70,14 +71,12 @@ ABC Institute, Rupert-Karls-University Heidelberg, Heidelberg, Germany\\
 \section{Introduction}
 
   Unsupervised pre-training is important to modern research of deep learning.
-  Lee et al.~\cite{lee2009convolutional} used the pre-training approaches
-  in Computer Vision tasks in 2009, and later from 2010 to 2016,
-  Nair and Hinton~\cite{nair2010rectified} proved that the pre-training process is supplementary in the Computer Vision tasks,
-  thus, can be omitted in some cases.
-  However, it started to flourish in the natural language processing domain since Mikolov et al.~\cite{mikolov2013distributed} had proposed Word2Vec.
-  Not long before Devin et al.~\cite{devlin2019bert}'s BERT language model dominates in most tasks in natural language processing,
-  which is close resemble of Vicent et al.~\cite{vincent2008extracting}'s Denoising Autoencoder model, which was initially designed for images.
-  The pre-training process becomes one of the most important procedures in deep learning.
+  Lee et al.~\cite{lee2009convolutional} used the pre-training approaches in Computer Vision tasks in 2009,
+  and, Nair and Hinton~\cite{nair2010rectified} proved that the pre-training process is supplementary, which can be omitted in some cases, in the Computer Vision tasks later from 2010 to 2016,
+  However, it started to flourish since Mikolov et al.~\cite{mikolov2013distributed} had proposed Word2Vec in the natural language processing,
+  recently, Devin et al.~\cite{devlin2019bert}'s BERT language model dominates in most tasks in natural language processing.
+  The pre-training approach in natural language processing is close resemble to Vicent et al.~\cite{vincent2008extracting}'s Denoising Autoencoder model initially designed for images processing.
+  Thus, the pre-training step becomes important in CV and NLP.
 
 %-------------------------------------------------------------------------
 
@@ -89,48 +88,42 @@ which was inspired by unsupervised natural language representation learning.
 and until LeCun et al.~\cite{lecun1990handwritten}'s first experiment on handwritten digit recognition, CNN's great potential had been revealed.
   In the 2010s, Krizhevsky et al.~\cite{krizhevsky2012imagenet} proposed the deep architecture, AlexNet, by concatenating multiple components of CNN layers.
 Several years later, a lot of variants of AlexNet had been proposed by researchers and the accuracy of ImageNet had been greatly improved, e.g. ZFNet~\cite{zeiler2014visualizing}, VGG~\cite{simonyan2014very}, GoogLeNet~\cite{szegedy2015going}, ResNet~\cite{he2016deep},
- ResNeXt~\cite{xie2017aggregated}, inception-ResNet-v2~\cite{szegedy2016inception}, DenseNet~\cite{huang2016deep}.
+  ResNeXt~\cite{xie2017aggregated}, inception-ResNet-v2~\cite{szegedy2016inception}, DenseNet~\cite{huang2016deep}.
   Lu and Weng~\cite{lu2007survey} concluded that for the multi-source image classification tasks, additional information such as signatures, texture, context, and ancillary data can be combined to achieve better performance.
-And it is difficult in handling the dichotomy between pixels and natural language texts in a single model.
+And it is difficult in handling the dichotomy between pixels and natural language texts in a single model. For per-pixel approach, non-parametric classifiers, e.g. neural networks, support vector machines, and decision trees,
+are the most well-known algorithms for their performance and generalization advantages in the late 1990s and 2000s.
   Cui et al.~\cite{cui2020revisiting} proposed several whole-word-masking pre-trained Chinese language models,
-which are improved versions of BERT~\cite{devlin2019bert} pre-trained language models, namely RBT3, RBTL3, and RoBERTa-wwm-ext-large.
+which are improved versions of BERT~\cite{devlin2019bert} pre-trained language models, namely RoBERTa(3), RoBERTa-L(3), and RoBERTa-L(24). The training of the RoBERTa(3) language model was based on Devlin et. al.'s BERT model,
+moreover, the pre-trained Chinese language models use extra 5 billion training tokens comparing to 0.4 billion tokens in the BERT model.
 These models achieved better performance in Chinese machine reading comprehension, Chinese document classification, and other downstream natural language tasks.
   He and Peng~\cite{he2017fine} combined the vision stream and language stream as two parallel channels for extracting multi-source information in the image classification task,
 and tested on the CUB-200-2011 image dataset and achieved $85.55\%$ by combining GoogLeNet~\cite{szegedy2015going} and CNN-RNN~\cite{reed2016learning}, the result outperformed many competitors.
-  Lu and Weng found that, for per-pixel approach, non-parametric classifiers, e.g. neural networks, support vector machines, and decision trees,
-are the most well-known algorithms for their performance and generalization advantages in the late 1990s and 2000s.
-Fern{\'a}ndez et al.~\cite{fernandez2014we} compared different classifiers in small datasets, and they found that the random forest algorithm ranks first among the 179 classifiers.
+  Fern{\'a}ndez et al.~\cite{fernandez2014we} compared different classifiers in small datasets, and they found that the random forest algorithm ranks first among the 179 classifiers.
   Recall that Kim~\cite{kim2014convolutional} had proved that unsupervised pre-trained language model $word2vec$ and CNN outperformed many other machine learning algorithms,
 e.g. support vector machines and conditional random field, in many datasets such as movie reviews, Stanford sentiment treebank, and TREC question.
-Cui et al.'s pre-trained language model, namely RoBERTa(3), RoBERTa-large(3), and RoBERTa-large(24), had improved performances over many other machine learning algorithms.
-BERT and RoBERTa-large(24) models both achieved an f1-score of 97.8\% in the THUCNews dataset, which contains 65,000 news reports in 10 domains.
+Cui et al.'s pre-trained language model, namely RoBERTa(3), RoBERTa-L(3), and RoBERTa-L(24), had improved performances over many other machine learning algorithms.
+BERT and RoBERTa-L(24) models both achieved an f1-score of 97.8\% in the THUCNews dataset, which contains 65,000 news reports in 10 domains.
 
 %-------------------------------------------------------------------------
 
-\section{Image Classification by Convolutional and Transformer networks}
+\section{Image Classification by Convolutional and Transformer Networks}
 
-Three of the most popular approaches for image classification tasks are per-pixel, subpixel, and heterogeneous.
+We use the Jittor\cite{hu2020jittor} library as the modeling tool, and the TsinghuaDogs\cite{Zou2020TsinghuaDogs} dataset to compare the performance with competitors.The experiment was performed on an Nvidia V100, with 16GB of RAM,
+which can provide 100 tera-flops of computation capability.
 
 \subsection{Convolutional Neural Networks for Image Classification}
 
-\par CNN models are fundamental architectures to compare the performance. A vision system is an Attention mechanism that focuses limited attention on the key information, saving resources and getting the most efficient information quickly.
-Attention models are less complex and have fewer parameters than CNN and RNN. So the demand for calculation is even smaller.
-Attention addresses an issue in which RNN cannot be calculated in parallel.
-The Attention mechanism does not rely on the calculations of the next step, so it can be processed in parallel with CNN.
-Before the introduction of the Attention mechanism, there was a problem that long distances of information would be weakened,
+\par Three of the most popular approaches for image classification tasks are per-pixel, subpixel, and heterogeneous.
+CNN models are fundamental and often used as baselines to compare the classification performance.
+The vision system of human has a mechanism that focuses limited attention on the key information to save resources and to get the most efficient information quickly.
+Before introduction of the Attention mechanism, there was a problem in RNN that long distances of information would be weakened,
 just as people with weak memory could not remember the past.
 
-\par We use the Jittor\cite{hu2020jittor} library as the modeling tool, and the TsinghuaDog\cite{Zou2020ThuDogs} dataset to compare the performance with competitors.
-Image pre-process steps including resizing to $256*256$, center-cropping by $224*224$, a random horizontal flip, conversion to (0,1), and normalization to 0.485 of mean value and 0.229 of standard error.
+\par Image pre-process steps including resizing to $256*256$, center-cropping by $224*224$, a random horizontal flip, conversion to (0,1), and normalization to 0.485 of mean value and 0.229 of standard error.
 
-\par RESNET has been proved to be efficient and effective in Computer Vision modeling, thus, a lot of time could be saved by supervised learning on a new CV task.
+\par The ResNet has been proved to be efficient and effective, thus, a lot of time could be saved by starting from a pre-trained model for a new Computer Vision task.
 It is not surprising that the residual mechanism can learn deep layers with some layers skipped for different tasks.
 
-\par We use the RESNET with two 1x1 Convolutional layers for matching the gap between output of the RESNET and the Attention.
-The Attention has multiple heads and use the Self-Attention, the Query, Key, and Value dimensions are all same, 512 is an empirical value.
-
-\par The experiment was performed on an Nvidia V100, with 16GB of RAM,
-which can provide 100 tera-flops of computation capability.
 
 \begin{table}
 \begin{center}
@@ -139,67 +132,69 @@ which can provide 100 tera-flops of computation capability.
 Model   &  Accuracy \\
 \hline
 \hline
-Alexnet & 41.73\%\\
+AlexNet & 41.73\%\\
 GoogLeNet & 68.84\%\\
-mobilenet\_v2 & 63.65\%\\
-shufflenet\_v2\_x0\_5  &	45.38\% \\
-Attention-RESNET152-4H-256L &  	55.00\% \\
-Attention-RESNET152-1H-1024L &  	67.57\% \\
+MobileNet\_v2 & 63.65\%\\
+ShuffleNet\_v2\_x0\_5  &	45.38\% \\
+Attention-ResNet152-4H-256L &  	55.00\% \\
+Attention-ResNet152-1H-1024L &  	67.57\% \\
 \hline
 \hline
-\hline
-Attention-RESNET152-1H-1024L &  	78.38\% \\
-DENSENET121   	&	75.29\% \\
-SE-RESNET50 & 79.47\% \\
-RESNET50 & 82.50\%\\
-Gelu-RESNET152 &	64.06\% \\
-RESNET152  	&	85.14\% \\
-SE-RESNET152  	&	83.34\% \\
-SE-RESNET152+RESNET152 & 82.62\% \\
-SE-RESNET152+Alexnet & 80.38\% \\
-RESNET200  	&	73.19\% \\
-\hline
+Attention-ResNet152-1H-1024L &  	78.38\% \\
+DenseNet121   	&	75.29\% \\
+SE-ResNet50 & 79.47\% \\
+ResNet50 & 82.50\%\\
+Gelu-ResNet152 &	64.06\% \\
+ResNet152  	&	85.14\% \\
+SE-ResNet152  	&	83.34\% \\
+SE-ResNet152+ResNet152 & 82.62\% \\
+SE-ResNet152+AlexNet & 80.38\% \\
+ResNet200  	&	73.19\% \\
 \hline
 \hline
-RESNET152  	&	84.87\% \\
-SE-RESNET152  	&	82.92\% \\
+ResNet152  	&	84.87\% \\
+SE-ResNet152  	&	82.92\% \\
 \hline
 \end{tabular}
 \end{center}
-\caption{Comparision of model accuracy on the ThuDogs dataset. The top part models use 10\% of the whole ThuDogs data, the middle part models use 80\% of the ThuDogs data,
-and the bottom part models use 100\% of the ThuDogs data.}
+\caption{Comparision of model accuracy on the TsinghuaDogs dataset. The top part models use 10\% of the whole TsinghuaDogs data, the middle part models use 80\% of the TsinghuaDogs data,
+and the bottom part models use 100\% of the TsinghuaDogs data.}
 \end{table}
 
 \subsection{Dataset Amount Usage}
-From the Table (1) RESNET152 and SE-RESNET152 in the middle part and the bottom part, we can see that because of the imbalance of the dataset on different class, the top class has 7449 instance,
-and the bottom class has 200 instance. As a result, using 80\% of the ThuDogs data might beat the 100\% under Stochastic gradient descent optimizer.
-For later discussion, we use 80\% of the ThuDogs data to train the model discussed for best performance and accuracy.
+
+From the Table (1) ResNet152 and SE-ResNet152 in the middle part and the bottom part, we can see that there is imbalance on the dataset for different classes, the top class has 7449 instances,
+and the bottom class has 200 instances. As a result, using 80\% of the TsinghuaDogs data might beat the 100\% under Stochastic Gradient Descent optimizer.
+In later discussion, we use 80\% of the TsinghuaDogs data to train the model for best performance and accuracy.
 
 \subsection{Model Description}
 
-All models in the Table (1) share a common architecture that a base feature selection layer, such as AlexNet, followed by a fully connected layer which was used as a mapping function from ImageNet dataset classes to ThuDogs dataset classes.
+All models in the Table (1) share a common architecture that a base feature selection layer, such as AlexNet, followed by a fully connected layer which was used as a mapping function from ImageNet dataset classes to TsinghuaDogs dataset classes.
 The Attention based model use two $1*1$ convolutional layers serves as transition between the average-pool layer and the fully connected layer.
 Between that we use the Multi-head Attention layer with 1024 as the max sequence and 1 head, the k-dim and v-dim are 1024 and the self attention mechanism was used.
-The Alexnet, GoogLeNet, mobilenet, shufflenet, Densenet, Resnet, SE-RESNET are the well-known models. The Gelu-Resnet replace the Relu with Gelu function.
-The RESNET200 increase the third phase parameter from 36 to 48, with a parameter of $[3,8,48,3]$.
-The Attention-RESNET152-4H-256L and Attention-RESNET152-1H-1024L model differs only on the number of heads, and the input dimension, the first model has 4 heads and 256 dimension for embedding dimension, K-dim and V-dim.
+The AlexNet, GoogLeNet, MobileNet, ShuffleNet, DenseNet, ResNet, SE-ResNet are the well-known models. The Gelu-ResNet replace the Relu with Gelu function.
+The ResNet200 increase the third phase parameter from 36 to 48, with a parameter of $[3,8,48,3]$.
+The Attention-ResNet152-4H-256L and Attention-ResNet152-1H-1024L model differs only on the number of heads, and the input dimension, the first model has 4 heads and 256 dimension for embedding dimension, K-dim and V-dim.
 For the Attention layer, the shape of the input was transformed to (batch, channel, sequence), then transposed to (batch, sequence, channel) for the Attention layer.
 After the Attention operation, the shape of the image was transposed back to (batch, channel, sequence), and then for the rest of the operations.
 
 \subsection{Discussion}
 
-From the Table(1) we can see that the Attention layer doesn't improve the performance on the ThuDogs validation dataset, there is 6.85\% gap comparing to the RESNET152 model.
-Experiment on the Attention model number of heads and sequence length showed that, (Attention-RESNET152-4H-256L \&  	55.00\%, Attention-RESNET152-1H-1024L \&  	67.57\%),
-increasing the number of head and reducing the sequence length have negative impact on the accuracy of the ThuDogs Dataset.
-Experiment showed that, the Attention mechanism following the ResNet doesn't show improvement on the accuracy, and so as the Squeeze-Extract mechanism, Gelu activation, and combination of Resnet with other networks, such as AlexNet or SERESNET.
+From the Table (1) we can see that the Attention layer doesn't improve the performance on the TsinghuaDogs validation dataset, there is 6.85\% gap comparing to the ResNet152 model.
+Experiment on the Attention model number of heads and sequence length showed that, (Attention-ResNet152-4H-256L \&  	55.00\%, Attention-ResNet152-1H-1024L \&  	67.57\%),
+increasing the number of head and reducing the sequence length have negative impact on the accuracy of the TsinghuaDogs Dataset.
+Experiment showed that, the Attention mechanism following the ResNet doesn't show improvement on the accuracy, and so as the Squeeze-Extract mechanism, Gelu activation, and combination of ResNet with other networks, such as AlexNet or SEResNet.
+\par To state it clear that, by adding the Transformer layer around the ResNet doesn't improve the overall performance of the image classification task.
+Careful architecture design should be performed, otherwise, there would be negative gain from the architecture redesign.
+Experiment showed that the ResNet152 is still a strong baseline for the Image Classification task.
 
 %-------------------------------------------------------------------------
 \section{Image Classification via Pre-trained Transformers Language Models}
 
 \subsection{Approach}
 
-My approach consists of a pre-training stage followed by a fine-tuning stage.
-In the pre-training, I use the BERT objectives, and the sequence Transformer architecture to predict language tokens.
+Our approach consists of a pre-training stage followed by a fine-tuning stage.
+In the pre-training, we use the BERT objectives, and the sequence Transformer architecture to predict language tokens.
 
 \par Given an unlabeled dataset $ X$, the BERT objective samples a sub-sequence $ S \in \{C\}$,
 $C$ represents all possible tokens, and such that for each index $i \in  S$,
@@ -214,14 +209,14 @@ conditioned on the "unmasked" ones $x_{\left[1,n\right]\backslash M}$.
 
 \par The transformer decoder takes the image pixels and meta characters sequence $x_1,\cdots,x_n$ and produces a $d$-dimensional
 embedding for each position.
-Then I use a fully connected layer as a non-linear function from embeddings to image classes.
+Then we use a fully connected layer as a non-linear function from embeddings to image classes.
 The dropout layer and the Softmax layer are used for better transfer performance between the training and the test datasets.
 
 \subsection{The Power of the Transformer Encoder on the Document Classification}
 
 Generality speaking, the performance of the pre-trained language models achieved in the document classification tasks.
 
-We used the RoBERTa-large with 3 and 12 layers as encoder, and tested on two Chinese Judicial datasets, which has two and four classes.
+We used the RoBERTa-L with 3 and 24 layers as encoder, and tested on two Chinese Judicial datasets, which has two and four classes.
 The \textit{Two-Case} dataset annotated civil and criminal cases, and the \textit{Four-Case} dataset annotated by civil, criminal, intellectual property, and administrative cases.
 The \textit{Two-Case} dataset has $19,508$ training documents and $2,000$ test documents, and the \textit{Four-Case} dataset has $34,789$ training documents and $2,013$ test documents.
 
@@ -235,9 +230,9 @@ Therefore, the pixel channels of an image can be properly represented by these p
 \hline
 Language Model 	& Dataset & Accuracy \\
 \hline\hline
-RoBERTa-large(24) & Two-Case	&	99.80\% \\
-RoBERTa-large(24) & Four-Case	&	99.76\% \\
-RoBERTa-large(3)  & Four-Case	&	96.35\% \\
+RoBERTa-L(24) & Two-Case	&	99.80\% \\
+RoBERTa-L(24) & Four-Case	&	99.76\% \\
+RoBERTa-L(3)  & Four-Case	&	96.35\% \\
 \hline
 \end{tabular}
 \end{center}
@@ -262,7 +257,7 @@ An experiment show that document classification capability can be transferred to
 \label{fig:short}
 \end{figure*}
 
-I design simple classification models without too many layers, as Figure (1) shows,
+We design simple classification models without too many layers, as Figure (1) shows,
 and use the CIFAR-10 and CIFAR-100 dataset as an example to show the architecture of the model.
 The model architecture has seven functional layers:
 
@@ -277,6 +272,15 @@ The model architecture has seven functional layers:
 \end{itemize}
 
 
+\par In total, 349 computed tomography images were collected from the COVID-19 reports in the MedPix, LUNA, Radiopaedia,
+PubMed Central databases, which sizes range from $1637\times1225$ to $148\times61$.
+The COVID19 lung tomography dataset contains 251 covid images and 291 covid negative images in the training set,
+and contains 98 covid image and 100 covid negative images in the test set.
+All images are resized to a resolution of $32\times32$ pixels, the RGB channels are kept and the alpha channel values are discarded.
+For the COVID-19 lung tomography dataset, the metadata is the filename of the images, which can be treated as the supervised description of the image.
+Peek some the filenames, e.g. \textit{covid\_201\_1.png}, \textit{covid\_201\_2.png}, and \textit{noncovid\_001\_1.png},
+
+
 \par The CIFAR-10 dataset contains 60,000 color images with a resolution of $32\times32$ in 10 classes, and the CIFAR-100 dataset has 100 classes containing 600 images each.
 Encode the image by the sequence of RGB channel values, in the order of Red-channel, Green-channel, and Blue-channel,
 then encode other meta-data if provided, as a sequence of ASCII characters.
@@ -288,27 +292,17 @@ some blue-channel value, and all the meta value in common cases.
 In the Encoder layer and the Embedding layer, trimmed sequence of values are encoded by BERT-like models,
 and get the encoded representation of the token $\textbf{[CLS]}$ as the images' language model embeddings.
 In the Feature-Extraction layer, a combination of one dropout layer, one fully connected layer, and one softmax layer, as Equation (2), is used.
-The softmax layer is an approach that make the probability $z$ of each class more focused by taking exponent of it, then use normalization for each class probability.
-In the Output layer, the classification label of the image is feed in the model.
+The Softmax layer is an approach that make the probability $z$ of each class more focused by taking exponent of it, then use normalization for each class probability.
+In the Output layer, the classification label of the image is fed into the model.
 
 \begin{equation}
   \sigma(\textbf{z})_j = {e^{\textbf{z}_j} \over {\sum_{k=1}^{\textit{K}} e^{\textbf{z}_k}}}, j=1,\cdots,\textit{K}.
 \end{equation}
 
-\subsection{More Fair Comparison by The Mask Token}
-
 \par It is intuitive for the model to use both the channel values and the metadata in the training phase.
 For the CIFAR-10 and CIFAR-100 dataset, the metadata is the filename of the images, which can be treated as the supervised description of the image.
 Peek some the filenames, e.g. \textit{wagon\_s\_001343.png}, \textit{banana\_boat\_s\_001615.png}, and \textit{delivery\_truck\_s\_001529.png},
 and it is beneficial for the classification model to understand the supervised descriptive information for the image.
-
-\par Recall that the $\textbf{[MASK]}$ token in the BERT language model is a special token which can be used to trim the vocabulary size,
-and gives the token-recovery capability to the downstream task model.
-
-\par However, in the test phase, if feeding the metadata to the model, people might argue that the model learns only the mapping function from
-the metadata, which is the filename in this case, to the image class, which makes it is unfair to compare the performance with other image classification models.
-Thus, to be more objective and fair, I add a preprocess step for the metadata in the test phase, using the $\textbf{[MASK]}$ token to replace each
-ASCII character of the filename then feeds into the model to do the inference.
 
 %-------------------------------------------------------------------------
 
@@ -320,20 +314,19 @@ ASCII character of the filename then feeds into the model to do the inference.
 
 \begin{figure*}
 \begin{center}
-  \fbox{\rule{0pt}{2in} \includegraphics[width=0.9\linewidth]{roberta-cifar.pdf}}
+  \fbox{\rule{0pt}{0in} \includegraphics[width=0.9\linewidth]{image-classification(3).pdf}}
 \end{center}
    \caption{Accuracy of the image classification models with the pre-trained language encoder on the CIFAR-10 and CIFAR-100 dataset in the training epochs.}
 \label{fig:short}
 \end{figure*}
 
 
-As Cui et. al.~\cite{cui2020revisiting} reported that the training of the RBT3 language model was based on Devlin et. al.'s model,
-moreover, the pre-trained Chinese language models use extra 5 billion training tokens comparing to Devlin et. al.'s 0.4 billion tokens.
+
 We use a batch size of 512 and train for $6\sim16$ epochs using AdamW with $\beta_1=0.99$, $\beta_2=0.999$, and weight decay of $10^{-8}$.
-We set the learning rate to $10^{-4}$ and no warmed up or decay are used.
+We set the learning rate to $10^{-4}$ and no warm-up or decay are used.
 The dropout rate is $0.05$.
 
-\par When fine-tuning, as Figure (2), We check the accuracy of the trained model on the test set and stopped training when it converges on $10^{-3}\sim10^{-4}$.
+\par When fine-tuning, as Figure (2), we check the accuracy of the trained model on the test set and stopped training when it converges on $10^{-3}\sim10^{-4}$.
 
 \par The experiment was performed on a Google Cloud TPU v3, with 32GB of RAM, and 8 chips with 16GB of the high speed of memory each,
 which can provide 420 tera-flops of computation capability.
@@ -342,33 +335,39 @@ which can provide 420 tera-flops of computation capability.
 
 Using the proposed model, we tried different pre-trained language models to see the impact on classification accuracy.
 From the Table (3), for the same size of a dataset with larger classes, it needs more epochs and training time for the classification model.
-For the same RoBERTa language model with different numbers of transformer layers, 24 layers of transformers had better accuracy than 3 layers,
-however, its training cost grows for the larger language model.
-For the same fine-tuned language model, classes number has positive impact on the accuracy.
+For the same RoBERTa language model with different numbers of transformer layers, 24 layers had better accuracy than 3 layers,
+however, the training cost grows for the larger language model.
+For the same fine-tuned language model, class number has positive impact on the accuracy.
 And the fewer classes the dataset has, the more accurate results the model can achieve.
 
+\par RoBERTa-S is short for RoBERTa-Small which has 768 hidden dimension, RoBERTa-L is short for RoBERTa-Large  which has 1024 hidden dimension.
 
 \begin{table}
 \begin{center}
 \begin{tabular}{|l|c|c|r|}
 \hline
 Language Model 	& Dataset  & Accuracy \\
-\hline\hline
-RoBERTa-large(3)   & CIFAR-10 	&	99.74\% \\
-RoBERTa-large(3)  & CIFAR-10 	&	99.72\% \\
-RoBERTa-large(2)  & CIFAR-10 	&	99.60\% \\
 \hline
-RoBERTa-large(3)    & CIFAR-100 	&	99.66\% \\
-RoBERTa-large(3)  & CIFAR-100   & 	99.10\% \\
-RoBERTa-large(24) & CIFAR-100  &	99.76\% \\
+\hline
+RoBERTa-S(3)   & COVID19 	&	100.0\% \\
+RoBERTa-L(3)  & COVID19 	&	99.51\% \\
+RoBERTa-L(24)  & COVID19 	&	100.0\% \\
+\hline
+RoBERTa-S(3)   & CIFAR-10 	&	99.74\% \\
+RoBERTa-L(3)  & CIFAR-10 	&	99.72\% \\
+RoBERTa-L(24)  & CIFAR-10 	&	99.60\% \\
+\hline
+RoBERTa-S(3)    & CIFAR-100 	&	99.66\% \\
+RoBERTa-L(3)  & CIFAR-100   & 	99.10\% \\
+RoBERTa-L(24) & CIFAR-100  &	99.76\% \\
 \hline\hline
 iGPT-L & CIFAR-10  & 99.0\% \\
 iGPT-L & CIFAR-100 & 88.5\% \\
 \hline
 \end{tabular}
 \end{center}
-\caption{Comparision of accuracy of the pre-trained language models and iGPT-L on the CIFAR-10 and CIFAR-100 datasets in the image classification task.
-RoBERTa-large is short for RoBERTa-wwm-ext-large. (a) iGPT-L model was trained far more than 18 epochs, it was trained by 1,000,000 iterations of pre-training and a few epochs for fine-tuning.}
+\caption{Comparision of accuracy of the pre-trained language models and iGPT-L on the COVID19, CIFAR-10 and CIFAR-100 datasets in the image classification task.
+    (a) iGPT-L model was trained far more than 18 epochs, it was trained by 1,000,000 iterations of pre-training and a few epochs for fine-tuning.}
 \end{table}
 
 
@@ -381,16 +380,24 @@ The reason that the model's outstanding performance lies in the large pre-traine
 $5.4$ billions of tokens of wiki data and other resources.
 The transformers in the pre-trained language models use multiple layers for representing images and may be used in other Computer Vision task, e.g. object detection, gesture prediction.
 
+\section{Reproducibility}
+
+The convolutional neural networks for image classification experiment notebook can be found at https://colab.research.google.com/drive/\\
+167uMdDGmXSr1xwdM4GFwfiuBpz0bCbeA?usp=sharing. Related code are placed on https://github.com/ShenDezhou/CAIL2021/tree/master/dogflb.
+
+The image classification model with transformer encoder experiment notebook can be found at https://colab.research.google.com/drive/\\
+1saMYaaR3ih1eo9ttYy0Ncb5V003uVyEV?usp=sharing. Related code are placed on https://github.com/ShenDezhou/CAIL/tree/master/CAIL2020/rlfl.
+
+
 
 \section{Conclusion}
 
  This paper proposed a novel idea by using the pre-trained language models for image representation and take image classification
  as an example to prove its performance for Computer Vision tasks, such as image classification.
- The finding might benefit various subjects, namely  for their specific research.
+ The finding might benefit various subjects.
 Tests showed that the proposed model outperforms the iGPT-L model without augmentation on the image dataset,
 the model achieved accuracy of $99.60\%\sim99.74\%$ on the CIFAR-10 image set,
-and accuracy of $99.10\%\sim99.76\%$ on the CIFAR-100 image set.
-
+accuracy of $99.10\%\sim99.76\%$ on the CIFAR-100 image set, and achieved accuracy of $99.51\%\sim100.00\%$ on the COVID-19 tomography image test set.
 
 %
 % ---- Bibliography ----
