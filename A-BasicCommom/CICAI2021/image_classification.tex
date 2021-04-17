@@ -54,12 +54,11 @@ ABC Institute, Rupert-Karls-University Heidelberg, Heidelberg, Germany\\
 
 \begin{abstract}
 
-  Image classification and categorization are essential to the capability of telling the difference between images for a machine vision task.
-  As the \underline{B}idirectional \underline{E}ncoder \underline{R}epresentations from \underline{T}ransformers became popular in many tasks of natural language processing recent years,
-  it is intuitive to use these pre-trained language models for enhancing the computer vision tasks.
-  In this paper, by encoding image pixels using pre-trained transformers models, then connect to a fully connected layer,
-  the classification model outperforms the iGPT-L model, and achieved accuracy of $99.60\%\sim99.74\%$ on the CIFAR-10 image set,
-  accuracy of $99.10\%\sim99.76\%$ on the CIFAR-100 image set, and achieved accuracy of $99.51\%\sim100.00\%$ on the COVID-19 tomography image test set.
+  The \underline{B}idirectional \underline{E}ncoder \underline{R}epresentations from \underline{T}ransformers represents the recent popularity of many tasks in natural language processing.
+  These pre-trained language models have been used to enhance computer vision tasks for many years.
+  This paper uses a pre-trained transformer model to encode image pixels, and then connects to the fully connection layer, dropout layer and Softmax layer.
+  The performance of the classification model is better than the current best iGPT-L model.
+  It surpasses the current best accuracy in the CIFAR-10/100 image set and the COVID-19 tomographic image classification set.
 
 \keywords{Image Classification  \and Transformers \and Attention.}
 \end{abstract}
@@ -392,12 +391,11 @@ The image classification model with transformer encoder experiment notebook can 
 
 \section{Conclusion}
 
- This paper proposed a novel idea by using the pre-trained language models for image representation and take image classification
- as an example to prove its performance for Computer Vision tasks, such as image classification.
- The finding might benefit various subjects.
-Tests showed that the proposed model outperforms the iGPT-L model without augmentation on the image dataset,
-the model achieved accuracy of $99.60\%\sim99.74\%$ on the CIFAR-10 image set,
-accuracy of $99.10\%\sim99.76\%$ on the CIFAR-100 image set, and achieved accuracy of $99.51\%\sim100.00\%$ on the COVID-19 tomography image test set.
+This article proposes a new idea of using pre-trained language models for image characterization and image classification.
+Through empirical analysis, the negative impact of the transformer on the CNN model is discussed, and it is proved that the pre-trained language model can improve the performance in image classification.
+This finding may benefit various topics of computer vision tasks.
+The test shows that the proposed model is better than the classification effect of the iGPT-L model without enhancing the image data set.
+The accuracy is $99.60\%\sim99.74\%$ on the CIFAR-10 image set, $99.10\%\sim99.76\%$ on the CIFAR-100 image set, and $99.51\%\sim100.00\%$ on the COVID-19 tomographic image test set.
 
 %
 % ---- Bibliography ----
