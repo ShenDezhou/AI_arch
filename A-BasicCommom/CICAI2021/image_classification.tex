@@ -69,13 +69,28 @@ ABC Institute, Rupert-Karls-University Heidelberg, Heidelberg, Germany\\
 %%%%%%%%% BODY TEXT
 \section{Introduction}
 
-  Unsupervised pre-training is important to modern research of deep learning.
+  \par Unsupervised pre-training is important to modern research of deep learning.
   Lee et al.~\cite{lee2009convolutional} used the pre-training approaches in Computer Vision tasks in 2009,
   and, Nair and Hinton~\cite{nair2010rectified} proved that the pre-training process is supplementary, which can be omitted in some cases, in the Computer Vision tasks later from 2010 to 2016,
   However, it started to flourish since Mikolov et al.~\cite{mikolov2013distributed} had proposed Word2Vec in the natural language processing,
   recently, Devin et al.~\cite{devlin2019bert}'s BERT language model dominates in most tasks in natural language processing.
   The pre-training approach in natural language processing is close resemble to Vicent et al.~\cite{vincent2008extracting}'s Denoising Autoencoder model initially designed for images processing.
   Thus, the pre-training step becomes important in CV and NLP.
+
+  \par The presentation of the Transformer~\cite{vaswani2017attention} model has profoundly changed the field of NLP,
+especially the subsequent series of Transformer-based large-scale pre-training language models,
+which opened a new model training paradigm in NLP: first in large-scale unlabeled Pre-train the model on the text,
+and then use task-specific small data to fine-tune the model.
+
+  \par Transformer's first show in CV is Vision Transformer~\cite{dosovitskiy2020image}.
+The specific method is to divide a picture into multiple non-overlapping patches.
+The patch here can be considered as a token in NLP, and the patches are arranged to form a sequence, get patches embedding after a Linear Embedding.
+In order to do the image classification task, it is still imitating the BERT method of adding $[CLS]$, adding a special mark $[class]$ at the beginning of the patch sequence, and then add the position code to the Transformer to do the encoding.
+
+  \par Liu et al.~\cite{liu2021swin} uses a patch merge mechanism between the Transformer layers to integrate adjacent patch features to achieve an effect similar to the downsampling in CNN.
+In ViT, self-attention is calculated for all input patches, and the shifted window mechanism designed by Liu et al. allows self-attention to be calculated only for patches in a certain local window for the complexity problem of Transformer.
+The window should be shifted to the lower right corner, this achieves cross-window feature interaction, which makes up for the limitation that only a single window can be seen.
+To a certain extent the receptive field is expanded on the upper side. The design is to have two successive Transformer layers, one using regular windows, and the other using sliding windows.
 
 %-------------------------------------------------------------------------
 
@@ -89,31 +104,27 @@ and until LeCun et al.~\cite{lecun1990handwritten}'s first experiment on handwri
 Several years later, a lot of variants of AlexNet had been proposed by researchers and the accuracy of ImageNet had been greatly improved, e.g. ZFNet~\cite{zeiler2014visualizing}, VGG~\cite{simonyan2014very}, GoogLeNet~\cite{szegedy2015going}, ResNet~\cite{he2016deep},
   ResNeXt~\cite{xie2017aggregated}, inception-ResNet-v2~\cite{szegedy2016inception}, DenseNet~\cite{huang2016deep}.
   Lu and Weng~\cite{lu2007survey} concluded that for the multi-source image classification tasks, additional information such as signatures, texture, context, and ancillary data can be combined to achieve better performance.
-And it is difficult in handling the dichotomy between pixels and natural language texts in a single model. For per-pixel approach, non-parametric classifiers, e.g. neural networks, support vector machines, and decision trees,
+And it is difficult in handling the dichotomy between pixels and natural language texts in a single model.
+For per-pixel approach, non-parametric classifiers, e.g. neural networks, support vector machines, and decision trees,
 are the most well-known algorithms for their performance and generalization advantages in the late 1990s and 2000s.
-  Cui et al.~\cite{cui2020revisiting} proposed several whole-word-masking pre-trained Chinese language models,
-which are improved versions of BERT~\cite{devlin2019bert} pre-trained language models, namely RoBERTa(3), RoBERTa-L(3), and RoBERTa-L(24). The training of the RoBERTa(3) language model was based on Devlin et. al.'s BERT model,
-moreover, the pre-trained Chinese language models use extra 5 billion training tokens comparing to 0.4 billion tokens in the BERT model.
-These models achieved better performance in Chinese machine reading comprehension, Chinese document classification, and other downstream natural language tasks.
+ \par Cui et al.~\cite{cui2020revisiting} proposed several whole-word-masking pre-trained Chinese language models, which are improved versions of BERT~\cite{devlin2019bert} pre-trained language models.
+The pre-trained Chinese language models use extra 5 billion training tokens comparing to 0.4 billion tokens in the BERT model. BERT and RoBERTa-L(24) models both achieved an f1-score of 97.8\% in the THUCNews dataset.
   He and Peng~\cite{he2017fine} combined the vision stream and language stream as two parallel channels for extracting multi-source information in the image classification task,
 and tested on the CUB-200-2011 image dataset and achieved $85.55\%$ by combining GoogLeNet~\cite{szegedy2015going} and CNN-RNN~\cite{reed2016learning}, the result outperformed many competitors.
   Fern{\'a}ndez et al.~\cite{fernandez2014we} compared different classifiers in small datasets, and they found that the random forest algorithm ranks first among the 179 classifiers.
   Recall that Kim~\cite{kim2014convolutional} had proved that unsupervised pre-trained language model $word2vec$ and CNN outperformed many other machine learning algorithms,
 e.g. support vector machines and conditional random field, in many datasets such as movie reviews, Stanford sentiment treebank, and TREC question.
-Cui et al.'s pre-trained language model, namely RoBERTa(3), RoBERTa-L(3), and RoBERTa-L(24), had improved performances over many other machine learning algorithms.
-BERT and RoBERTa-L(24) models both achieved an f1-score of 97.8\% in the THUCNews dataset, which contains 65,000 news reports in 10 domains.
 
 %-------------------------------------------------------------------------
 
 \section{Image Classification by Convolutional and Transformer Networks}
 
-We use the Jittor\cite{hu2020jittor} library as the modeling tool, and the TsinghuaDogs\cite{Zou2020TsinghuaDogs} dataset to compare the performance with competitors.The experiment was performed on an Nvidia V100, with 16GB of RAM,
-which can provide 100 tera-flops of computation capability.
+We use the Jittor\cite{hu2020jittor} library as a modeling tool to compare with competitors on the TsinghuaDogs\cite{Zou2020ThuDogs} dataset.
+The experiment was conducted on the Nvidia V100 with a memory of 16GB which provides 100 Tera-Flops computing power.
 
 \subsection{Convolutional Neural Networks for Image Classification}
 
-\par Three of the most popular approaches for image classification tasks are per-pixel, subpixel, and heterogeneous.
-CNN models are fundamental and often used as baselines to compare the classification performance.
+\par CNN models are fundamental and often used as baselines to compare the classification performance.
 The vision system of human has a mechanism that focuses limited attention on the key information to save resources and to get the most efficient information quickly.
 Before introduction of the Attention mechanism, there was a problem in RNN that long distances of information would be weakened,
 just as people with weak memory could not remember the past.
@@ -163,7 +174,8 @@ and the bottom part models use 100\% of the TsinghuaDogs data.}
 \subsection{Dataset Amount Usage}
 
 From the Table (1) ResNet152 and SE-ResNet152 in the middle part and the bottom part, we can see that there is imbalance on the dataset for different classes, the top class has 7449 instances,
-and the bottom class has 200 instances. As a result, using 80\% of the TsinghuaDogs data might beat the 100\% under Stochastic Gradient Descent optimizer.
+and the bottom class has 200 instances.
+As a result, using 80\% of the TsinghuaDogs data might beat the 100\% under Stochastic Gradient Descent optimizer.
 In later discussion, we use 80\% of the TsinghuaDogs data to train the model for best performance and accuracy.
 
 \subsection{Model Description}
@@ -213,8 +225,6 @@ The dropout layer and the Softmax layer are used for better transfer performance
 
 \subsection{The Power of the Transformer Encoder on the Document Classification}
 
-Generality speaking, the performance of the pre-trained language models achieved in the document classification tasks.
-
 We used the RoBERTa-L with 3 and 24 layers as encoder, and tested on two Chinese Judicial datasets, which has two and four classes.
 The \textit{Two-Case} dataset annotated civil and criminal cases, and the \textit{Four-Case} dataset annotated by civil, criminal, intellectual property, and administrative cases.
 The \textit{Two-Case} dataset has $19,508$ training documents and $2,000$ test documents, and the \textit{Four-Case} dataset has $34,789$ training documents and $2,013$ test documents.
@@ -243,33 +253,29 @@ RoBERTa-L(3)  & Four-Case	&	96.35\% \\
 \subsection{Image Classification Model with Transformer Encoder}
 
 
-For the per-pixel image classification approach, for every RGB channel of pixels in an image,
+
+\par For the per-pixel image classification approach, for every RGB channel of pixels in an image,
 each pixel had its pixel-channel code, ranging from 0x00 to 0xff for different colors.
 Thus, taking these pixels in an image is resembled to ASCII characters in a document.
 An experiment show that document classification capability can be transferred to image classification naturally.
 
 \begin{figure*}
 \begin{center}
-  \fbox{\rule{0pt}{2in} \includegraphics[width=0.9\linewidth]{classification.pdf}}
+  \fbox{\rule{0pt}{0in} \includegraphics[width=0.95\linewidth]{classification.pdf}}
 \end{center}
    \caption{Concatenation, encoder, representation, and extraction layers for image classification task.}
 \label{fig:short}
 \end{figure*}
 
-We design simple classification models without too many layers, as Figure (1) shows,
+\par We design simple classification models without too many layers, as Figure (1) shows,
 and use the CIFAR-10 and CIFAR-100 dataset as an example to show the architecture of the model.
-The model architecture has seven functional layers:
-
-\begin{itemize}
-\item {\bf Input layer}
-\item {\bf Concatenation layer}
-\item {\bf Trim layer}
-\item {\bf Encoder layer}
-\item {\bf Embedding layer}
-\item {\bf Feature Extraction layer}
-\item {\bf Output layer}
-\end{itemize}
-
+The model architecture has seven functional layers: Input layer,
+Concatenation layer,
+Trim layer,
+Encoder layer,
+Embedding layer,
+Feature Extraction layer,
+Output layer.
 
 \par In total, 349 computed tomography images were collected from the COVID-19 reports in the MedPix, LUNA, Radiopaedia,
 PubMed Central databases, which sizes range from $1637\times1225$ to $148\times61$.
@@ -315,7 +321,7 @@ and it is beneficial for the classification model to understand the supervised d
 \begin{center}
   \fbox{\rule{0pt}{0in} \includegraphics[width=0.9\linewidth]{image-classification(3).pdf}}
 \end{center}
-   \caption{Accuracy of the image classification models with the pre-trained language encoder on the CIFAR-10 and CIFAR-100 dataset in the training epochs.}
+   \caption{Accuracy of the image classification models with the pre-trained language encoder on the CIFAR-10/10 and COVID-19 dataset in the training epochs.}
 \label{fig:short}
 \end{figure*}
 
